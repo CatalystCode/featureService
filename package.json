@@ -1,0 +1,34 @@
+{
+  "name": "rhom-location-service",
+  "homepage": "https://github.com/timfpark/rhomLocationServer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/timfpark/tileServer.git"
+  },
+  "author": "Tim Park <timfpark@gmail.com>",
+  "version": "1.0.4",
+  "engines": {
+    "node": "4.3.x"
+  },
+  "dependencies": {
+    "async": "^1.4.2",
+    "azure-storage": "^0.10.0",
+    "body-parser": "^1.14.1",
+    "express": "^4.13.3",
+    "geopoint": "^1.0.1",
+    "http-status-codes": "^1.0.5",
+    "jsonapi-serializer": "3.0.0",
+    "morgan": "^1.6.1",
+    "node-fetch": "^1.3.3",
+    "pg": "^4.5.3",
+    "request": "^2.65.0",
+    "service-utils": "^1.0.9"
+  },
+  "scripts": {
+    "test": "PORT=3035 mocha"
+  },
+  "devDependencies": {
+    "pbf2json": "^3.0.0",
+    "through2": "^2.0.1"
+  }
+}
