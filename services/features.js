@@ -108,10 +108,10 @@ function getByBoundingBox(boundingBox, callback) {
 }
 
 function init(callback) {
-    if (!process.env.POSTGRES_CONNECTION_STRING)
-        return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, "POSTGRES_CONNECTION_STRING configuration not provided as environment variable"));
+    if (!process.env.FEATURES_CONNECTION_STRING)
+        return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, "FEATURES_CONNECTION_STRING configuration not provided as environment variable"));
 
-    pg.connect(process.env.POSTGRES_CONNECTION_STRING, function(err, client, done) {
+    pg.connect(process.env.FEATURES_CONNECTION_STRING, function(err, client, done) {
         featuresTable = client;
 
         return callback(err);
