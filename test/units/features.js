@@ -25,6 +25,21 @@ describe('features service', function() {
             done();
         });
     });
+
+    it('can summarize features by bounding box', function(done) {
+        services.features.summarizeByBoundingBox({
+            north: 50.951529,
+            west: 6.941152,
+            south: 50.922862,
+            east: 6.975656
+        }, (err, summary) => {
+            assert(!err);
+            assert(summary);
+
+            done();
+        });
+    });
+
 /*
     it('can get features by bounding box', function(done) {
         services.features.getByBoundingBox({

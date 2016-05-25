@@ -94,7 +94,7 @@ function get(featureId, callback) {
 }
 
 function getByBoundingBox(boundingBox, callback) {
-    let boundingBoxQuery = `SELECT * FROM activities WHERE bbox && ST_MakeEnvelope(
+    let boundingBoxQuery = `SELECT * FROM features WHERE bbox && ST_MakeEnvelope(
         ${boundingBox.west}, ${boundingBox.south},
         ${boundingBox.east}, ${boundingBox.north}
     )`;
@@ -115,6 +115,23 @@ function init(callback) {
         featuresTable = client;
 
         return callback(err);
+    });
+}
+
+function summarizeByBoundingBox(boundingBox, callback) {
+    let boundingBoxQuery = `SELECT fullTag, count(*) FROM features WHERE centroid && ST_MakeEnvelope(
+        ${boundingBox.west}, ${boundingBox.south},
+        ${boundingBox.east}, ${boundingBox.north}
+    ) GROUP BY fullTag`;
+
+    console.log(boundingBoxQuery);
+
+    featuresTable.query(boundingBoxQuery, (err, results) => {
+        console.log(err);
+        if (err)
+            return callback(err);
+        else
+            return callback(null, results.rows);
     });
 }
 
@@ -186,10 +203,11 @@ function validate(activity, callback) {
 };
 
 module.exports = {
-    fromJsonApi:        fromJsonApi,
-    get:                get,
-    getByBoundingBox:   getByBoundingBox,
-    init:               init,
-    toJsonApi:          toJsonApi,
-    upsert:             upsert,
+    fromJsonApi:                fromJsonApi,
+    get:                        get,
+    getByBoundingBox:           getByBoundingBox,
+    init:                       init,
+    summarizeByBoundingBox:     summarizeByBoundingBox,
+    toJsonApi:                  toJsonApi,
+    upsert:                     upsert,
 };

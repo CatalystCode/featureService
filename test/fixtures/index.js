@@ -4,8 +4,8 @@ var fixtures = {
     nodeFeature: {
         id: 544896521,
         centroid: {
-            lat: 49.4989793,
-            lon: 5.9783523,
+            lat: -49.4989793,
+            lon: -45.9783523,
         },
         fullTag: 'leisure:playground',
         category: 'leisure',
@@ -14,10 +14,10 @@ var fixtures = {
 
     wayFeature: {
         id: 420028229,
-        name: 'Luxemberg parking',
+        name: 'fake parking',
         centroid: {
-            lat: 49.717977,
-            lon: 6.010458
+            lat: -49.717977,
+            lon: -45.010458
         },
         fullTag: 'amenity:parking',
         category: 'amenity',
