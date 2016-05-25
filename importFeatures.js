@@ -6,8 +6,11 @@ var pbf2json = require('pbf2json'),
 
 let featureTags = [
   'amenity',
+  'building',
+  'historic',
   'leisure',
-  'public_transport'
+  'public_transport',
+  'tourism'
 ];
 
 let config = {
