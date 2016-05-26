@@ -16,7 +16,8 @@ const FEATURE_ATTRIBUTES = [
     'centroid',
     'fullTag',
     'category',
-    'tag'
+    'tag',
+    'imported_at'
 ];
 
 const WGS86 = 4326;
@@ -35,9 +36,11 @@ CREATE TABLE features
 
   centroid          geometry                    NOT NULL,
 
-  fullTag           character varying(128)      NOT NULL,
+  fulltag           character varying(128)      NOT NULL,
   category          character varying(64)       NOT NULL,
   tag               character varying(64)       NOT NULL,
+
+  imported_at       timestamp                   NOT NULL,
 
   CONSTRAINT nodes_pkey PRIMARY KEY (id),
   CONSTRAINT enforce_dims_centroid CHECK (st_ndims(centroid) = 2),
@@ -54,7 +57,7 @@ CREATE INDEX features_centroid_index
 
 CREATE INDEX features_fulltag_index
   ON features
-  (fullTag);
+  (fulltag);
 
 */
 
@@ -124,10 +127,7 @@ function summarizeByBoundingBox(boundingBox, callback) {
         ${boundingBox.east}, ${boundingBox.north}
     ) GROUP BY fullTag`;
 
-    console.log(boundingBoxQuery);
-
     featuresTable.query(boundingBoxQuery, (err, results) => {
-        console.log(err);
         if (err)
             return callback(err);
         else
@@ -154,7 +154,7 @@ function upsert(feature, callback) {
     feature.name = feature.name || '';
 
     let upsertQuery = `INSERT INTO features (
-        id, name, centroid, fullTag, category, tag
+        id, name, centroid, fullTag, category, tag, imported_at
     ) VALUES (
         '${feature.id}',
         '${feature.name}',
@@ -165,7 +165,8 @@ function upsert(feature, callback) {
 
         '${feature.fullTag}',
         '${feature.category}',
-        '${feature.tag}'
+        '${feature.tag}',
+        current_timestamp
     ) ON CONFLICT (id) DO UPDATE SET
         name = '${feature.name}',
 
@@ -175,7 +176,8 @@ function upsert(feature, callback) {
 
         fullTag = '${feature.fullTag}',
         category = '${feature.category}',
-        tag = '${feature.tag}'
+        tag = '${feature.tag}',
+        imported_at = current_timestamp
     ;`;
 
     featuresTable.query(upsertQuery, (err, results) => {
