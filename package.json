@@ -28,6 +28,7 @@
     "test": "PORT=3035 mocha"
   },
   "devDependencies": {
+    "geotile": "^0.1.9",
     "pbf2json": "^3.0.0",
     "through2": "^2.0.1"
   }
