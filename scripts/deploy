@@ -1,0 +1,4 @@
+git log -1 --format="%H" > deployment_sha
+git add deployment_sha
+git commit -m 'deployment sha'
+git push azure master

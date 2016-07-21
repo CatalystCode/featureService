@@ -13,6 +13,7 @@ describe('ops endpoint', function() {
             assert(!err);
             assert.equal(resp.statusCode, HttpStatus.OK);
             assert.equal(resp.body.ok, true);
+            assert(resp.body.sha);
             done();
         });
     });

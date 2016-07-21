@@ -83,6 +83,8 @@ function get(featureId, callback) {
 }
 
 function rowToFeature(row) {
+    if (!row) return;
+
     row['createdAt'] = row['created_at'];
     row['updatedAt'] = row['updated_at'];
 
