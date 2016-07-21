@@ -10,27 +10,8 @@ const request = require('request');
 const featuresEndpoint = 'http://localhost:' + process.env.PORT + '/features';
 
 describe('features endpoint', function() {
-
-/*
-    it('can GET an activity', function(done) {
-        request.get(`${featuresEndpoint}/${activityId}`, {
-            headers: {
-                Authorization: "Bearer " + fixtures.accessToken
-            },
-            json: true
-        }, function(err, resp) {
-            assert(!err);
-            assert.equal(resp.statusCode, HttpStatus.OK);
-
-            assert(resp.body.data);
-
-            done();
-        });
-    });
-*/
-/*
     it('can get features within a boundingBox', function(done) {
-        request.get(`${featuresEndpoint}/37/-123/36/-122`, {
+        request.get(`${featuresEndpoint}/-49.4979793/-45.9793523/-49.4999793/-45.9773523`, {
             headers: {
                 Authorization: "Bearer " + fixtures.accessToken
             },
@@ -39,17 +20,14 @@ describe('features endpoint', function() {
             assert(!err);
             assert.equal(resp.statusCode, HttpStatus.OK);
 
-            assert(resp.body.activities);
-            assert(resp.body.activities.length > 0);
-            assert(resp.body.activities[0].d !== undefined);
-            assert(resp.body.activities[0].td !== undefined);
-            assert(resp.body.activities[0].l !== undefined);
-            assert(resp.body.activities[0].g !== undefined);
-            assert(resp.body.activities[0].id !== undefined);
+            assert(resp.body.features);
+            assert.equal(resp.body.features.length, 1);
+            assert.equal(resp.body.features[0].category, 'leisure');
+            assert.equal(resp.body.features[0].tag, 'playground');
+            assert.equal(resp.body.features[0].centroid.coordinates[0], -45.9783523);
+            assert.equal(resp.body.features[0].centroid.coordinates[1], -49.4989793);
 
             done();
         });
     });
-*/
-
 });
