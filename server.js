@@ -28,7 +28,8 @@ app.use(function(req, res, next) {
 app.use(morgan('combined'));
 app.use(bodyParser.json());
 
-app.get('/features/:north/:west/:south/:east', controllers.features.getByBoundingBox);
+app.get('/bbox/:north/:west/:south/:east', controllers.features.getByBoundingBox);
+app.get('/point/:latitude/:longitude', controllers.features.getByPoint);
 
 app.get('/ops/health', controllers.ops.health);
 

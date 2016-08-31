@@ -26,16 +26,18 @@ CREATE EXTENSION postgis;
 
 CREATE TABLE features
 (
-  id                bigint                      NOT NULL,
+  id                bigint                       NOT NULL,
 
-  name              character varying(128)      NOT NULL,
+  names             jsonb                        NOT NULL,
 
-  hull              geometry                    NOT NULL,
-  centroid          geometry                    NOT NULL,
+  hull              geometry                     NOT NULL,
+  centroid          geometry                     NOT NULL,
 
-  fulltag           character varying(128)      NOT NULL,
-  category          character varying(64)       NOT NULL,
-  tag               character varying(64)       NOT NULL,
+  elevation         float,
+
+  fulltag           character varying(128)       NOT NULL,
+  category          character varying(64)        NOT NULL,
+  tag               character varying(64)        NOT NULL,
 
   created_at         timestamp                   NOT NULL,
   updated_at         timestamp                   NOT NULL,
@@ -43,11 +45,9 @@ CREATE TABLE features
   CONSTRAINT nodes_pkey PRIMARY KEY (id),
 
   CONSTRAINT enforce_dims_centroid CHECK (st_ndims(centroid) = 2),
-  CONSTRAINT enforce_geotype_centroid CHECK (geometrytype(centroid) = 'POINT'::text),
   CONSTRAINT enforce_srid_centroid CHECK (st_srid(centroid) = 4326),
 
   CONSTRAINT enforce_dims_hull CHECK (st_ndims(hull) = 2),
-  CONSTRAINT enforce_geotype_hull CHECK (geometrytype(hull) = 'POLYGON'::text),
   CONSTRAINT enforce_srid_hull CHECK (st_srid(hull) = 4326)
 );
 
@@ -166,59 +166,29 @@ function summarizeByBoundingBox(boundingBox, callback) {
 }
 
 function upsert(feature, callback) {
-    feature.name = feature.name || '';
-
-    if (!feature.hull) {
-        feature.hull = [
-            { lat: feature.centroid.lat + NODE_FEATURE_BBOX_DELTA, lon: feature.centroid.lon - NODE_FEATURE_BBOX_DELTA },
-            { lat: feature.centroid.lat + NODE_FEATURE_BBOX_DELTA, lon: feature.centroid.lon + NODE_FEATURE_BBOX_DELTA },
-            { lat: feature.centroid.lat - NODE_FEATURE_BBOX_DELTA, lon: feature.centroid.lon + NODE_FEATURE_BBOX_DELTA },
-            { lat: feature.centroid.lat - NODE_FEATURE_BBOX_DELTA, lon: feature.centroid.lon - NODE_FEATURE_BBOX_DELTA },
-            { lat: feature.centroid.lat + NODE_FEATURE_BBOX_DELTA, lon: feature.centroid.lon - NODE_FEATURE_BBOX_DELTA }
-        ];
-    }
-
-    let hullLineString = "";
     let prefix = "";
 
-    feature.hull.forEach( (point) => {
-        hullLineString += `${prefix}${point.lon} ${point.lat}`;
-        prefix = ",";
-    });
-
     let upsertQuery = `INSERT INTO features (
-        id, name, hull, centroid, fullTag, category, tag, created_at, updated_at
+        id, names, hull, centroid, fullTag, category, tag, created_at, updated_at
     ) VALUES (
-        '${feature.id}',
-        '${feature.name}',
+        ${feature.id},
+        '${JSON.stringify(feature.names).replace(/'/g,"''")}',
 
-        ST_Polygon(
-            ST_GeomFromText('LINESTRING(
-                ${hullLineString}
-            )'
-        ), 4326),
-
-        ST_SetSRID(
-            ST_Point(${feature.centroid.lon}, ${feature.centroid.lat}), 4326
-        ),
+        ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(feature.geometry)}'), 4326),
+        ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(feature.centroid)}'), 4326),
 
         '${feature.fullTag}',
         '${feature.category}',
         '${feature.tag}',
+
         current_timestamp,
         current_timestamp
     ) ON CONFLICT (id) DO UPDATE SET
-        name = '${feature.name}',
+        names = '${JSON.stringify(feature.names).replace(/'/g,"''")}',
 
-        centroid = ST_SetSRID(
-            ST_Point(${feature.centroid.lon}, ${feature.centroid.lat}), 4326
-        ),
+        hull = ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(feature.geometry)}'), 4326),
+        centroid = ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(feature.centroid)}'), 4326),
 
-        hull = ST_Polygon(
-            ST_GeomFromText('LINESTRING(
-                ${hullLineString}
-            )'
-        ), 4326),
         fullTag = '${feature.fullTag}',
         category = '${feature.category}',
         tag = '${feature.tag}',
@@ -226,7 +196,6 @@ function upsert(feature, callback) {
     ;`;
 
     common.utils.postgresClientWrapper(process.env.FEATURES_CONNECTION_STRING, (client, wrapperCallback) => {
-
         client.query(upsertQuery, (err, results) => {
             if (err) return wrapperCallback(err);
 

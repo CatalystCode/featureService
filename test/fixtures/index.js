@@ -1,27 +1,22 @@
 var jwt = require('jsonwebtoken');
 
 var fixtures = {
-    nodeFeature: {
-        id: 544896521,
-        centroid: {
-            lat: -49.4989793,
-            lon: -45.9783523,
+    feature: {
+        "id":3830198,
+        "names": {
+            "common":"Sal"
         },
-        fullTag: 'leisure:playground',
-        category: 'leisure',
-        tag: 'playground'
-    },
-
-    wayFeature: {
-        id: 420028229,
-        name: 'fake parking',
-        centroid: {
-            lat: -49.717977,
-            lon: -45.010458
+        "geometry": {
+            "type":"MultiPolygon",
+            "coordinates":[[[[-22.8724103,16.6696193],[-22.924919,16.585595],[-22.9840127,16.8273509],[-22.8892456,16.8339415],[-22.8724103,16.6696193]]]]
         },
-        fullTag: 'amenity:parking',
-        category: 'amenity',
-        tag: 'parking'
+        "centroid": {
+            "type":"Point",
+            "coordinates":[-22.917646899999998,16.729126675000003]
+        },
+        "category":"boundary",
+        "tag":"administrative",
+        "fullTag":"boundary:administrative"
     }
 };
 

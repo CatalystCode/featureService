@@ -31,6 +31,19 @@ exports.get = function(req, res) {
 };
 */
 
+exports.getByPoint = function(req, res) {
+    services.features.getByPoint({
+        latitude: req.params.latitude,
+        longitude: req.params.longitude,
+    }, (err, features) => {
+        if (err) return common.utils.handleError(res, err);
+
+        res.send({
+            features: features
+        });
+    });
+};
+
 exports.getByBoundingBox = function(req, res) {
     services.features.getByBoundingBox({
         north: req.params.north,
