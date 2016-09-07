@@ -8,18 +8,6 @@ const async = require('async'),
       process = require('process'),
       ServiceError = common.utils.ServiceError;
 
-const FEATURE_ATTRIBUTES = [
-    'id',
-    'name',
-    'centroid',
-    'fullTag',
-    'category',
-    'tag',
-    'imported_at'
-];
-
-const NODE_FEATURE_BBOX_DELTA = 0.0003;
-
 /*
 
 CREATE EXTENSION postgis;
@@ -39,8 +27,10 @@ CREATE TABLE features
   category          character varying(64)        NOT NULL,
   tag               character varying(64)        NOT NULL,
 
-  created_at         timestamp                   NOT NULL,
-  updated_at         timestamp                   NOT NULL,
+  admin_level       int,
+
+  created_at        timestamp                    NOT NULL,
+  updated_at        timestamp                    NOT NULL,
 
   CONSTRAINT nodes_pkey PRIMARY KEY (id),
 
@@ -90,7 +80,9 @@ function rowToFeature(row) {
 
     row['hull'] = JSON.parse(row['hull_geo_json']);
     row['centroid'] = JSON.parse(row['centroid_geo_json']);
+    row['adminLevel'] = row['admin_level'];
 
+    delete row['admin_level'];
     delete row['created_at'];
     delete row['updated_at'];
     delete row['hull_geo_json'];
@@ -169,7 +161,7 @@ function upsert(feature, callback) {
     let prefix = "";
 
     let upsertQuery = `INSERT INTO features (
-        id, names, hull, centroid, fullTag, category, tag, created_at, updated_at
+        id, names, hull, centroid, fullTag, category, tag, admin_level, created_at, updated_at
     ) VALUES (
         ${feature.id},
         '${JSON.stringify(feature.names).replace(/'/g,"''")}',
@@ -180,6 +172,8 @@ function upsert(feature, callback) {
         '${feature.fullTag}',
         '${feature.category}',
         '${feature.tag}',
+
+        ${feature.adminLevel},
 
         current_timestamp,
         current_timestamp
@@ -192,6 +186,9 @@ function upsert(feature, callback) {
         fullTag = '${feature.fullTag}',
         category = '${feature.category}',
         tag = '${feature.tag}',
+
+        admin_level = ${feature.adminLevel},
+
         updated_at = current_timestamp
     ;`;
 

@@ -1,7 +1,8 @@
 "use strict"
 
 const async = require('async'),
-      features = require('./features');
+      features = require('./features'),
+      visits = require('./visits');
 
 const submodules = [
     features
@@ -12,6 +13,7 @@ function init(callback) {
 }
 
 module.exports = {
-    features: features,
+    features:   features,
     init:       init,
+    visits:     visits
 };

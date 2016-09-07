@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "geotile": "^0.1.9",
+    "node-uuid": "^1.4.7",
     "pbf2json": "^3.0.0",
     "through2": "^2.0.1"
   }

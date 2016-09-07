@@ -1,6 +1,8 @@
-var jwt = require('jsonwebtoken');
+'use strict';
 
-var fixtures = {
+const uuid = require('node-uuid');
+
+let fixtures = {
     feature: {
         "id":3830198,
         "names": {
@@ -16,8 +18,27 @@ var fixtures = {
         },
         "category":"boundary",
         "tag":"administrative",
-        "fullTag":"boundary:administrative"
-    }
+        "fullTag":"boundary:administrative",
+        "adminLevel": 4
+    },
+    visit: {
+        id: '93de94d6-6561-446f-9a33-c1761b029bd5',
+        userId: '747941cfb829',
+        featureId: 3830198,
+        start: new Date(2016,4,19),
+    },
+    location: {
+        timestamp: new Date(2016,5,15),
+        userId: '747941cfb829',
+        accuracy: 10,
+        altitude: 102,
+        altitudeAccuracy: -1,
+        course: 274.01,
+        latitude: 41.7381279,
+        longitude: -121.5290743,
+        speed: 6.02
+    },
+    userId: '747941cfb829'
 };
 
 module.exports = fixtures;

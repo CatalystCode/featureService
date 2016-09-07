@@ -7,7 +7,7 @@ const HttpStatus = require('http-status-codes');
 const presenters = require('../../presenters');
 const request = require('request');
 
-const featuresEndpoint = 'http://localhost:' + process.env.PORT;
+const featuresEndpoint = 'http://localhost:' + process.env.PORT + '/features';
 
 describe('features endpoint', function() {
     it('can get features within a boundingBox', function(done) {
