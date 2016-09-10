@@ -7,12 +7,8 @@ var app = require('../../server')
 
 describe('visits service', function() {
     it('can upsert visit', function(done) {
-        services.visits.upsert(fixtures.visit, (err, visit) => {
+        services.visits.upsert([ fixtures.visit ], err => {
             assert(!err);
-            assert(visit);
-
-            assert.equal(visit.userId, fixtures.userId);
-
             done();
         });
     });

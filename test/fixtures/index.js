@@ -25,7 +25,7 @@ let fixtures = {
         id: '93de94d6-6561-446f-9a33-c1761b029bd5',
         userId: '747941cfb829',
         featureId: 3830198,
-        start: new Date(2016,4,19),
+        start: new Date(2016,4,19).getTime(),
     },
     location: {
         timestamp: new Date(2016,5,15),

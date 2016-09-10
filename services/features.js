@@ -41,8 +41,6 @@ CREATE TABLE features
   CONSTRAINT enforce_srid_hull CHECK (st_srid(hull) = 4326)
 );
 
-CREATE ROLE frontend WITH PASSWORD '[euro4sure]';
-ALTER ROLE frontend LOGIN;
 GRANT SELECT, UPDATE, INSERT, DELETE ON features TO frontend;
 
 CREATE INDEX features_centroid_index

@@ -57,13 +57,7 @@ function resultsToVisits(results) {
 }
 
 function fromJson(visitsJson, callback) {
-    let parsedVisits = visitsJson.visits.map(visit => {
-        visit['start'] = visit['start'] && new Date(Date.parse(visit['start']));
-        visit['finish'] = visit['finish'] && new Date(Date.parse(visit['finish']));
-        return visit;
-    });
-
-    return callback(null, parsedVisits);
+    return callback(null, visitsJson);
 }
 
 function getVisits(scope, userId, callback) {
@@ -89,39 +83,43 @@ function init(callback) {
     return callback();
 }
 
-function upsert(visit, callback) {
+function upsert(visits, callback) {
     let prefix = "";
 
-    if (!visit.id)        return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'id' not provided for visit."));
-    if (!visit.userId)    return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'userId' not provided for visit."));
-    if (!visit.featureId) return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'featureId' not provided for visit."));
-    if (!visit.start)     return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'start' not provided for visit."));
+    visits.forEach(visit => {
+        if (!visit.id)        return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'id' not provided for visit."));
+        if (!visit.userId)    return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'userId' not provided for visit."));
+        if (!visit.featureId) return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'featureId' not provided for visit."));
+        if (!visit.start)     return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'start' not provided for visit."));
+    });
 
-    let finishTimestamp = visit.finish && visit.finish.getTime() || 'null';
-    let upsertQuery = `INSERT INTO visits (
-        id, user_id, feature_id, start, finish, created_at, updated_at
-    ) VALUES (
-        '${visit.id}',
-        '${visit.userId}',
-        ${visit.featureId},
-        ${visit.start.getTime()},
-        ${finishTimestamp},
-        current_timestamp,
-        current_timestamp
-    ) ON CONFLICT (id) DO UPDATE SET
-        user_id  = '${visit.userId}',
-        feature_id = ${visit.featureId},
-        start = ${visit.start.getTime()},
-        finish = ${finishTimestamp},
-        updated_at = current_timestamp
-    ;`;
+    async.each(visits, (visit, visitCallback) => {
+        let finishTimestamp = visit.finish || 'null';
+        let upsertQuery = `INSERT INTO visits (
+            id, user_id, feature_id, start, finish, created_at, updated_at
+        ) VALUES (
+            '${visit.id}',
+            '${visit.userId}',
+            ${visit.featureId},
+            ${visit.start},
+            ${finishTimestamp},
+            current_timestamp,
+            current_timestamp
+        ) ON CONFLICT (id) DO UPDATE SET
+            user_id  = '${visit.userId}',
+            feature_id = ${visit.featureId},
+            start = ${visit.start},
+            finish = ${finishTimestamp},
+            updated_at = current_timestamp
+        ;`;
 
-    common.utils.postgresClientWrapper(process.env.FEATURES_CONNECTION_STRING, (client, wrapperCallback) => {
-        client.query(upsertQuery, (err, results) => {
-            if (err) return wrapperCallback(err);
+        common.utils.postgresClientWrapper(process.env.FEATURES_CONNECTION_STRING, (client, wrapperCallback) => {
+            client.query(upsertQuery, (err, results) => {
+                if (err) return wrapperCallback(err);
 
-            return wrapperCallback(null, visit);
-        });
+                return wrapperCallback(null, visit);
+            });
+        }, visitCallback);
     }, callback);
 }
 

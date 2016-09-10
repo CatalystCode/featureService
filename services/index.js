@@ -5,7 +5,8 @@ const async = require('async'),
       visits = require('./visits');
 
 const submodules = [
-    features
+    features,
+    visits
 ];
 
 function init(callback) {
