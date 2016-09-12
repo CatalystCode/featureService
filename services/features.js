@@ -158,6 +158,13 @@ function summarizeByBoundingBox(boundingBox, callback) {
 function upsert(feature, callback) {
     let prefix = "";
 
+    if (!feature.category) return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'category' not provided for feature."));
+    if (!feature.centroid) return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'centroid' not provided for feature."));
+    if (!feature.fullTag)  return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'fullTag' not provided for feature."));
+    if (!feature.geometry) return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'gemoetry' not provided for feature."));
+    if (!feature.names)    return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'name' not provided for feature."));
+    if (!feature.tag)      return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'tag' not provided for feature."));
+
     let upsertQuery = `INSERT INTO features (
         id, names, hull, centroid, fullTag, category, tag, admin_level, created_at, updated_at
     ) VALUES (
