@@ -8,7 +8,7 @@
   "author": "Tim Park <timfpark@gmail.com>",
   "version": "1.0.4",
   "engines": {
-    "node": "4.4.x"
+    "node": "6.2.x"
   },
   "dependencies": {
     "async": "^1.4.2",
