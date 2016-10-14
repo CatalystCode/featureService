@@ -57,7 +57,12 @@ function resultsToVisits(results) {
 }
 
 function fromJson(visitsJson, callback) {
-    return callback(null, visitsJson);
+    let parsedVisitsJson = visitsJson.visits.map(visitJson => {
+        visitJson.start = Date.parse(visitJson.start);
+        return visitJson;
+    });
+
+    return callback(null, {visits: parsedVisitsJson});
 }
 
 function getVisits(scope, userId, callback) {
