@@ -1,10 +1,5 @@
 {
-  "name": "rhom-location-service",
-  "homepage": "https://github.com/timfpark/rhomLocationServer",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/timfpark/tileServer.git"
-  },
+  "name": "rhom-feature-service",
   "author": "Tim Park <timfpark@gmail.com>",
   "version": "1.0.4",
   "engines": {

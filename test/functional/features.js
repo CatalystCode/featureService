@@ -21,11 +21,10 @@ describe('features endpoint', function() {
             assert.equal(resp.statusCode, HttpStatus.OK);
 
             assert(resp.body.features);
-            assert.equal(resp.body.features.length, 1);
+            assert.equal(resp.body.features.length, 17);
             assert.equal(resp.body.features[0].category, 'boundary');
             assert.equal(resp.body.features[0].tag, 'administrative');
-            assert.equal(resp.body.features[0].centroid.coordinates[0], -22.9176469);
-            assert.equal(resp.body.features[0].centroid.coordinates[1], 16.729126675);
+            assert(resp.body.features[0].centroid.coordinates);
 
             done();
         });
@@ -42,11 +41,12 @@ describe('features endpoint', function() {
             assert.equal(resp.statusCode, HttpStatus.OK);
 
             assert(resp.body.features);
-            assert.equal(resp.body.features.length, 1);
+
+            assert.equal(resp.body.features.length, 6);
             assert.equal(resp.body.features[0].category, 'boundary');
             assert.equal(resp.body.features[0].tag, 'administrative');
-            assert.equal(resp.body.features[0].centroid.coordinates[0], -22.9176469);
-            assert.equal(resp.body.features[0].centroid.coordinates[1], 16.729126675);
+            assert.equal(resp.body.features[0].centroid.coordinates[0], 0.0);
+            assert.equal(resp.body.features[0].centroid.coordinates[1], 0.0);
 
             done();
         });

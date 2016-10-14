@@ -21,7 +21,7 @@ describe('visits endpoint', function() {
             assert.equal(resp.statusCode, HttpStatus.OK);
 
             assert(resp.body.visits);
-            assert.equal(resp.body.visits.length, 1);
+            assert.equal(resp.body.visits.length, 3);
 
             done();
         });

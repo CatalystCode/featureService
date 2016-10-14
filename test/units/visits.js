@@ -17,7 +17,7 @@ describe('visits service', function() {
         services.visits.getVisits('open', fixtures.userId, (err, visits) => {
             assert(!err);
             assert(visits);
-            assert.equal(visits.length, 1);
+            assert.equal(visits.length, 3);
 
             assert(!visits[0].user_id);
             assert.equal(visits[0].userId, fixtures.userId);

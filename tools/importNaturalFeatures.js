@@ -1,7 +1,7 @@
 'use strict';
 
 let pbf2json = require('pbf2json'),
-    services = require('./services'),
+    services = require('../services'),
     through = require('through2'),
     Tile = require('geotile');
 
@@ -52,8 +52,10 @@ services.init(function(err) {
     pbf2json.createReadStream(config).pipe(
         through.obj( (item, e, next) => {
             let feature = {
-                id: item.id
+                id: `'osm-${item.id}'`
             };
+
+            if (!item.tags['name']) return;
 
             FEATURE_TAGS.forEach( (featureTag) => {
                 if (!item.tags[featureTag]) return;
@@ -67,9 +69,8 @@ services.init(function(err) {
                 return next();
 
             feature.names = {};
-            if (item.tags['name']) {
-                feature.names.common = item.tags['name'];
-            }
+
+            feature.names.common = item.tags['name'];
 
             if (item.type === 'node') {
                 let latitude = parseFloat(item.lat);
@@ -83,8 +84,8 @@ services.init(function(err) {
                     ]
                 };
 
-                let bboxDelta = 0.005;
-                feature.geometry = {
+                let bboxDelta = 0.001;
+                feature.hull = {
                     "type":"Polygon",
                     "coordinates":[[
                         [longitude - bboxDelta, latitude + bboxDelta],
@@ -94,8 +95,6 @@ services.init(function(err) {
                         [longitude - bboxDelta, latitude + bboxDelta]
                     ]]
                 };
-
-                feature.adminLevel = 9999;
 
                 if (item.tags['ele']) {
                     feature.elevation = parseFloat(item.tags['ele']);

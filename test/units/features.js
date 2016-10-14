@@ -9,7 +9,6 @@ describe('features service', function() {
 
     it('can upsert feature', function(done) {
         services.features.upsert(fixtures.feature, (err, feature) => {
-            console.log(err);
             assert(!err);
             assert(feature);
 
@@ -19,15 +18,16 @@ describe('features service', function() {
 
     it('can summarize features by bounding box', function(done) {
         services.features.summarizeByBoundingBox({
-            north: 16.829126675000003,
-            west: -23.017646899999998,
-            south: 16.629126675000003,
-            east: -22.817646899999998
+            north: 37.096292,
+            west: -122.144374,
+            south: 36.961995,
+            east: -121.817531
         }, (err, summaries) => {
             assert(!err);
-            assert.equal(summaries.length, 1);
-            assert.equal(summaries[0].fulltag, 'boundary:administrative');
-            assert.equal(summaries[0].count, 1);
+
+            assert.equal(summaries.length, 2);
+            assert.equal(summaries[0].fulltag, 'natural:peak');
+            assert.equal(summaries[0].count, 31);
 
             done();
         });
@@ -35,16 +35,20 @@ describe('features service', function() {
 
     it('can get intersecting features by point', function(done) {
         services.features.getByPoint({
-            latitude: 16.729126675000003,
-            longitude: -22.917646899999998
+            latitude: 36.5785,
+            longitude: -118.2923
         }, (err, features) => {
             assert(!err);
             assert(features);
 
-            assert.equal(features.length, 1);
-            assert.equal(features[0].tag, 'administrative');
-            assert.equal(features[0].centroid.coordinates[0], -22.9176469);
-            assert.equal(features[0].centroid.coordinates[1], 16.729126675);
+            assert.equal(features.length, 9);
+
+            assert.equal(features[0].fulltag, 'boundary:administrative');
+            assert.equal(features[0].centroid.coordinates[0], 0.0);
+            assert.equal(features[0].centroid.coordinates[1], 0.0);
+
+            assert.equal(features[7].fulltag, 'natural:peak');
+            assert(features[7].centroid.coordinates);
 
             done();
         });
@@ -52,18 +56,18 @@ describe('features service', function() {
 
     it('can get features by bounding box', function(done) {
         services.features.getByBoundingBox({
-            north: 16.829126675000003,
-            west: -23.017646899999998,
-            south: 16.629126675000003,
-            east: -22.817646899999998
+            north: 37.096292,
+            west: -122.144374,
+            south: 36.961995,
+            east: -121.817531
         }, (err, features) => {
             assert(!err);
             assert(features);
 
-            assert.equal(features.length, 1);
-            assert.equal(features[0].tag, 'administrative');
-            assert.equal(features[0].centroid.coordinates[0], -22.9176469);
-            assert.equal(features[0].centroid.coordinates[1], 16.729126675);
+            assert(features.length > 0);
+
+            assert.equal(features[0].fulltag, 'natural:peak');
+            assert(features[0].centroid.coordinates);
 
             done();
         });
