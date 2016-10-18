@@ -200,7 +200,7 @@ function upsert(feature, callback) {
     common.utils.postgresClientWrapper(process.env.FEATURES_CONNECTION_STRING, (client, wrapperCallback) => {
         client.query(upsertQuery, (err, results) => {
             if (err) {
-                common.log.error(`failed query: ${upsertQuery} with err: ${err}`);
+                common.services.log.error(`failed query: ${upsertQuery} with err: ${err}`);
                 return wrapperCallback(err);
             }
 
