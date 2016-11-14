@@ -6,7 +6,9 @@ const async = require('async'),
       GeoPoint = require('geopoint'),
       HttpStatus = require('http-status-codes'),
       process = require('process'),
-      ServiceError = common.utils.ServiceError;
+      ServiceError = common.utils.ServiceError,
+      turf = require('turf'),
+      geojsonBbox = require('geojson-bbox');
 
 /*
 
@@ -18,7 +20,9 @@ CREATE TABLE features
 
   names             jsonb                        NOT NULL,
 
+  bbox              geometry                     NOT NULL,
   hull              geometry                     NOT NULL,
+
   centroid          geometry                     NOT NULL,
 
   hierarchy         jsonb                        NOT NULL,
@@ -53,9 +57,9 @@ CREATE INDEX features_hull_index
   USING gist
   (hull);
 
-CREATE INDEX features_fulltag_index
+CREATE INDEX features_bbox_index
   ON features
-  (fulltag);
+  (bbox);
 
 */
 
@@ -76,13 +80,15 @@ function rowToFeature(row) {
     row['createdAt'] = row['created_at'];
     row['updatedAt'] = row['updated_at'];
 
-    row['hull'] = JSON.parse(row['hull_geo_json']);
+    //row['hull'] = JSON.parse(row['hull_geo_json']);
     row['centroid'] = JSON.parse(row['centroid_geo_json']);
     //row['names'] = JSON.parse(row['names']);
 
     delete row['created_at'];
     delete row['updated_at'];
-    delete row['hull_geo_json'];
+    //delete row['hull'];
+    delete row['bbox'];
+    //delete row['hull_geo_json'];
     delete row['centroid_geo_json'];
 
     return row;
@@ -99,9 +105,69 @@ function resultsToFeatures(results) {
     return features;
 }
 
+function geoJsonFilter(features, geojson) {
+    let filteredFeatures = [];
+    features.forEach(feature => {
+        //console.log(JSON.stringify(feature));
+
+        let intersects;
+        let hullGeoJson = {
+            type: "Feature",
+            properties: {},
+            geometry: feature.hull
+        };
+
+//        console.log(JSON.stringify(hullGeoJson));
+
+        if (geojson.geometry.type === "Polygon")
+            intersects = turf.intersect(hullGeoJson, geojson);
+        else
+            intersects = turf.inside(geojson, hullGeoJson);
+
+        if (intersects) {
+            console.log('hit: ' + feature.names.common);
+            filteredFeatures.push(feature);
+        } else {
+            console.log('miss: ' + feature.names.common);
+        }
+    });
+
+    return filteredFeatures;
+}
+
+function bboxToGeoJson(bbox) {
+    return {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates":[
+            [
+                [bbox.west,bbox.north],
+                [bbox.east,bbox.north],
+                [bbox.east,bbox.south],
+                [bbox.west,bbox.south],
+                [bbox.west,bbox.north]
+            ]
+        ]
+      }
+    };
+}
+
+function pointToGeoJson(point) {
+    return {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Point",
+        "coordinates": [point.longitude, point.latitude]
+      }
+    };
+}
+
 function getByBoundingBox(boundingBox, callback) {
     common.utils.postgresClientWrapper(process.env.FEATURES_CONNECTION_STRING, (client, wrapperCallback) => {
-        let boundingBoxQuery = `SELECT *, ST_AsGeoJSON(hull) as hull_geo_json, ST_AsGeoJSON(centroid) as centroid_geo_json FROM features WHERE hull && ST_MakeEnvelope(
+        let boundingBoxQuery = `SELECT id, names, ST_AsGeoJSON(centroid) as centroid_geo_json FROM features WHERE hull && ST_MakeEnvelope(
             ${boundingBox.west}, ${boundingBox.south},
             ${boundingBox.east}, ${boundingBox.north}
         )`;
@@ -110,6 +176,8 @@ function getByBoundingBox(boundingBox, callback) {
             if (err) return wrapperCallback(err);
 
             let features = resultsToFeatures(results);
+            //let bboxGeoJson = bboxToGeoJson(boundingBox);
+            //let filteredFeatures = geoJsonFilter(features, bboxGeoJson);
 
             return wrapperCallback(null, features);
         });
@@ -118,14 +186,24 @@ function getByBoundingBox(boundingBox, callback) {
 
 function getByPoint(point, callback) {
     common.utils.postgresClientWrapper(process.env.FEATURES_CONNECTION_STRING, (client, wrapperCallback) => {
-        let pointQuery = `SELECT *, ST_AsGeoJSON(hull) as hull_geo_json, ST_AsGeoJSON(centroid) as centroid_geo_json FROM features WHERE ST_Contains(hull, ST_GeomFromText(
+        let pointQuery = `SELECT id, names, ST_AsGeoJSON(centroid) as centroid_geo_json FROM features WHERE ST_Contains(hull, ST_GeomFromText(
             'POINT(${point.longitude} ${point.latitude})', 4326)
         );`
 
+        let id = Math.random();
+        let startTime = new Date();
+
         client.query(pointQuery, (err, results) => {
             if (err) return wrapperCallback(err);
+            let totalTime =  new Date().getTime() - startTime.getTime();
+            //console.log('finished query: ' + pointQuery + ' total time: ' + totalTime);
 
             let features = resultsToFeatures(results);
+            //let pointGeoJson = pointToGeoJson(point);
+            //let filteredFeatures = geoJsonFilter(features, pointGeoJson);
+
+            let featureNames = features.map(feature => { return feature.names });
+            console.log(featureNames);
 
             return wrapperCallback(null, features);
         });
@@ -167,14 +245,18 @@ function upsert(feature, callback) {
     feature.elevation = feature.elevation || 'null';
     feature.hierarchy = feature.hierarchy || '{}';
 
+    let extent = geojsonBbox(feature.hull);
+    let bbox = turf.bboxPolygon(extent);
+
     let upsertQuery = `INSERT INTO features (
-        id, names, hierarchy, hull, centroid, elevation, fullTag, category, tag, created_at, updated_at
+        id, names, hierarchy, hull, bbox, centroid, elevation, fullTag, category, tag, created_at, updated_at
     ) VALUES (
         ${feature.id},
         '${JSON.stringify(feature.names).replace(/'/g,"''")}',
         '${JSON.stringify(feature.hierarchy)}',
 
         ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(feature.hull)}'), 4326),
+        ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(bbox.geometry)}'), 4326),
         ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(feature.centroid)}'), 4326),
         ${feature.elevation},
 
@@ -188,6 +270,7 @@ function upsert(feature, callback) {
         names = '${JSON.stringify(feature.names).replace(/'/g,"''")}',
 
         hull = ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(feature.hull)}'), 4326),
+        bbox = ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(bbox.geometry)}'), 4326),
         centroid = ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(feature.centroid)}'), 4326),
 
         fullTag = '${feature.fullTag}',

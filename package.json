@@ -3,13 +3,14 @@
   "author": "Tim Park <timfpark@gmail.com>",
   "version": "1.0.4",
   "engines": {
-    "node": "6.2.x"
+    "node": "6.9.x"
   },
   "dependencies": {
     "async": "^1.4.2",
     "azure-storage": "^0.10.0",
     "body-parser": "^1.14.1",
     "express": "^4.13.3",
+    "geojson-bbox": "0.0.0",
     "geopoint": "^1.0.1",
     "geotile": "^0.1.10",
     "http-status-codes": "^1.0.5",
@@ -25,7 +26,8 @@
   "devDependencies": {
     "geotile": "^0.1.9",
     "node-uuid": "^1.4.7",
-    "pbf2json": "^3.0.0",
-    "through2": "^2.0.1"
+    "pbf2json": "^4.2.0",
+    "through2": "^2.0.1",
+    "turf": "^3.0.14"
   }
 }

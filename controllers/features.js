@@ -38,8 +38,13 @@ exports.getByPoint = function(req, res) {
     }, (err, features) => {
         if (err) return common.utils.handleError(res, err);
 
+        let simplifiedFeatures = features.map(feature => {
+            delete feature['hull'];
+            return feature;
+        });
+
         res.send({
-            features: features
+            features: simplifiedFeatures
         });
     });
 };

@@ -6,21 +6,23 @@ let pbf2json = require('pbf2json'),
     Tile = require('geotile');
 
 const FULL_TAGS_TO_CAPTURE = [
-    /*
   'building:hut',
+/*
   'historic:boundary_stone',
   'historic:castle',
   'historic:monument',
   'historic:milestone',
   'historic:rune_stone',
   'man_made:beacon',
-  */
+*/
   'natural:peak',
 /*
   'iata:*',
   'tourism:artwork',
+*/
   'tourism:alpine_hut',
   'tourism:wilderness_hut',
+/*
   'tourism:viewpoint'
 */
 ];
@@ -55,8 +57,6 @@ services.init(function(err) {
                 id: `'osm-${item.id}'`
             };
 
-            if (!item.tags['name']) return;
-
             FEATURE_TAGS.forEach( (featureTag) => {
                 if (!item.tags[featureTag]) return;
 
@@ -67,6 +67,11 @@ services.init(function(err) {
 
             if (FULL_TAGS_TO_CAPTURE.indexOf(feature.fullTag) < 0)
                 return next();
+
+            if (!item.tags['name']) {
+                console.log('no name on matching feature, skipping.');
+                return next();
+            }
 
             feature.names = {};
 
