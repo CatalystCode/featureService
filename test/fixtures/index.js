@@ -18,8 +18,7 @@ let fixtures = {
         },
         "category":"boundary",
         "tag":"administrative",
-        "fullTag":"boundary:administrative",
-        "adminLevel": 4
+        "fullTag":"boundary:administrative"
     },
     visit: {
         id: '93de94d6-6561-446f-9a33-c1761b029bd5',

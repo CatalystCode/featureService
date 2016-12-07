@@ -167,7 +167,7 @@ function pointToGeoJson(point) {
 
 function getByBoundingBox(boundingBox, callback) {
     common.utils.postgresClientWrapper(process.env.FEATURES_CONNECTION_STRING, (client, wrapperCallback) => {
-        let boundingBoxQuery = `SELECT id, names, ST_AsGeoJSON(centroid) as centroid_geo_json FROM features WHERE hull && ST_MakeEnvelope(
+        let boundingBoxQuery = `SELECT id, names, ST_AsGeoJSON(centroid) as centroid_geo_json, category, tag, fulltag FROM features WHERE hull && ST_MakeEnvelope(
             ${boundingBox.west}, ${boundingBox.south},
             ${boundingBox.east}, ${boundingBox.north}
         )`;
@@ -186,7 +186,7 @@ function getByBoundingBox(boundingBox, callback) {
 
 function getByPoint(point, callback) {
     common.utils.postgresClientWrapper(process.env.FEATURES_CONNECTION_STRING, (client, wrapperCallback) => {
-        let pointQuery = `SELECT id, names, ST_AsGeoJSON(centroid) as centroid_geo_json FROM features WHERE ST_Contains(hull, ST_GeomFromText(
+        let pointQuery = `SELECT id, names, ST_AsGeoJSON(centroid) as centroid_geo_json, category, tag, fulltag FROM features WHERE ST_Contains(hull, ST_GeomFromText(
             'POINT(${point.longitude} ${point.latitude})', 4326)
         );`
 
@@ -199,11 +199,6 @@ function getByPoint(point, callback) {
             //console.log('finished query: ' + pointQuery + ' total time: ' + totalTime);
 
             let features = resultsToFeatures(results);
-            //let pointGeoJson = pointToGeoJson(point);
-            //let filteredFeatures = geoJsonFilter(features, pointGeoJson);
-
-            let featureNames = features.map(feature => { return feature.names });
-            console.log(featureNames);
 
             return wrapperCallback(null, features);
         });

@@ -22,6 +22,9 @@ describe('features endpoint', function() {
 
             assert(resp.body.features);
             assert(resp.body.features.length > 0);
+
+            let feature = resp.body.features[0];
+
             assert.equal(resp.body.features[0].category, 'boundary');
             assert.equal(resp.body.features[0].tag, 'administrative');
             assert(resp.body.features[0].centroid.coordinates);
@@ -45,8 +48,8 @@ describe('features endpoint', function() {
             assert(resp.body.features.length > 0);
             assert.equal(resp.body.features[0].category, 'boundary');
             assert.equal(resp.body.features[0].tag, 'administrative');
-            assert.equal(resp.body.features[0].centroid.coordinates[0], 0.0);
-            assert.equal(resp.body.features[0].centroid.coordinates[1], 0.0);
+            assert.equal(resp.body.features[0].centroid.coordinates[0], -22.9176469);
+            assert.equal(resp.body.features[0].centroid.coordinates[1], 16.729126675);
 
             done();
         });
