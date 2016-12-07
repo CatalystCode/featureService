@@ -47,19 +47,10 @@ CREATE TABLE features
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON features TO frontend;
 
-CREATE INDEX features_centroid_index
-  ON features
-  USING gist
-  (centroid);
-
 CREATE INDEX features_hull_index
   ON features
   USING gist
   (hull);
-
-CREATE INDEX features_bbox_index
-  ON features
-  (bbox);
 
 */
 
