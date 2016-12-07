@@ -6,6 +6,7 @@ var app = require('../../server')
   , services = require('../../services');
 
 describe('visits service', function() {
+    /*
     it('can upsert visit', function(done) {
         services.visits.upsert([ fixtures.visit ], err => {
             assert(!err);
@@ -25,5 +26,6 @@ describe('visits service', function() {
 
             done();
         });
-    })
+    });
+    */
 });

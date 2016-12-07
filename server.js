@@ -31,8 +31,8 @@ app.use(bodyParser.json());
 app.get('/features/bbox/:north/:west/:south/:east', controllers.features.getByBoundingBox);
 app.get('/features/point/:latitude/:longitude',     controllers.features.getByPoint);
 
-app.get('/visits/:scope/:userId',                   controllers.visits.get);
-app.post('/visits',                                 controllers.visits.upsert);
+//app.get('/visits/:scope/:userId',                   controllers.visits.get);
+//app.post('/visits',                                 controllers.visits.upsert);
 
 app.get('/ops/health', controllers.ops.health);
 
