@@ -167,10 +167,10 @@ function pointToGeoJson(point) {
 
 function getByBoundingBox(boundingBox, callback) {
     common.utils.postgresClientWrapper(process.env.FEATURES_CONNECTION_STRING, (client, wrapperCallback) => {
-        let boundingBoxQuery = `SELECT id, names, ST_AsGeoJSON(centroid) as centroid_geo_json, category, tag, fulltag FROM features WHERE hull && ST_MakeEnvelope(
+        let boundingBoxQuery = `SELECT id, names, ST_AsGeoJSON(centroid) as centroid_geo_json, category, tag, fulltag FROM features WHERE ST_Intersects(hull, ST_MakeEnvelope(
             ${boundingBox.west}, ${boundingBox.south},
-            ${boundingBox.east}, ${boundingBox.north}
-        )`;
+            ${boundingBox.east}, ${boundingBox.north}, 4326
+        ))`;
 
         client.query(boundingBoxQuery, (err, results) => {
             if (err) return wrapperCallback(err);
