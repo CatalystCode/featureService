@@ -41,6 +41,9 @@ CREATE TABLE features
   CONSTRAINT enforce_dims_centroid CHECK (st_ndims(centroid) = 2),
   CONSTRAINT enforce_srid_centroid CHECK (st_srid(centroid) = 4326),
 
+  CONSTRAINT enforce_dims_bbox CHECK (st_ndims(bbox) = 2),
+  CONSTRAINT enforce_srid_bbox CHECK (st_srid(bbox) = 4326),
+
   CONSTRAINT enforce_dims_hull CHECK (st_ndims(hull) = 2),
   CONSTRAINT enforce_srid_hull CHECK (st_srid(hull) = 4326)
 );
@@ -205,10 +208,10 @@ function init(callback) {
 
 function summarizeByBoundingBox(boundingBox, callback) {
     common.utils.postgresClientWrapper(process.env.FEATURES_CONNECTION_STRING, (client, wrapperCallback) => {
-        let boundingBoxQuery = `SELECT fullTag, count(*) FROM features WHERE centroid && ST_MakeEnvelope(
+        let boundingBoxQuery = `SELECT fullTag, count(*) FROM features WHERE ST_Intersects(centroid, ST_MakeEnvelope(
             ${boundingBox.west}, ${boundingBox.south},
-            ${boundingBox.east}, ${boundingBox.north}
-        ) GROUP BY fullTag`;
+            ${boundingBox.east}, ${boundingBox.north}, 4326
+        )) GROUP BY fullTag`;
 
         client.query(boundingBoxQuery, (err, results) => {
             if (err) return wrapperCallback(err);
