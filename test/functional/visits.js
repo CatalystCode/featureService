@@ -10,9 +10,8 @@ const request = require('request');
 const visitsEndpoint = 'http://localhost:' + process.env.PORT + '/visits';
 
 describe('visits endpoint', function() {
-    /*
-    it('can get open visits', function(done) {
-        request.get(`${visitsEndpoint}/open/747941cfb829`, {
+    it('can get all user visits', function(done) {
+        request.get(`${visitsEndpoint}/${fixtures.userId}`, {
             headers: {
                 Authorization: "Bearer " + fixtures.accessToken
             },
@@ -22,29 +21,9 @@ describe('visits endpoint', function() {
             assert.equal(resp.statusCode, HttpStatus.OK);
 
             assert(resp.body.visits);
-            assert.equal(resp.body.visits.length, 3);
+            assert.equal(resp.body.visits.length, 1);
 
             done();
         });
     });
-
-    it('can upsert visit', function(done) {
-        request.post(visitsEndpoint, {
-            headers: {
-                Authorization: "Bearer " + fixtures.accessToken
-            },
-            body: {
-                visits: [
-                    fixtures.visit
-                ]
-            },
-            json: true
-        }, function(err, resp) {
-            assert(!err);
-            assert.equal(resp.statusCode, HttpStatus.ACCEPTED);
-
-            done();
-        });
-    });
-    */
 });

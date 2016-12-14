@@ -23,8 +23,23 @@ let fixtures = {
     visit: {
         id: '93de94d6-6561-446f-9a33-c1761b029bd5',
         userId: '747941cfb829',
-        featureId: 3830198,
-        start: new Date(2016,4,19).getTime(),
+        featureId: '93de94d6-6561-446f-9a33-c1761b029bd5',
+        start: new Date(2016,12,13,16,09).getTime(),
+        startIntersection: {
+            userId: '747941cfb829',
+            features: [
+                { id: '93de94d6-6561-446f-9a33-c1761b029bd5' }
+            ],
+            timestamp: new Date(2016, 12, 13, 16, 09).getTime()
+        },
+        finish: new Date(2016,12,13,16,09).getTime(),
+        finishIntersection: {
+            userId: '747941cfb829',
+            features: [
+                { id: '93de94d6-6561-446f-9a33-c1761b029bd5' }
+            ],
+            timestamp: new Date(2016, 12, 13, 16, 09).getTime()
+        },
     },
     location: {
         timestamp: new Date(2016,5,15),
@@ -36,6 +51,13 @@ let fixtures = {
         latitude: 41.7381279,
         longitude: -121.5290743,
         speed: 6.02
+    },
+    intersection: {
+        userId: '747941cfb829',
+        features: [
+            { id: '93de94d6-6561-446f-9a33-c1761b029bd5' }
+        ],
+        timestamp: new Date(2016, 12, 13, 16, 09).getTime()
     },
     userId: '747941cfb829'
 };
