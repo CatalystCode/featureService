@@ -92,11 +92,11 @@ function getByTimestamp(userId, timestamp, callback) {
 }
 
 function getLastBeforeTimestamp(userId, timestamp, callback) {
-    executeQuery(`SELECT * FROM visits WHERE user_id='${userId}' AND finish < ${timestamp} ORDER BY finish DESC LIMIT 1`, callback);
+    executeQuery(`SELECT * FROM visits WHERE user_id='${userId}' AND finish < ${timestamp} ORDER BY finish DESC LIMIT 100`, callback);
 }
 
 function getNextAfterTimestamp(userId, timestamp, callback) {
-    executeQuery(`SELECT * FROM visits WHERE user_id='${userId}' AND start > ${timestamp} ORDER BY start ASC LIMIT 1`, callback);
+    executeQuery(`SELECT * FROM visits WHERE user_id='${userId}' AND start > ${timestamp} ORDER BY start ASC LIMIT 100`, callback);
 }
 
 function getVisits(userId, options, callback) {
