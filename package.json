@@ -3,7 +3,7 @@
   "author": "Tim Park <timfpark@gmail.com>",
   "version": "1.0.4",
   "engines": {
-    "node": "6.6.x"
+    "node": "6.9.x"
   },
   "dependencies": {
     "async": "^2.1.4",
