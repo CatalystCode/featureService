@@ -364,22 +364,22 @@ function hasFeatureId(features, featureId) {
 }
 
 function selectEvent(events, featureId, startIndex, direction) {
-    log.debug('====> finding event for featureId: ' + featureId + ' at index: ' + startIndex);
+    log.info('====> finding event for featureId: ' + featureId + ' at index: ' + startIndex);
     for (let index = startIndex + direction;
         index < events.length && index >= 0;
         index += direction) {
-        log.debug('======> index: ' + index);
-        log.debug(events[index]);
-        log.debug(featureId);
+        log.info('======> index: ' + index);
+        log.info(events[index]);
+        log.info(featureId);
         if (events[index].featureId === featureId) {
-            log.debug('found matching event');
-            log.debug(JSON.stringify(events[index], null, 2));
+            log.info('found matching event');
+            log.info(JSON.stringify(events[index], null, 2));
             return events[index];
         }
 
         if (!hasFeatureId(events[index].features, featureId)) {
-            log.debug('found disqualifying stopping event');
-            log.debug(JSON.stringify(events[index], null, 2));
+            log.info('found disqualifying stopping event');
+            log.info(JSON.stringify(events[index], null, 2));
             return null;
         }
     }
@@ -387,19 +387,19 @@ function selectEvent(events, featureId, startIndex, direction) {
 }
 
 function intersectVisits(currentVisits, intersection) {
-    log.debug('========================>')
-    log.debug('=> processing intersection:');
-    log.debug(intersection);
-    log.debug('=> currentVisits: ');
-    log.debug(currentVisits);
+    log.info('========================>')
+    log.info('=> processing intersection:');
+    log.info(intersection);
+    log.info('=> currentVisits: ');
+    log.info(currentVisits);
 
     let events = visitsToEvents(currentVisits);
     events.sort((a,b) => {
         return a.timestamp - b.timestamp;
     });
 
-    log.debug('=> events:');
-    log.debug(events);
+    log.info('=> events:');
+    log.info(events);
 
     let startIndex = 0;
     while (startIndex < events.length && events[startIndex].timestamp < intersection.timestamp)
@@ -413,13 +413,13 @@ function intersectVisits(currentVisits, intersection) {
 
     // perform pre-extending, extending, and new visits on all featureIds in intersection
     intersection.features.forEach(feature => {
-        log.debug('==> looking at intersection featureId: ' + feature.id);
+        log.info('==> looking at intersection featureId: ' + feature.id);
         let beforeEvent = selectEvent(events, feature.id, startIndex, -1);
         if (beforeEvent) {
             let beforeVisit = newVisits[beforeEvent.visitId];
             if (beforeVisit.finish < intersection.timestamp) {
-                log.debug('====> preextending existing:');
-                log.debug(JSON.stringify(beforeVisit, null, 2));
+                log.info('====> preextending existing:');
+                log.info(JSON.stringify(beforeVisit, null, 2));
                 beforeVisit.finish = intersection.timestamp;
                 beforeVisit.finishIntersection = intersection;
             }
@@ -428,8 +428,8 @@ function intersectVisits(currentVisits, intersection) {
             if (afterEvent) {
                 let afterVisit = newVisits[afterEvent.visitId];
                 if (afterVisit.start > intersection.timestamp) {
-                    log.debug('====> extending existing:');
-                    log.debug(JSON.stringify(afterVisit, null, 2));
+                    log.info('====> extending existing:');
+                    log.info(JSON.stringify(afterVisit, null, 2));
                     afterVisit.start = intersection.timestamp;
                     afterVisit.startIntersection = intersection;
                 }
@@ -438,16 +438,16 @@ function intersectVisits(currentVisits, intersection) {
                 // if it spans, but both start and finish don't have the feature, split the visit.
 
                 Object.keys(newVisits).forEach(visitId => {
-                    log.debug('====> processing visit id: ' + visitId);
+                    log.info('====> processing visit id: ' + visitId);
                     let visit = newVisits[visitId];
-                    log.debug('====> processing visit: ' + JSON.stringify(visit, null, 2));
+                    log.info('====> processing visit: ' + JSON.stringify(visit, null, 2));
                     if (visit.start < intersection.timestamp && visit.finish > intersection.timestamp) {
-                        log.debug('====> found spanning visit: ');
-                        log.debug(JSON.stringify(visit, null, 2));
-                        log.debug('visit featureId: ' + visit.featureId);
-                        log.debug('intersection features: ' + JSON.stringify(intersection.features, null, 2));
+                        log.info('====> found spanning visit: ');
+                        log.info(JSON.stringify(visit, null, 2));
+                        log.info('visit featureId: ' + visit.featureId);
+                        log.info('intersection features: ' + JSON.stringify(intersection.features, null, 2));
                         if (!hasFeatureId(intersection.features, visit.featureId)) {
-                            log.debug('====> intersection doesnt have visit featureId, splitting visit.');
+                            log.info('====> intersection doesnt have visit featureId, splitting visit.');
 
                             // we will add the current intersection as a visit after this split below.
 
@@ -464,7 +464,7 @@ function intersectVisits(currentVisits, intersection) {
 
                             visit.finish = intersection.timestamp;
                             visit.finishIntersection = intersection;
-                            log.debug(JSON.stringify(newVisits, null, 2));
+                            log.info(JSON.stringify(newVisits, null, 2));
                         }
                     }
                 });
@@ -478,17 +478,17 @@ function intersectVisits(currentVisits, intersection) {
                     finish:    intersection.timestamp,
                     finishIntersection: intersection
                 };
-                log.debug('====> creating new visit:');
-                log.debug(JSON.stringify(newVisit, null, 2));
+                log.info('====> creating new visit:');
+                log.info(JSON.stringify(newVisit, null, 2));
                 newVisits[newVisit.id] = newVisit;
             }
         }
     });
 
-    log.debug('=> updated visits:');
-    log.debug(JSON.stringify(newVisits, null, 2));
+    log.info('=> updated visits:');
+    log.info(JSON.stringify(newVisits, null, 2));
 
-    log.debug('<========================');
+    log.info('<========================');
     return newVisits;
 }
 
@@ -502,8 +502,8 @@ function updateVisitsFromIntersection(intersection, callback) {
 
         let visits = {};
 
-        log.debug('results:');
-        log.debug(JSON.stringify(results, null, 2));
+        log.info('results:');
+        log.info(JSON.stringify(results, null, 2));
 
         results.forEach(result => {
             result.forEach(visit => {
@@ -511,8 +511,8 @@ function updateVisitsFromIntersection(intersection, callback) {
             });
         });
 
-        log.debug('visits:');
-        log.debug(JSON.stringify(visits, null, 2));
+        log.info('visits:');
+        log.info(JSON.stringify(visits, null, 2));
 
         let newVisits = intersectVisits(visits, intersection);
         let newVisitsArray = Object.keys(newVisits).map(visitId => {
