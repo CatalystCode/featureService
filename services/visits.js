@@ -50,6 +50,9 @@ function rowToVisit(row) {
     row['createdAt'] = row['created_at'];
     row['updatedAt'] = row['updated_at'];
 
+    row['start'] = parseInt(row['start']);
+    row['finish'] = parseInt(row['finish']);
+
     delete row['feature_id'];
     delete row['user_id'];
     delete row['start_intersection'];
@@ -505,11 +508,15 @@ function intersectVisits(currentVisits, intersection) {
 }
 
 function updateVisitsFromIntersection(intersection, callback) {
-    async.parallel([
-        callback => { getByTimestamp(intersection.userId, intersection.timestamp, callback); },
-        callback => { getLastBeforeTimestamp(intersection.userId, intersection.timestamp, callback); },
-        callback => { getNextAfterTimestamp(intersection.userId, intersection.timestamp, callback); }
-    ], (err, results) => {
+
+    // TODO: Revive tighter bound on the visits we actually need.
+    // async.parallel([
+    //    callback => { getByTimestamp(intersection.userId, intersection.timestamp, callback); },
+    //    callback => { getLastBeforeTimestamp(intersection.userId, intersection.timestamp, callback); },
+    //    callback => { getNextAfterTimestamp(intersection.userId, intersection.timestamp, callback); }
+    // ], (err, results) => {
+
+    getVisits(intersection.userId, {}, (err, visitList) => {
         if (err) return callback(err);
 
         let visits = {};
@@ -517,20 +524,20 @@ function updateVisitsFromIntersection(intersection, callback) {
         //log.info('results:');
         //log.info(JSON.stringify(results, null, 2));
 
-        results.forEach(result => {
-            result.forEach(visit => {
-                visits[visit.id] = visit;
-            });
+        visitList.forEach(visit => {
+            visits[visit.id] = visit;
         });
 
-        //log.info('visits:');
+        //log.info('LOADED VISITS:');
         //log.info(JSON.stringify(visits, null, 2));
 
         let newVisits = intersectVisits(visits, intersection);
-        let newVisitsArray = Object.keys(newVisits).map(visitId => {
+
+        let newVisitList = Object.keys(newVisits).map(visitId => {
             return newVisits[visitId];
         });
-        upsert(newVisitsArray, callback);
+
+        upsert(newVisitList, callback);
     });
 }
 
