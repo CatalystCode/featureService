@@ -656,6 +656,57 @@ describe('visits service', function() {
         done();
     });
 
+    it('applying the an intersection that is covered by a spanning visit is a nop', function(done) {
+        let currentVisits = {
+            "846df10c-46c0-42db-b150-80a8c3cf4d1d": {
+                "id": "846df10c-46c0-42db-b150-80a8c3cf4d1d",
+                "userId": "user1",
+                "featureId": "AP",
+                "start": 3,
+                "startIntersection": {
+                "userId": "user1",
+                "features": [
+                    {
+                    "id": "CA"
+                    },
+                    {
+                    "id": "AP"
+                    }
+                ],
+                "timestamp": 3
+                },
+                "finish": 5,
+                "finishIntersection": {
+                "userId": "user1",
+                "features": [
+                    {
+                    "id": "CA"
+                    },
+                    {
+                    "id": "AP"
+                    }
+                ],
+                "timestamp": 5
+                }
+            }
+        };
+
+        let intersection = {
+            userId: 'user1',
+            features: [
+                { id: 'CA' },
+                { id: 'AP' }
+            ],
+            timestamp: 4
+        };
+
+        let newVisits = services.visits.intersectVisits(currentVisits, intersection);
+
+        assert.equal(JSON.stringify(newVisits), JSON.stringify(currentVisits));
+
+        done();
+    });
+
     it('can update visits from intersection', function(done) {
         services.visits.updateVisitsFromIntersection(fixtures.intersection, err => {
             assert(!err);
