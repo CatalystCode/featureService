@@ -5,9 +5,13 @@ const async = require('async'),
       common = require('service-utils'),
       log = common.services.log,
       HttpStatus = require('http-status-codes'),
+      pg = require('pg'),
       process = require('process'),
       ServiceError = common.utils.ServiceError,
+      url = require('url'),
       uuid = require('uuid/v4');
+
+let featureTablePool;
 
 /*
 
@@ -81,13 +85,18 @@ function fromJson(visitsJson, callback) {
 }
 
 function executeQuery(query, callback) {
-    common.utils.postgresClientWrapper(process.env.FEATURES_CONNECTION_STRING, (client, wrapperCallback) => {
-        client.query(query, (err, results) => {
-            if (err) return wrapperCallback(err);
+    featureTablePool.connect((err, client, done) => {
+        if (err) return callback(err);
 
-            return wrapperCallback(null, resultsToVisits(results));
+        client.query(query, (err, results) => {
+            done();
+
+            if (err)
+                return callback(err);
+            else
+                return callback(null, resultsToVisits(results));
         });
-    }, callback);
+    });
 }
 
 function getByTimestamp(userId, timestamp, callback) {
@@ -110,6 +119,19 @@ function getVisits(userId, options, callback) {
 function init(callback) {
     if (!process.env.FEATURES_CONNECTION_STRING)
         return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, "FEATURES_CONNECTION_STRING configuration not provided as environment variable"));
+
+    const params = url.parse(process.env.FEATURES_CONNECTION_STRING);
+    const auth = params.auth.split(':');
+
+    const config = {
+        user: auth[0],
+        password: auth[1],
+        host: params.hostname,
+        port: params.port,
+        database: params.pathname.split('/')[1]
+    };
+
+    featureTablePool = new pg.Pool(config);
 
     return callback();
 }
