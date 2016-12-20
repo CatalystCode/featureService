@@ -462,6 +462,7 @@ function intersectVisits(currentVisits, intersection) {
 
                             let postIntersectionVisit = {
                                 id: uuid(),
+                                userId: intersection.userId,
                                 featureId: visit.featureId,
                                 start: intersection.timestamp,
                                 startIntersection: intersection,
