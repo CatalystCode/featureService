@@ -559,18 +559,18 @@ function upsert(visits, callback) {
             '${visit.userId}',
             '${visit.featureId}',
             ${visit.start},
-            '${JSON.stringify(visit.startIntersection)}',
+            '${JSON.stringify(visit.startIntersection).replace(/'/g,"''")}',
             ${visit.start},
-            '${JSON.stringify(visit.finishIntersection)}',
+            '${JSON.stringify(visit.finishIntersection).replace(/'/g,"''")}',
             current_timestamp,
             current_timestamp
         ) ON CONFLICT (id) DO UPDATE SET
             user_id  = '${visit.userId}',
             feature_id = '${visit.featureId}',
             start = ${visit.start},
-            start_intersection = '${JSON.stringify(visit.startIntersection)}',
+            start_intersection = '${JSON.stringify(visit.startIntersection).replace(/'/g,"''")}',
             finish = ${visit.finish},
-            finish_intersection = '${JSON.stringify(visit.finishIntersection)}',
+            finish_intersection = '${JSON.stringify(visit.finishIntersection).replace(/'/g,"''")}',
             updated_at = current_timestamp
         ;`;
 
