@@ -15,7 +15,7 @@ describe('features service', function() {
             done();
         });
     });
-
+/*
     it('can summarize features by bounding box', function(done) {
         services.features.summarizeByBoundingBox({
             north: 17,
@@ -33,6 +33,7 @@ describe('features service', function() {
             done();
         });
     });
+*/
 
     it('can get intersecting features by point', function(done) {
         services.features.getByPoint({

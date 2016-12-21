@@ -5,9 +5,11 @@ const async = require('async'),
       common = require('service-utils'),
       GeoPoint = require('geopoint'),
       HttpStatus = require('http-status-codes'),
+      pg = require('pg'),
       process = require('process'),
       ServiceError = common.utils.ServiceError,
       turf = require('turf'),
+      url = require('url'),
       geojsonBbox = require('geojson-bbox');
 
 /*
@@ -57,15 +59,31 @@ CREATE INDEX features_hull_index
 
 */
 
-function get(featureId, callback) {
-    common.utils.postgresClientWrapper(process.env.FEATURES_CONNECTION_STRING, (client, wrapperCallback) => {
-        let getQuery = `SELECT *, ST_AsGeoJSON(hull) as hull_geo_json, ST_AsGeoJSON(centroid) as centroid_geo_json FROM features WHERE id = '${featureId}'`;
+let featureDatabasePool;
 
-        client.query(getQuery, (err, results) => {
-            if (err) return callback(err);
-            return callback(null, rowToFeature(results.rows[0]));
+function executeQuery(query, callback) {
+    featureDatabasePool.connect((err, client, done) => {
+        if (err) return callback(err);
+
+        client.query(query, (err, results) => {
+            done();
+
+            if (err)
+                return callback(err);
+            else
+                return callback(null, resultsToFeatures(results));
         });
-    }, callback);
+    });
+}
+
+function get(featureId, callback) {
+    let getQuery = `SELECT *, ST_AsGeoJSON(hull) as hull_geo_json, ST_AsGeoJSON(centroid) as centroid_geo_json FROM features WHERE id = '${featureId}'`;
+    executeQuery(getQuery, (err, rows) => {
+        if (err) return callback(err);
+        if (!rows || rows.length === 0) return callback(null, null);
+
+        return callback(null, rows[0]);
+    });
 }
 
 function rowToFeature(row) {
@@ -160,52 +178,43 @@ function pointToGeoJson(point) {
 }
 
 function getByBoundingBox(boundingBox, callback) {
-    common.utils.postgresClientWrapper(process.env.FEATURES_CONNECTION_STRING, (client, wrapperCallback) => {
-        let boundingBoxQuery = `SELECT id, names, ST_AsGeoJSON(centroid) as centroid_geo_json, category, tag, fulltag FROM features WHERE ST_Intersects(hull, ST_MakeEnvelope(
-            ${boundingBox.west}, ${boundingBox.south},
-            ${boundingBox.east}, ${boundingBox.north}, 4326
-        ))`;
+    let boundingBoxQuery = `SELECT id, names, ST_AsGeoJSON(centroid) as centroid_geo_json, category, tag, fulltag FROM features WHERE ST_Intersects(hull, ST_MakeEnvelope(
+        ${boundingBox.west}, ${boundingBox.south},
+        ${boundingBox.east}, ${boundingBox.north}, 4326
+    ))`;
 
-        client.query(boundingBoxQuery, (err, results) => {
-            if (err) return wrapperCallback(err);
-
-            let features = resultsToFeatures(results);
-            //let bboxGeoJson = bboxToGeoJson(boundingBox);
-            //let filteredFeatures = geoJsonFilter(features, bboxGeoJson);
-
-            return wrapperCallback(null, features);
-        });
-    }, callback);
+    return executeQuery(boundingBoxQuery, callback);
 }
 
 function getByPoint(point, callback) {
-    common.utils.postgresClientWrapper(process.env.FEATURES_CONNECTION_STRING, (client, wrapperCallback) => {
-        let pointQuery = `SELECT id, names, ST_AsGeoJSON(centroid) as centroid_geo_json, category, tag, fulltag FROM features WHERE ST_Contains(hull, ST_GeomFromText(
-            'POINT(${point.longitude} ${point.latitude})', 4326)
-        );`
+    let pointQuery = `SELECT id, names, ST_AsGeoJSON(centroid) as centroid_geo_json, category, tag, fulltag FROM features WHERE ST_Contains(hull, ST_GeomFromText(
+        'POINT(${point.longitude} ${point.latitude})', 4326)
+    );`
 
-        let id = Math.random();
-        let startTime = new Date();
-
-        client.query(pointQuery, (err, results) => {
-            if (err) return wrapperCallback(err);
-            let totalTime =  new Date().getTime() - startTime.getTime();
-            //console.log('finished query: ' + pointQuery + ' total time: ' + totalTime);
-
-            let features = resultsToFeatures(results);
-
-            return wrapperCallback(null, features);
-        });
-    }, callback);
+    return executeQuery(pointQuery, callback);
 }
 
 function init(callback) {
     if (!process.env.FEATURES_CONNECTION_STRING)
         return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, "FEATURES_CONNECTION_STRING configuration not provided as environment variable"));
 
+    const params = url.parse(process.env.FEATURES_CONNECTION_STRING);
+    const auth = params.auth.split(':');
+
+    const config = {
+        user: auth[0],
+        password: auth[1],
+        host: params.hostname,
+        port: params.port,
+        database: params.pathname.split('/')[1]
+    };
+
+    featureDatabasePool = new pg.Pool(config);
+
     return callback();
 }
 
+/*
 function summarizeByBoundingBox(boundingBox, callback) {
     common.utils.postgresClientWrapper(process.env.FEATURES_CONNECTION_STRING, (client, wrapperCallback) => {
         let boundingBoxQuery = `SELECT fullTag, count(*) FROM features WHERE ST_Intersects(centroid, ST_MakeEnvelope(
@@ -220,6 +229,7 @@ function summarizeByBoundingBox(boundingBox, callback) {
         });
     }, callback);
 }
+*/
 
 function upsert(feature, callback) {
     let prefix = "";
@@ -269,27 +279,14 @@ function upsert(feature, callback) {
         updated_at = current_timestamp
     ;`;
 
-    common.utils.postgresClientWrapper(process.env.FEATURES_CONNECTION_STRING, (client, wrapperCallback) => {
-        client.query(upsertQuery, (err, results) => {
-            if (err) {
-                common.services.log.error(`failed query: ${upsertQuery} with err: ${err}`);
-                return wrapperCallback(err);
-            }
-
-            return wrapperCallback(null, feature);
-        });
-    }, callback);
+    executeQuery(upsertQuery, callback);
 }
-
-function validate(activity, callback) {
-    return callback();
-};
 
 module.exports = {
     get:                        get,
     getByBoundingBox:           getByBoundingBox,
     getByPoint:                 getByPoint,
     init:                       init,
-    summarizeByBoundingBox:     summarizeByBoundingBox,
-    upsert:                     upsert,
+//    summarizeByBoundingBox:     summarizeByBoundingBox,
+    upsert:                     upsert
 };
