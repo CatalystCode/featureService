@@ -7,11 +7,13 @@ const async = require('async'),
       HttpStatus = require('http-status-codes'),
       pg = require('pg'),
       process = require('process'),
+      Redlock = require('redlock'),
       ServiceError = common.utils.ServiceError,
       url = require('url'),
       uuid = require('uuid/v4');
 
 let featureTablePool;
+let redlock;
 
 /*
 
@@ -120,6 +122,12 @@ function init(callback) {
     if (!process.env.FEATURES_CONNECTION_STRING)
         return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, "FEATURES_CONNECTION_STRING configuration not provided as environment variable"));
 
+    if (!process.env.REDIS_HOST)
+        return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, "REDIS_HOST configuration not provided as environment variable"));
+
+    if (!process.env.REDIS_KEY)
+        return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, "REDIS_KEY configuration not provided as environment variable"));
+
     const params = url.parse(process.env.FEATURES_CONNECTION_STRING);
     const auth = params.auth.split(':');
 
@@ -132,6 +140,24 @@ function init(callback) {
     };
 
     featureTablePool = new pg.Pool(config);
+
+    let client = require('redis').createClient(6380, process.env.REDIS_HOST, {
+        auth_pass: process.env.REDIS_KEY,
+        tls: {
+            servername: process.env.REDIS_HOST
+        }
+    });
+
+    var Redlock = require('redlock');
+
+    redlock = new Redlock(
+        [client],
+        {
+            driftFactor: 0.01,  // ms
+            retryCount: 3,
+            retryDelay: 200     // ms
+        }
+    );
 
     return callback();
 }
@@ -539,29 +565,43 @@ function updateVisitsFromIntersection(intersection, callback) {
     //    callback => { getNextAfterTimestamp(intersection.userId, intersection.timestamp, callback); }
     // ], (err, results) => {
 
-    getVisits(intersection.userId, {}, (err, visitList) => {
+    let resource = 'userVisits:' + intersection.userId;
+    let ttl = 5000;
+
+    redlock.lock(resource, ttl, (err, lock) => {
         if (err) return callback(err);
 
-        let visits = {};
+        getVisits(intersection.userId, {}, (err, visitList) => {
+            if (err) return callback(err);
 
-        //log.info('results:');
-        //log.info(JSON.stringify(results, null, 2));
+            let visits = {};
 
-        visitList.forEach(visit => {
-            visits[visit.id] = visit;
+            //log.info('results:');
+            //log.info(JSON.stringify(results, null, 2));
+
+            visitList.forEach(visit => {
+                visits[visit.id] = visit;
+            });
+
+            //log.info('LOADED VISITS:');
+            //log.info(JSON.stringify(visits, null, 2));
+
+            let newVisits = intersectVisits(visits, intersection);
+
+            let newVisitList = Object.keys(newVisits).map(visitId => {
+                return newVisits[visitId];
+            });
+
+            upsert(newVisitList, err => {
+                lock.unlock(lockErr => {
+                    if (lockErr) common.services.log.error(lockErr);
+
+                    return callback(err);
+                });
+            });
         });
-
-        //log.info('LOADED VISITS:');
-        //log.info(JSON.stringify(visits, null, 2));
-
-        let newVisits = intersectVisits(visits, intersection);
-
-        let newVisitList = Object.keys(newVisits).map(visitId => {
-            return newVisits[visitId];
-        });
-
-        upsert(newVisitList, callback);
     });
+
 }
 
 function upsert(visits, callback) {
