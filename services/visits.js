@@ -154,8 +154,8 @@ function init(callback) {
         [client],
         {
             driftFactor: 0.01,  // ms
-            retryCount: 30,
-            retryDelay: 250     // ms
+            retryCount: 100,
+            retryDelay: 125     // ms
         }
     );
 
