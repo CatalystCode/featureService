@@ -154,8 +154,8 @@ function init(callback) {
         [client],
         {
             driftFactor: 0.01,  // ms
-            retryCount: 3,
-            retryDelay: 200     // ms
+            retryCount: 30,
+            retryDelay: 250     // ms
         }
     );
 
@@ -571,6 +571,7 @@ function updateVisitsFromIntersection(intersection, callback) {
     redlock.lock(resource, ttl, (err, lock) => {
         if (err) return callback(err);
 
+        common.services.log.info('starting updateVisitsFromIntersection');
         getVisits(intersection.userId, {}, (err, visitList) => {
             if (err) return callback(err);
 
@@ -593,6 +594,7 @@ function updateVisitsFromIntersection(intersection, callback) {
             });
 
             upsert(newVisitList, err => {
+                common.services.log.info('finished updateVisitsFromIntersection');
                 lock.unlock(lockErr => {
                     if (lockErr) common.services.log.error(lockErr);
 
