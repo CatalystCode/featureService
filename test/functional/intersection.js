@@ -15,7 +15,9 @@ describe('features endpoint', function() {
                 Authorization: "Bearer " + fixtures.accessToken
             },
             body: {
-                intersection: fixtures.intersection
+                intersections: [
+                    fixtures.intersection
+                ]
             },
             json: true
         }, function(err, resp) {

@@ -3,7 +3,6 @@
 const async = require('async'),
       azure = require('azure-storage'),
       common = require('service-utils'),
-      log = common.services.log,
       HttpStatus = require('http-status-codes'),
       pg = require('pg'),
       process = require('process'),
@@ -437,34 +436,56 @@ function selectEvent(events, featureId, startIndex, direction) {
     return null;
 }
 
+//let names = {};
+
 function intersectVisits(currentVisits, intersection) {
+    //intersection.features.forEach(feature => {
+    //    names[feature.id] = feature.names.common;
+    //});
+
     //log.info('========================>')
-    //log.info('=> processing intersection:');
-    //log.info(JSON.stringify(intersection, null, 2));
-    //log.info('=> currentVisits: ');
-    //log.info(JSON.stringify(currentVisits, null, 2));
+    //common.services.log.info('=> currentVisits: ');
+    //common.services.log.info(JSON.stringify(currentVisits, null, 2));
+    //common.services.log.info('=> processing intersection:');
+    //common.services.log.info(JSON.stringify(intersection, null, 2));
+
+    //common.services.log.info('intersection @ ' + moment(intersection.timestamp).format(dateFormatString));
 
     let events = visitsToEvents(currentVisits);
     events.sort((a,b) => {
         return a.timestamp - b.timestamp;
     });
 
-    //log.info('=> events:');
-    //log.info(JSON.stringify(events, null, 2));
+    /*
+    console.log('=> events:');
+    let index = 0;
+    events.forEach(event => {
+        let eventString = `${index}: ${event.featureId}: `;
+        event.features.forEach(feature => {
+            eventString += `${feature.id},`;
+        });
+        index += 1;
+        console.log(eventString);
+    });
+    */
 
     let startIndex = 0;
     while (startIndex < events.length && events[startIndex].timestamp < intersection.timestamp)
         startIndex += 1;
 
+    //console.log('=> startIndex:' + startIndex);
+
     // if we already have an event at this timestamp, we have already handled it, so NOP.
-    if (events[startIndex.timestamp] === intersection.timestamp)
+    if (events[startIndex.timestamp] === intersection.timestamp) {
+        //console.log('already handled.');
         return currentVisits;
+    }
 
     let newVisits = JSON.parse(JSON.stringify(currentVisits));
 
     // perform pre-extending, extending, and new visits on all featureIds in intersection
     intersection.features.forEach(feature => {
-        //log.info('==> looking at intersection featureId: ' + feature.id);
+        //common.services.log.info('==> looking at intersection featureId: ' + feature.id);
         let beforeEvent = selectEvent(events, feature.id, startIndex, -1);
         if (beforeEvent) {
             let beforeVisit = newVisits[beforeEvent.visitId];
@@ -472,8 +493,10 @@ function intersectVisits(currentVisits, intersection) {
                 beforeVisit.finish = intersection.timestamp;
                 beforeVisit.finishIntersection = intersection;
                 beforeVisit.touched = intersection.timestamp;
-                //log.info('====> adjusting visit ' + beforeVisit.id + ' before intersection to end on intersection ' + feature.names.common);
-                // log.info(JSON.stringify(beforeVisit, null, 2));
+                //common.services.log.info('====> adjusting visit ' + beforeVisit.id + ' before intersection to end on intersection ' + feature.id);
+                //common.services.log.info(JSON.stringify(beforeVisit, null, 2));
+            } else {
+                //common.services.log.info('====> before visit spans this intersection: ' + beforeVisit.id);
             }
         } else {
             let afterEvent = selectEvent(events, feature.id, startIndex, 1);
@@ -483,30 +506,26 @@ function intersectVisits(currentVisits, intersection) {
                     afterVisit.start = intersection.timestamp;
                     afterVisit.startIntersection = intersection;
                     afterVisit.touched = intersection.timestamp;
-                    //log.info('====> adjusting visit ' + afterVisit.id + ' after intersection to start on intersection for ' + feature.names.common);
-                    // log.info(JSON.stringify(afterVisit, null, 2));
+                    //common.services.log.info('====> adjusting visit ' + afterVisit.id + ' after intersection to start on intersection for ' + feature.id);
+                    //common.services.log.info(JSON.stringify(afterVisit, null, 2));
+                } else {
+                    //common.services.log.info('====> after visit spans this intersection: ' + afterVisit.id);
                 }
             } else {
                 // look for visits that span the intersection
                 // if it spans, but both start and finish don't have the feature, split the visit.
 
-                let foundSpan = false;
-                let madeSplit = false;
+                // make sure that at most one visit is created that contains intersection.
+                let featureHandled = false;
                 Object.keys(newVisits).forEach(visitId => {
                     //log.info('====> processing visit id: ' + visitId);
                     let visit = newVisits[visitId];
                     //log.info('====> processing visit: ' + JSON.stringify(visit, null, 2));
                     if (visit.start < intersection.timestamp && visit.finish > intersection.timestamp) {
-                        //log.info('====> found spanning visit: ' + visit.id);
-                        foundSpan = true;
-                        if (!hasFeatureId(intersection.features, visit.featureId)) {
-                            madeSplit = true;
-                            //log.info(JSON.stringify(visit, null, 2));
-                            //log.info('visit featureId: ' + visit.featureId);
-                            //log.info('intersection features: ' + JSON.stringify(intersection.features, null, 2));
-                            //log.info('====> intersection doesnt have visit featureId, splitting visit.');
+                        //common.services.log.info('====> found spanning visit: ' + visit.id);
 
-                            // we will add the current intersection as a visit after this split below.
+                        if (!hasFeatureId(intersection.features, visit.featureId)) {
+                            //common.services.log.info('====> visit doesnt have any of the intersection featureIds, splitting visit: ' + visit.id);
 
                             let postIntersectionVisit = {
                                 id: uuid(),
@@ -518,18 +537,19 @@ function intersectVisits(currentVisits, intersection) {
                                 finishIntersection: visit.finishIntersection,
                                 touched: intersection.timestamp
                             };
-
                             newVisits[postIntersectionVisit.id] = postIntersectionVisit;
 
                             visit.finish = intersection.timestamp;
                             visit.finishIntersection = intersection;
                             visit.touched = intersection.timestamp;
-                            //log.info(JSON.stringify(newVisits, null, 2));
+                        } else if (visit.featureId === feature.id) {
+                            //common.services.log.info('visit has featureId so we shouldnt need to create a new visit.');
+                            featureHandled = true;
                         }
                     }
                 });
 
-                if (!foundSpan || foundSpan && madeSplit) {
+                if (!featureHandled) {
                     let newVisit = {
                         id:        uuid(),
                         userId:    intersection.userId,
@@ -541,22 +561,64 @@ function intersectVisits(currentVisits, intersection) {
                         touched:   intersection.timestamp
                     };
 
-                    //log.info('====> creating new visit for ' + feature.names.common);
-                    //log.info(JSON.stringify(newVisit, null, 2));
+                    //common.services.log.info('====> creating new visit for ' + feature.id);
+                    //common.services.log.info(JSON.stringify(newVisit, null, 2));
                     newVisits[newVisit.id] = newVisit;
                 }
             }
         }
     });
 
-    //log.info('=> updated visits:');
-    //log.info(JSON.stringify(newVisits, null, 2));
+    //common.services.log.info('=> updated visits:');
+    //common.services.log.info(JSON.stringify(newVisits, null, 2));
 
     //log.info('<========================');
     return newVisits;
 }
 
-function updateVisitsFromIntersection(intersection, callback) {
+let moment = require('moment');
+let dateFormatString = 'YYYY-MM-DD HH:mm:ss';
+
+function displayVisits(callback) {
+    getVisits('10152875766888406', {}, (err, visits) => {
+        if (err && callback) return callback(err);
+        let visitDisplay = [];
+
+        visits.sort((a,b) => {
+            if (a.featureId < b.featureId)
+                return -1;
+            if (a.featureId > b.featureId)
+                return 1;
+
+            return a.start - b.start;
+        });
+
+        let previousVisit;
+        visits.forEach(visit => {
+            let startDate = new Date(visit.start);
+            let formattedStartDate = moment(startDate).format(dateFormatString);
+            let finishDate = new Date(visit.finish);
+            let formattedFinishDate = moment(finishDate).format(dateFormatString);
+            //let derefedFeatureId = names[visit.featureId];
+            //let formattedFeatureId = derefedFeatureId;jj
+
+            /*
+            console.log(`${derefedFeatureId}: ${formattedStartDate} => ${formattedFinishDate}: ${visit.id}`);
+            if (previousVisit) {
+                if (visit.id === previousVisit.id && visit.start < previousVisit.finish) {
+                    console.log('ERROR: OVERLAP!!');
+                }
+            }
+            */
+
+            previousVisit = visit;
+        });
+
+        if (callback) return callback();
+    });
+}
+
+function updateVisitsFromIntersections(intersections, callback) {
 
     // TODO: Revive tighter bound on the visits we actually need.
     // async.parallel([
@@ -565,14 +627,18 @@ function updateVisitsFromIntersection(intersection, callback) {
     //    callback => { getNextAfterTimestamp(intersection.userId, intersection.timestamp, callback); }
     // ], (err, results) => {
 
-    let resource = 'userVisits:' + intersection.userId;
+    if (intersections.length === 0) return callback();
+
+    let userId = intersections[0].userId;
+    let resource = 'userVisits:' + userId;
     let ttl = 5000;
 
     redlock.lock(resource, ttl, (err, lock) => {
         if (err) return callback(err);
 
-        common.services.log.info('starting updateVisitsFromIntersection');
-        getVisits(intersection.userId, {}, (err, visitList) => {
+        //common.services.log.info('starting updateVisitsFromIntersection');
+
+        getVisits(userId, {}, (err, visitList) => {
             if (err) return callback(err);
 
             let visits = {};
@@ -584,21 +650,20 @@ function updateVisitsFromIntersection(intersection, callback) {
                 visits[visit.id] = visit;
             });
 
-            //log.info('LOADED VISITS:');
-            //log.info(JSON.stringify(visits, null, 2));
+            intersections.forEach(intersection => {
+                visits = intersectVisits(visits, intersection);
+            });
 
-            let newVisits = intersectVisits(visits, intersection);
-
-            let newVisitList = Object.keys(newVisits).map(visitId => {
-                return newVisits[visitId];
+            let newVisitList = Object.keys(visits).map(visitId => {
+                return visits[visitId];
             });
 
             upsert(newVisitList, err => {
-                common.services.log.info('finished updateVisitsFromIntersection');
+                //common.services.log.info('finished updateVisitsFromIntersection');
                 lock.unlock(lockErr => {
                     if (lockErr) common.services.log.error(lockErr);
 
-                    return callback(err);
+                    displayVisits(callback);
                 });
             });
         });
@@ -653,6 +718,6 @@ module.exports = {
     getVisits:                      getVisits,
     init:                           init,
     intersectVisits:                intersectVisits,
-    updateVisitsFromIntersection:   updateVisitsFromIntersection,
+    updateVisitsFromIntersections:  updateVisitsFromIntersections,
     upsert:                         upsert,
 };

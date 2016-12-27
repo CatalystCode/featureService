@@ -5,7 +5,7 @@ const common = require('service-utils'),
       services = require('../services');
 
 exports.post = function(req, res) {
-    services.visits.updateVisitsFromIntersection(req.body.intersection, err => {
+    services.visits.updateVisitsFromIntersections(req.body.intersections, err => {
         if (err) return common.utils.handleError(res, err);
 
         res.sendStatus(HttpStatus.ACCEPTED);
