@@ -1,15 +1,15 @@
-var express = require('express')
-  , app = express()
-  , bodyParser = require('body-parser')
-  , common = require('service-utils')
-  , morgan = require('morgan')
-  , server = require('http').createServer(app)
-  , services = require('./services')
-  , controllers = require('./controllers');
+'use strict';
 
-//var appInsights = require('applicationinsights');
-//appInsights.setup().start();
-//var appInsightsClient = appInsights.getClient();
+const express = require('express'),
+      app = express(),
+      bodyParser = require('body-parser'),
+      common = require('service-utils'),
+      morgan = require('morgan'),
+      server = require('http').createServer(app),
+      services = require('./services'),
+      controllers = require('./controllers');
+
+require("applicationinsights").setup().start();
 
 app.use(function(req, res, next) {
     res.header('Access-Control-Allow-Origin', "*");
