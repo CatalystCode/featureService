@@ -1,0 +1,8 @@
+OSM_FILE=data/north-america-latest.osm.pbf node importNaturalFeatures.js
+OSM_FILE=data/europe-latest.osm.pbf node importNaturalFeatures.js
+OSM_FILE=data/asia-latest.osm.pbf node importNaturalFeatures.js
+OSM_FILE=data/africa-latest.osm.pbf node importNaturalFeatures.js
+OSM_FILE=data/antarctica-latest.osm.pbf node importNaturalFeatures.js
+OSM_FILE=data/australia-latest.osm.pbf node importNaturalFeatures.js
+OSM_FILE=data/central-america-latest.osm.pbf node importNaturalFeatures.js
+OSM_FILE=data/south-america-latest.osm.pbf node importNaturalFeatures.js
