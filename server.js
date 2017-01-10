@@ -44,7 +44,7 @@ services.init(function(err) {
     }
 
     server.listen(process.env.PORT);
-    common.services.log.info('feature server listening on port: ' + process.env.PORT);
+    common.services.log.info('RESTART: feature server listening on port: ' + process.env.PORT);
 });
 
 module.exports = server;
