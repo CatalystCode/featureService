@@ -34,6 +34,7 @@ app.get('/visits/:userId',                          controllers.visits.get);
 app.post('/intersection',                           controllers.intersection.post);
 
 app.get('/ops/health',                              controllers.ops.health);
+app.get('/',                                        controllers.ops.health);
 
 services.init(function(err) {
     if (err) {
