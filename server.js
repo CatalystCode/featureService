@@ -9,8 +9,6 @@ const express = require('express'),
       services = require('./services'),
       controllers = require('./controllers');
 
-require("applicationinsights").setup().start();
-
 app.use(function(req, res, next) {
     res.header('Access-Control-Allow-Origin', "*");
     res.header('Access-Control-Allow-Credentials', true);
@@ -44,7 +42,8 @@ services.init(function(err) {
     }
 
     server.listen(process.env.PORT);
-    common.services.log.info('RESTART: feature server listening on port: ' + process.env.PORT);
+    common.services.appInsights.trackMetric("restart", 1);
+    common.services.log.info('feature server listening on port: ' + process.env.PORT);
 });
 
 module.exports = server;

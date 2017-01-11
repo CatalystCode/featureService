@@ -21,7 +21,7 @@
     "redis": "^2.6.3",
     "redlock": "^2.1.0",
     "request": "^2.79.0",
-    "service-utils": "^1.0.26",
+    "service-utils": "^1.0.28",
     "through2": "^2.0.3",
     "turf": "^3.0.14",
     "uuid": "^3.0.1"
