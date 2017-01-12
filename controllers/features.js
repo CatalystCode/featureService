@@ -32,10 +32,16 @@ exports.get = function(req, res) {
 */
 
 exports.getByPoint = function(req, res) {
-    services.features.getByPoint({
-        latitude: req.params.latitude,
-        longitude: req.params.longitude,
-    }, (err, features) => {
+    let query = {
+        latitude: parseFloat(req.params.latitude),
+        longitude: parseFloat(req.params.longitude),
+    };
+
+    if (req.query.layer) {
+        query.layer = encodeURIComponent(req.query.layer);
+    }
+
+    services.features.getByPoint(query, (err, features) => {
         if (err) return common.utils.handleError(res, err);
 
         let simplifiedFeatures = features.map(feature => {
@@ -50,12 +56,18 @@ exports.getByPoint = function(req, res) {
 };
 
 exports.getByBoundingBox = function(req, res) {
-    services.features.getByBoundingBox({
-        north: req.params.north,
-        west: req.params.west,
-        south: req.params.south,
-        east: req.params.east
-    }, (err, features) => {
+    let query = {
+        north: parseFloat(req.params.north),
+        west: parseFloat(req.params.west),
+        south: parseFloat(req.params.south),
+        east: parseFloat(req.params.east),
+    };
+
+    if (req.query.layer) {
+        query.layer = encodeURIComponent(req.query.layer);
+    }
+
+    services.features.getByBoundingBox(query, (err, features) => {
         if (err) return common.utils.handleError(res, err);
 
         res.send({

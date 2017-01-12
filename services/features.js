@@ -166,19 +166,27 @@ function pointToGeoJson(point) {
     };
 }
 
-function getByBoundingBox(boundingBox, callback) {
+function getByBoundingBox(query, callback) {
     let boundingBoxQuery = `SELECT ${COLUMN_QUERY} FROM features WHERE ST_Intersects(hull, ST_MakeEnvelope(
-        ${boundingBox.west}, ${boundingBox.south},
-        ${boundingBox.east}, ${boundingBox.north}, 4326
+        ${query.west}, ${query.south},
+        ${query.east}, ${query.north}, 4326
     ))`;
+
+    if (query.layer) {
+        boundingBoxQuery += ` AND layer='${query.layer}'`;
+    }
 
     return executeQuery(boundingBoxQuery, callback);
 }
 
-function getByPoint(point, callback) {
+function getByPoint(query, callback) {
     let pointQuery = `SELECT ${COLUMN_QUERY} FROM features WHERE ST_Contains(hull, ST_GeomFromText(
-        'POINT(${point.longitude} ${point.latitude})', 4326)
-    );`
+        'POINT(${query.longitude} ${query.latitude})', 4326)
+    )`;
+
+    if (query.layer) {
+        pointQuery += ` AND layer='${query.layer}'`;
+    }
 
     return executeQuery(pointQuery, callback);
 }
