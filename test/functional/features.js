@@ -21,13 +21,15 @@ describe('features endpoint', function() {
             assert.equal(resp.statusCode, HttpStatus.OK);
 
             assert(resp.body.features);
-            console.dir(resp.body);
             assert(resp.body.features.length > 0);
 
             let feature = resp.body.features[0];
 
-            assert.equal(resp.body.features[0].properties.tags[0], fixtures.feature.properties.tags[0]);
-            assert(resp.body.features[0].centroid.coordinates);
+            assert.equal(feature.id, fixtures.feature.id);
+            assert.equal(feature.name, fixtures.feature.name);
+            assert.equal(feature.layer, fixtures.feature.layer);
+            assert.equal(feature.properties.tags[0], fixtures.feature.properties.tags[0]);
+            assert(feature.centroid.coordinates);
 
             done();
         });
@@ -44,9 +46,15 @@ describe('features endpoint', function() {
             assert.equal(resp.statusCode, HttpStatus.OK);
 
             assert(resp.body.features);
-
             assert(resp.body.features.length > 0);
-            assert.equal(resp.body.features[0].properties.tags[0], fixtures.feature.properties.tags[0]);
+
+            let feature = resp.body.features[0];
+
+            assert.equal(feature.id, fixtures.feature.id);
+            assert.equal(feature.name, fixtures.feature.name);
+            assert.equal(feature.layer, fixtures.feature.layer);
+            assert.equal(feature.properties.tags[0], fixtures.feature.properties.tags[0]);
+            assert(feature.centroid.coordinates);
             assert.equal(resp.body.features[0].centroid.coordinates[0], -22.9176469);
             assert.equal(resp.body.features[0].centroid.coordinates[1], 16.729126675);
 

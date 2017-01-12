@@ -5,12 +5,15 @@ const uuid = require('node-uuid');
 let fixtures = {
     feature: {
         "id": "fake-3830198",
+        "name": "Sal's",
+        "layer": "county",
         "properties": {
             "names": {
-                "en":"Sal"
+                "en":"Sal's"
             },
             "tags": [
-                "boundary:administrative"
+                "boundary:administrative",
+                "placetype:county"
             ],
             "elevation": 34.5
         },

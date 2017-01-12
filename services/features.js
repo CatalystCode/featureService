@@ -20,6 +20,9 @@ CREATE TABLE features
 (
   id                character varying(64)        NOT NULL,
 
+  name              character varying(128)       NOT NULL,
+  layer             character varying(32)        NOT NULL,
+
   properties        jsonb                        NOT NULL,
 
   bbox              geometry                     NOT NULL,
@@ -50,6 +53,8 @@ CREATE INDEX features_hull_index
 
 */
 
+const COLUMN_QUERY = 'id, name, layer, properties, ST_AsGeoJSON(centroid) as centroid_geo_json, ST_AsGeoJSON(hull) as hull_geo_json';
+
 let featureDatabasePool;
 
 function executeQuery(query, callback) {
@@ -68,7 +73,7 @@ function executeQuery(query, callback) {
 }
 
 function get(featureId, callback) {
-    let getQuery = `SELECT *, ST_AsGeoJSON(hull) as hull_geo_json, ST_AsGeoJSON(centroid) as centroid_geo_json FROM features WHERE id = '${featureId}'`;
+    let getQuery = `SELECT ${COLUMN_QUERY} FROM features WHERE id = '${featureId}'`;
     executeQuery(getQuery, (err, rows) => {
         if (err) return callback(err);
         if (!rows || rows.length === 0) return callback(null, null);
@@ -82,17 +87,14 @@ function rowToFeature(row, columns) {
 
     row['createdAt'] = row['created_at'];
     row['updatedAt'] = row['updated_at'];
-
-    //row['hull'] = JSON.parse(row['hull_geo_json']);
     row['centroid'] = JSON.parse(row['centroid_geo_json']);
-    //row['names'] = JSON.parse(row['names']);
+    row['hull'] = JSON.parse(row['hull_geo_json']);
 
     delete row['created_at'];
     delete row['updated_at'];
-    //delete row['hull'];
     delete row['bbox'];
-    //delete row['hull_geo_json'];
     delete row['centroid_geo_json'];
+    delete row['hull_geo_json'];
 
     return row;
 }
@@ -111,16 +113,12 @@ function resultsToFeatures(results) {
 function geoJsonFilter(features, geojson) {
     let filteredFeatures = [];
     features.forEach(feature => {
-        //console.log(JSON.stringify(feature));
-
         let intersects;
         let hullGeoJson = {
             type: "Feature",
             properties: {},
             geometry: feature.hull
         };
-
-//        console.log(JSON.stringify(hullGeoJson));
 
         if (geojson.geometry.type === "Polygon")
             intersects = turf.intersect(hullGeoJson, geojson);
@@ -169,7 +167,7 @@ function pointToGeoJson(point) {
 }
 
 function getByBoundingBox(boundingBox, callback) {
-    let boundingBoxQuery = `SELECT id, properties, ST_AsGeoJSON(centroid) as centroid_geo_json, ST_AsGeoJSON(hull) as hull_geo_json FROM features WHERE ST_Intersects(hull, ST_MakeEnvelope(
+    let boundingBoxQuery = `SELECT ${COLUMN_QUERY} FROM features WHERE ST_Intersects(hull, ST_MakeEnvelope(
         ${boundingBox.west}, ${boundingBox.south},
         ${boundingBox.east}, ${boundingBox.north}, 4326
     ))`;
@@ -178,7 +176,7 @@ function getByBoundingBox(boundingBox, callback) {
 }
 
 function getByPoint(point, callback) {
-    let pointQuery = `SELECT id, properties, ST_AsGeoJSON(centroid) as centroid_geo_json, ST_AsGeoJSON(hull) as hull_geo_json FROM features WHERE ST_Contains(hull, ST_GeomFromText(
+    let pointQuery = `SELECT ${COLUMN_QUERY} FROM features WHERE ST_Contains(hull, ST_GeomFromText(
         'POINT(${point.longitude} ${point.latitude})', 4326)
     );`
 
@@ -225,6 +223,8 @@ function summarizeByBoundingBox(boundingBox, callback) {
 function upsert(feature, callback) {
     let prefix = "";
 
+    if (!feature.layer)      return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'layer' not provided for feature."));
+    if (!feature.name)       return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'name' not provided for feature."));
     if (!feature.centroid)   return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'centroid' not provided for feature."));
     if (!feature.hull)       return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'hull' not provided for feature."));
     if (!feature.properties) return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'properties' not provided for feature."));
@@ -236,10 +236,12 @@ function upsert(feature, callback) {
     let bbox = turf.bboxPolygon(extent);
 
     let upsertQuery = `INSERT INTO features (
-        id, properties, hull, bbox, centroid, created_at, updated_at
+        id, name, layer, properties, hull, bbox, centroid, created_at, updated_at
     ) VALUES (
         '${feature.id}',
-        '${JSON.stringify(feature.properties)}',
+        '${feature.name.replace(/'/g,"''")}',
+        '${feature.layer}',
+        '${JSON.stringify(feature.properties).replace(/'/g,"''")}',
 
         ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(feature.hull)}'), 4326),
         ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(bbox.geometry)}'), 4326),
@@ -248,7 +250,9 @@ function upsert(feature, callback) {
         current_timestamp,
         current_timestamp
     ) ON CONFLICT (id) DO UPDATE SET
-        properties = '${JSON.stringify(feature.properties)}',
+        name = '${feature.name.replace(/'/g,"''")}',
+        layer = '${feature.layer}',
+        properties = '${JSON.stringify(feature.properties).replace(/'/g,"''")}',
 
         hull = ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(feature.hull)}'), 4326),
         bbox = ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(bbox.geometry)}'), 4326),
