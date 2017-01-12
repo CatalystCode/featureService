@@ -7,51 +7,44 @@ let async = require('async'),
     Tile = require('geotile'),
     turf = require('turf');
 
-let DIRECTORY_PARALLELISM = 3;
+const DIRECTORY_PARALLELISM = 3;
 
 let skipped = 0;
 let total = 0;
 
-let skipIds = [
-  '0',
-  '1',
-  '85788865',
-  '85880723',
-  '85880767',
-  '85886313',
-  '85888131',
-  '404529565',
-  '404528711',
-  '420551843',
-  '420552373',
-  '420552465',
-  '420552969',
-  '420553211',
+const skipIds = [
+  0,
+  1
 ];
 
 let keepIds = [
-
 ];
 
-let ignoreTypes = [
+const ignoreTypes = [
+    /*
     'locality',
     'localadmin',
-    'marinearea',
     'macrohood',
     'microhood',
     'neighbourhood',
+    */
+    'marinearea',
     'ocean',
     'planet',
     'postalcode',
     'timezone',
 ];
 
-
-let countyCountries = [
-    85633793
-];
-
 let foundTypes = {};
+
+const DEFAULT_PLACETYPE_ZOOM = {
+    /*
+    locality:       { min: 14, max: 18 },
+    macrohood:      { min: 14, max: 18 },
+    microhood:      { min: 14, max: 19 },
+    neighborhood:   { min: 15, max: 18 },
+    */
+};
 
 function processFile(file, callback) {
     fs.readFile(file, (err, data) => {
@@ -69,18 +62,28 @@ function processFile(file, callback) {
         }
 
         if (!json["bbox"] || (json['bbox'][0] === 0.0 && json['bbox'][1] === 0.0 && json['bbox'][2] === 0.0 && json['bbox'][3] === 0)) {
-            //console.log('no bbox, skipping: ' + file);
+            console.log('no bbox, skipping: ' + file);
             skipped += 1;
             return callback();
         }
 
-        if (!json["properties"]["wof:name"]) {
-            //console.log('no name, skipping: ' + file);
+        let properties = json['properties'];
+
+        if (!properties["wof:name"]) {
+            console.log('no name, skipping: ' + file);
             skipped += 1;
             return callback();
         }
 
-        if (json["properties"]["wof:placetype"] === "timezone") {
+        if (skipIds.indexOf(json.id) !== -1) {
+            console.log(json.id + ' is in skip list, skipping.');
+            skipped += 1;
+            return callback();
+        }
+
+        let placeType = properties['wof:placetype'];
+
+        if (ignoreTypes.indexOf(placeType) !== -1) {
             skipped += 1;
             return callback();
         }
@@ -89,63 +92,92 @@ function processFile(file, callback) {
             console.log(`${skipped}/${total}`);
 
         let feature = {
-            id: `'wof-${json.id}'`,
+            id: `wof-${json.id}`,
+            name: properties['wof:name'],
+            layer: placeType,
             centroid: {
                 "type":"Point",
                 "coordinates":[
-                    json['properties']['geom:longitude'],
-                    json['properties']['geom:latitude']
+                    properties['geom:longitude'],
+                    properties['geom:latitude']
                 ]
             },
             hull: json['geometry'],
-            originalGeometry: json['geometry'],
-            fullTag: "boundary:administrative",
-            category: "boundary",
-            tag: "admin",
-            names: {
-                common: json['properties']['wof:name']
+            properties: {
+                names: {
+                    'en': properties['wof:name']
+                },
+                tags: [
+                    "boundary:administrative",
+                    `placetype:${placeType}`
+                ]
             }
         };
 
-        if (json['properties']['wof:hierarchy']) {
-            feature.hierarchy = json['properties']['wof:hierarchy'][0];
+        feature.properties.hierarchy = [];
+        if (properties['wof:hierarchy'] && properties['wof:hierarchy'].length > 0) {
+            let hierarchy = properties['wof:hierarchy'][0]
+            Object.keys(hierarchy).forEach(level => {
+                feature.properties.hierarchy.push(
+                    `wof-${hierarchy[level]}`
+                );
+            });
+
+            //console.log(feature.properties.hierarchy);
         }
 
-        let placeType = json['properties']['wof:placetype'];
-        let squareKm = turf.area(feature.hull) / 1000000.0;
-
-        if (skipIds.indexOf(json.id) !== -1) {
-            console.log(json.id + ' is in kill list, skipping.');
-            skipped += 1;
-            return callback();
+        if (properties['gn:population']) {
+            feature.properties.population = properties['gn:population'];
         }
 
-        if (ignoreTypes.indexOf(placeType) !== -1) {
-            skipped += 1;
-            return callback();
+/*
+        if (properties['mz:min_zoom'] && properties['mz:max_zoom']) {
+            feature.minZoom = properties['mz:min_zoom'];
+            feature.maxZoom = properties['mz:max_zoom'];
+
+            if (!DEFAULT_PLACETYPE_ZOOM[placeType]) {
+                DEFAULT_PLACETYPE_ZOOM[placeType] = {
+                    min: 0.0,
+                    max: 0.0,
+                    count: 0.0
+                }
+            }
+            DEFAULT_PLACETYPE_ZOOM[placeType].min += properties['mz:min_zoom'];
+            DEFAULT_PLACETYPE_ZOOM[placeType].max += properties['mz:max_zoom'];
+            DEFAULT_PLACETYPE_ZOOM[placeType].count += 1;
+        } else {
+            feature.minZoom = DEFAULT_PLACETYPE_ZOOM[placeType].min;
+            feature.maxZoom = DEFAULT_PLACETYPE_ZOOM[placeType].max;
         }
 
+        for (let placeType in DEFAULT_PLACETYPE_ZOOM) {
+            let minValue = DEFAULT_PLACETYPE_ZOOM[placeType].min / DEFAULT_PLACETYPE_ZOOM[placeType].count;
+            let maxValue = DEFAULT_PLACETYPE_ZOOM[placeType].max / DEFAULT_PLACETYPE_ZOOM[placeType].count;
+
+            console.log(`${placeType}: min: ${minValue} max: ${maxValue}`)
+        }
+*/
+        // let squareKm = turf.area(feature.hull) / 1000000.0;
+/*
         if (placeType === "county" && (!feature.hierarchy || feature.hierarchy['country_id'] !== 85633793)) {
             skipped += 1;
             return callback();
         }
+*/
 
-//        if (!foundTypes[placeType]) {
-//            console.log(placeType + ": " + json['properties']['wof:name']);
-//            foundTypes[placeType] = true;
-//        }
+/*
+        delete feature['hull'];
+        console.log(JSON.stringify(feature, null, 2));
+        return callback();
+*/
 
-//        if (json['properties']['wof:belongsto'].length > 2) {
-//            return callback();
-//        }
-
-        services.features.upsert(feature, (err, feature) => {
+        services.features.upsert(feature, err => {
             if (err) {
                 console.log(err);
                 skipped += 1;
 
             } else {
-                console.log(placeType + ": " + feature.id + ": " + feature.names.common + ": " + squareKm + ": " + file.slice(58));
+                console.log(placeType + ": " + feature.id + ": " + feature.name + ": " + file.slice(58));
             }
 
             return callback();
