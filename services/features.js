@@ -20,20 +20,11 @@ CREATE TABLE features
 (
   id                character varying(64)        NOT NULL,
 
-  names             jsonb                        NOT NULL,
+  properties        jsonb                        NOT NULL,
 
   bbox              geometry                     NOT NULL,
-  hull              geometry                     NOT NULL,
-
   centroid          geometry                     NOT NULL,
-
-  hierarchy         jsonb                        NOT NULL,
-
-  elevation         float,
-
-  fulltag           character varying(128)       NOT NULL,
-  category          character varying(64)        NOT NULL,
-  tag               character varying(64)        NOT NULL,
+  hull              geometry                     NOT NULL,
 
   created_at        timestamp                    NOT NULL,
   updated_at        timestamp                    NOT NULL,
@@ -86,7 +77,7 @@ function get(featureId, callback) {
     });
 }
 
-function rowToFeature(row) {
+function rowToFeature(row, columns) {
     if (!row) return;
 
     row['createdAt'] = row['created_at'];
@@ -178,7 +169,7 @@ function pointToGeoJson(point) {
 }
 
 function getByBoundingBox(boundingBox, callback) {
-    let boundingBoxQuery = `SELECT id, names, ST_AsGeoJSON(centroid) as centroid_geo_json, category, tag, fulltag FROM features WHERE ST_Intersects(hull, ST_MakeEnvelope(
+    let boundingBoxQuery = `SELECT id, properties, ST_AsGeoJSON(centroid) as centroid_geo_json, ST_AsGeoJSON(hull) as hull_geo_json FROM features WHERE ST_Intersects(hull, ST_MakeEnvelope(
         ${boundingBox.west}, ${boundingBox.south},
         ${boundingBox.east}, ${boundingBox.north}, 4326
     ))`;
@@ -187,7 +178,7 @@ function getByBoundingBox(boundingBox, callback) {
 }
 
 function getByPoint(point, callback) {
-    let pointQuery = `SELECT id, names, ST_AsGeoJSON(centroid) as centroid_geo_json, category, tag, fulltag FROM features WHERE ST_Contains(hull, ST_GeomFromText(
+    let pointQuery = `SELECT id, properties, ST_AsGeoJSON(centroid) as centroid_geo_json, ST_AsGeoJSON(hull) as hull_geo_json FROM features WHERE ST_Contains(hull, ST_GeomFromText(
         'POINT(${point.longitude} ${point.latitude})', 4326)
     );`
 
@@ -234,12 +225,9 @@ function summarizeByBoundingBox(boundingBox, callback) {
 function upsert(feature, callback) {
     let prefix = "";
 
-    if (!feature.category) return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'category' not provided for feature."));
-    if (!feature.centroid) return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'centroid' not provided for feature."));
-    if (!feature.fullTag)  return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'fullTag' not provided for feature."));
-    if (!feature.hull)     return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'hull' not provided for feature."));
-    if (!feature.names)    return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'name' not provided for feature."));
-    if (!feature.tag)      return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'tag' not provided for feature."));
+    if (!feature.centroid)   return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'centroid' not provided for feature."));
+    if (!feature.hull)       return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'hull' not provided for feature."));
+    if (!feature.properties) return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'properties' not provided for feature."));
 
     feature.elevation = feature.elevation || 'null';
     feature.hierarchy = feature.hierarchy || '{}';
@@ -248,33 +236,23 @@ function upsert(feature, callback) {
     let bbox = turf.bboxPolygon(extent);
 
     let upsertQuery = `INSERT INTO features (
-        id, names, hierarchy, hull, bbox, centroid, elevation, fullTag, category, tag, created_at, updated_at
+        id, properties, hull, bbox, centroid, created_at, updated_at
     ) VALUES (
-        ${feature.id},
-        '${JSON.stringify(feature.names).replace(/'/g,"''")}',
-        '${JSON.stringify(feature.hierarchy)}',
+        '${feature.id}',
+        '${JSON.stringify(feature.properties)}',
 
         ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(feature.hull)}'), 4326),
         ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(bbox.geometry)}'), 4326),
         ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(feature.centroid)}'), 4326),
-        ${feature.elevation},
-
-        '${feature.fullTag}',
-        '${feature.category}',
-        '${feature.tag}',
 
         current_timestamp,
         current_timestamp
     ) ON CONFLICT (id) DO UPDATE SET
-        names = '${JSON.stringify(feature.names).replace(/'/g,"''")}',
+        properties = '${JSON.stringify(feature.properties)}',
 
         hull = ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(feature.hull)}'), 4326),
         bbox = ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(bbox.geometry)}'), 4326),
         centroid = ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(feature.centroid)}'), 4326),
-
-        fullTag = '${feature.fullTag}',
-        category = '${feature.category}',
-        tag = '${feature.tag}',
 
         updated_at = current_timestamp
     ;`;

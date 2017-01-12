@@ -4,9 +4,15 @@ const uuid = require('node-uuid');
 
 let fixtures = {
     feature: {
-        "id":3830198,
-        "names": {
-            "common":"Sal"
+        "id": "fake-3830198",
+        "properties": {
+            "names": {
+                "en":"Sal"
+            },
+            "tags": [
+                "boundary:administrative"
+            ],
+            "elevation": 34.5
         },
         "hull": {
             "type":"MultiPolygon",
@@ -15,10 +21,7 @@ let fixtures = {
         "centroid": {
             "type":"Point",
             "coordinates":[-22.917646899999998,16.729126675000003]
-        },
-        "category":"boundary",
-        "tag":"administrative",
-        "fullTag":"boundary:administrative"
+        }
     },
     visit: {
         id: '93de94d6-6561-446f-9a33-c1761b029bd5',

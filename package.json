@@ -30,6 +30,7 @@
     "test": "PORT=3035 mocha"
   },
   "devDependencies": {
+    "country-language": "^0.1.7",
     "geotile": "^0.1.9",
     "node-uuid": "^1.4.7",
     "pbf2json": "^4.2.0",

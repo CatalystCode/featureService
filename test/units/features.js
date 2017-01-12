@@ -9,6 +9,7 @@ describe('features service', function() {
 
     it('can upsert feature', function(done) {
         services.features.upsert(fixtures.feature, (err, feature) => {
+            console.log(err);
             assert(!err);
             assert(feature);
 
@@ -45,7 +46,7 @@ describe('features service', function() {
             assert(features);
             assert(features.length > 0);
 
-            assert.equal(features[0].fulltag, 'boundary:administrative');
+            assert.equal(features[0].properties.tags[0], fixtures.feature.properties.tags[0]);
             assert.equal(features[0].centroid.coordinates[0], -22.9176469);
             assert.equal(features[0].centroid.coordinates[1], 16.729126675);
 
@@ -65,7 +66,7 @@ describe('features service', function() {
 
             assert(features.length > 0);
 
-            assert.equal(features[0].fulltag, 'boundary:administrative');
+            assert.equal(features[0].properties.tags[0], fixtures.feature.properties.tags[0]);
             assert(features[0].centroid.coordinates);
 
             done();
