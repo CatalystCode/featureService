@@ -2,6 +2,9 @@
   "name": "rhom-feature-service",
   "author": "Tim Park <timfpark@gmail.com>",
   "version": "1.0.4",
+  "engines": {
+    "node": "6.9.x"
+  },
   "dependencies": {
     "applicationinsights": "^0.17.2",
     "async": "^2.1.4",
