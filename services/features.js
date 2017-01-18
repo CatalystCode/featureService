@@ -53,8 +53,6 @@ CREATE INDEX features_hull_index
 
 */
 
-const COLUMN_QUERY = 'id, name, layer, properties, ST_AsGeoJSON(centroid) as centroid_geo_json, ST_AsGeoJSON(hull) as hull_geo_json';
-
 let featureDatabasePool;
 
 function executeQuery(query, callback) {
@@ -72,8 +70,8 @@ function executeQuery(query, callback) {
     });
 }
 
-function get(featureId, callback) {
-    let getQuery = `SELECT ${COLUMN_QUERY} FROM features WHERE id = '${featureId}'`;
+function getById(query, callback) {
+    let getQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE id = '${query.id}'`;
     executeQuery(getQuery, (err, rows) => {
         if (err) return callback(err);
         if (!rows || rows.length === 0) return callback(null, null);
@@ -87,8 +85,8 @@ function rowToFeature(row, columns) {
 
     row['createdAt'] = row['created_at'];
     row['updatedAt'] = row['updated_at'];
-    row['centroid'] = JSON.parse(row['centroid_geo_json']);
-    row['hull'] = JSON.parse(row['hull_geo_json']);
+    if (row['centroid_geo_json']) row['centroid'] = JSON.parse(row['centroid_geo_json']);
+    if (row['hull_geo_json']) row['hull'] = JSON.parse(row['hull_geo_json']);
 
     delete row['created_at'];
     delete row['updated_at'];
@@ -109,7 +107,7 @@ function resultsToFeatures(results) {
 
     return features;
 }
-
+/*
 function geoJsonFilter(features, geojson) {
     let filteredFeatures = [];
     features.forEach(feature => {
@@ -165,9 +163,25 @@ function pointToGeoJson(point) {
       }
     };
 }
+*/
+
+const COLUMN_QUERY = 'id, name, layer';
+
+function buildQueryColumns(query) {
+    let queryColumns = COLUMN_QUERY;
+    if (query.include) {
+        let includeArray = query.include.split(',');
+
+        if (includeArray.indexOf('hull') !== -1) queryColumns += ',ST_AsGeoJSON(hull) as hull_geo_json';
+        if (includeArray.indexOf('properties') !== -1) queryColumns += ',properties';
+        if (includeArray.indexOf('centroid') !== -1) queryColumns += ',ST_AsGeoJSON(centroid) as centroid_geo_json';
+    }
+
+    return queryColumns;
+}
 
 function getByBoundingBox(query, callback) {
-    let boundingBoxQuery = `SELECT ${COLUMN_QUERY} FROM features WHERE ST_Intersects(hull, ST_MakeEnvelope(
+    let boundingBoxQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE ST_Intersects(hull, ST_MakeEnvelope(
         ${query.west}, ${query.south},
         ${query.east}, ${query.north}, 4326
     ))`;
@@ -180,7 +194,7 @@ function getByBoundingBox(query, callback) {
 }
 
 function getByPoint(query, callback) {
-    let pointQuery = `SELECT ${COLUMN_QUERY} FROM features WHERE ST_Contains(hull, ST_GeomFromText(
+    let pointQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE ST_Contains(hull, ST_GeomFromText(
         'POINT(${query.longitude} ${query.latitude})', 4326)
     )`;
 
@@ -273,7 +287,7 @@ function upsert(feature, callback) {
 }
 
 module.exports = {
-    get:                        get,
+    getById:                    getById,
     getByBoundingBox:           getByBoundingBox,
     getByPoint:                 getByPoint,
     init:                       init,

@@ -19,7 +19,7 @@ exports.upsert = function(req, res) {
     });
 };
 
-exports.get = function(req, res) {
+exports.getById = function(req, res) {
     services.activities.get(req.params.userId, req.params.activityId, function(err, activity) {
         if (err) return common.utils.handleError(res, err);
 
@@ -35,6 +35,7 @@ exports.getByPoint = function(req, res) {
     let query = {
         latitude: parseFloat(req.params.latitude),
         longitude: parseFloat(req.params.longitude),
+        include: req.query.include
     };
 
     if (req.query.layer) {
@@ -44,14 +45,7 @@ exports.getByPoint = function(req, res) {
     services.features.getByPoint(query, (err, features) => {
         if (err) return common.utils.handleError(res, err);
 
-        let simplifiedFeatures = features.map(feature => {
-            delete feature['hull'];
-            return feature;
-        });
-
-        res.send({
-            features: simplifiedFeatures
-        });
+        res.send({ "features": features });
     });
 };
 
@@ -61,6 +55,7 @@ exports.getByBoundingBox = function(req, res) {
         west: parseFloat(req.params.west),
         south: parseFloat(req.params.south),
         east: parseFloat(req.params.east),
+        include: req.query.include
     };
 
     if (req.query.layer) {

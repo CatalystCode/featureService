@@ -10,7 +10,9 @@ fs.readFile('./deployment_sha', 'utf8', (err, sha) => {
 });
 
 exports.health = function(req, res) {
-    services.features.get("0", (err) => {
+    services.features.getById({
+        id: "0"
+    }, (err) => {
         if (err) return res.send(500, { "ok": false, "error": err });
 
         res.send({

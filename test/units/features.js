@@ -37,7 +37,8 @@ describe('features service', function() {
     it('can get intersecting features by point', function(done) {
         services.features.getByPoint({
             latitude: 16.729126675,
-            longitude: -22.9176469
+            longitude: -22.9176469,
+            include: "centroid,properties"
         }, (err, features) => {
             assert(!err);
 
@@ -57,7 +58,8 @@ describe('features service', function() {
             north: 17,
             west: -23,
             south: 16,
-            east: -22
+            east: -22,
+            include: "properties,centroid"
         }, (err, features) => {
             assert(!err);
             assert(features);
@@ -70,5 +72,4 @@ describe('features service', function() {
             done();
         });
     });
-
 });
