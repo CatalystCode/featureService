@@ -4,24 +4,13 @@ const express = require('express'),
       app = express(),
       bodyParser = require('body-parser'),
       common = require('service-utils'),
+      cors = require('cors'),
       morgan = require('morgan'),
       server = require('http').createServer(app),
       services = require('./services'),
       controllers = require('./controllers');
 
-app.use(function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', "*");
-    res.header('Access-Control-Allow-Credentials', true);
-    res.header('Access-Control-Allow-Methods', 'OPTIONS,GET,POST,PUT,DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
-    // intercept OPTIONS method
-    if ('OPTIONS' == req.method) {
-        res.sendStatus(200);
-    } else {
-        next();
-    }
-});
+app.use(cors());
 
 app.use(morgan('combined'));
 app.use(bodyParser.json());
