@@ -9,20 +9,18 @@ const request = require('request');
 const intersectionEndpoint = 'http://localhost:' + process.env.PORT + '/intersection';
 
 describe('features endpoint', function() {
-    it('can post intersection for processing', function(done) {
+    it('can post locations for visit processing', function(done) {
         request.post(intersectionEndpoint, {
             headers: {
                 Authorization: "Bearer " + fixtures.accessToken
             },
             body: {
-                intersections: [
-                    fixtures.intersection
-                ]
+                locations: fixtures.locations
             },
             json: true
         }, function(err, resp) {
             assert(!err);
-            assert.equal(resp.statusCode, HttpStatus.ACCEPTED);
+            assert.equal(resp.statusCode, HttpStatus.OK);
 
             done();
         });

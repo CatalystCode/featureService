@@ -518,9 +518,7 @@ function intersectVisits(currentVisits, intersection) {
                 // make sure that at most one visit is created that contains intersection.
                 let featureHandled = false;
                 Object.keys(newVisits).forEach(visitId => {
-                    //log.info('====> processing visit id: ' + visitId);
                     let visit = newVisits[visitId];
-                    //log.info('====> processing visit: ' + JSON.stringify(visit, null, 2));
                     if (visit.start < intersection.timestamp && visit.finish > intersection.timestamp) {
                         //common.services.log.info('====> found spanning visit: ' + visit.id);
 
@@ -572,7 +570,6 @@ function intersectVisits(currentVisits, intersection) {
     //common.services.log.info('=> updated visits:');
     //common.services.log.info(JSON.stringify(newVisits, null, 2));
 
-    //log.info('<========================');
     return newVisits;
 }
 
@@ -631,9 +628,9 @@ function updateVisitsFromIntersections(intersections, callback) {
 
     let userId = intersections[0].userId;
     let resource = 'userVisits:' + userId;
-    let ttl = 5000;
+    const LOCK_TTL = 5000;
 
-    redlock.lock(resource, ttl, (err, lock) => {
+    redlock.lock(resource, LOCK_TTL, (err, lock) => {
         if (err) return callback(err);
 
         //common.services.log.info('starting updateVisitsFromIntersection');
@@ -642,9 +639,6 @@ function updateVisitsFromIntersections(intersections, callback) {
             if (err) return callback(err);
 
             let visits = {};
-
-            //log.info('results:');
-            //log.info(JSON.stringify(results, null, 2));
 
             visitList.forEach(visit => {
                 visits[visit.id] = visit;
@@ -663,7 +657,7 @@ function updateVisitsFromIntersections(intersections, callback) {
                 lock.unlock(lockErr => {
                     if (lockErr) common.services.log.error(lockErr);
 
-                    displayVisits(callback);
+                    return callback();
                 });
             });
         });
@@ -691,7 +685,7 @@ function upsert(visits, callback) {
             '${visit.featureId}',
             ${visit.start},
             '${JSON.stringify(visit.startIntersection).replace(/'/g,"''")}',
-            ${visit.start},
+            ${visit.finish},
             '${JSON.stringify(visit.finishIntersection).replace(/'/g,"''")}',
             current_timestamp,
             current_timestamp

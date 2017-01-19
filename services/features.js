@@ -225,6 +225,37 @@ function init(callback) {
     return callback();
 }
 
+function intersectLocations(locations, callback) {
+    let intersections = [];
+    async.eachLimit(locations, 40, (location, locationCallback) => {
+        getByPoint({
+            latitude: location.latitude,
+            longitude: location.longitude
+        }, (err, features) => {
+            if (err) return locationCallback(err);
+
+            let simplifiedFeatures = features.map(feature => {
+                return {
+                    id: feature.id,
+                    properties: feature.properties
+                };
+            });
+
+            let intersection = {
+                features: simplifiedFeatures,
+                timestamp: location.timestamp.getTime(),
+                userId: location.userId
+            };
+
+            intersections.push(intersection);
+
+            return locationCallback();
+        });
+    }, err => {
+        return callback(err, intersections);
+    });
+}
+
 /*
 function summarizeByBoundingBox(boundingBox, callback) {
     common.utils.postgresClientWrapper(process.env.FEATURES_CONNECTION_STRING, (client, wrapperCallback) => {
@@ -291,6 +322,7 @@ module.exports = {
     getByBoundingBox:           getByBoundingBox,
     getByPoint:                 getByPoint,
     init:                       init,
+    intersectLocations:         intersectLocations,
 //    summarizeByBoundingBox:     summarizeByBoundingBox,
     upsert:                     upsert
 };

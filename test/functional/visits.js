@@ -1,11 +1,10 @@
 "use strict"
 
-const assert = require('assert');
-const app = require('../../server');
-const fixtures = require('../fixtures');
-const HttpStatus = require('http-status-codes');
-const presenters = require('../../presenters');
-const request = require('request');
+const assert = require('assert'), 
+      app = require('../../server'),
+      fixtures = require('../fixtures'),
+      HttpStatus = require('http-status-codes'),
+      request = require('request');
 
 const visitsEndpoint = 'http://localhost:' + process.env.PORT + '/visits';
 
@@ -21,7 +20,7 @@ describe('visits endpoint', function() {
             assert.equal(resp.statusCode, HttpStatus.OK);
 
             assert(resp.body.visits);
-            assert.equal(resp.body.visits.length, 1);
+            assert(resp.body.visits.length > 0);
 
             done();
         });
