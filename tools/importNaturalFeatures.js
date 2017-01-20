@@ -43,29 +43,35 @@ let config = {
 };
 
 let count = 0;
-/*
 services.init(function(err) {
     if (err) {
         console.log(err);
-//        return services.log.error('failed to initialize: ' + err);
         process.exit(1);
     }
-*/
+
     pbf2json.createReadStream(config).pipe(
         through.obj( (item, e, next) => {
             let feature = {
-                id: `'osm-${item.id}'`
+                id: `'osm-${item.id}'`,
+                layer: 'osm',
+                properties: {
+                    names: {},
+                    tags: []
+                }
             };
 
-            FEATURE_TAGS.forEach( (featureTag) => {
+            FEATURE_TAGS.forEach(featureTag => {
                 if (!item.tags[featureTag]) return;
 
-                feature.category = featureTag;
-                feature.tag = item.tags[featureTag];
-                feature.fullTag = `${featureTag}:${item.tags[featureTag]}`;
+                feature.properties.tags.push(`${featureTag}:${item.tags[featureTag]}`);
             });
 
-            if (FULL_TAGS_TO_CAPTURE.indexOf(feature.fullTag) < 0)
+            let foundMatching = false;
+            feature.properties.tags.forEach(tag => {
+                foundMatching = foundMatching || FULL_TAGS_TO_CAPTURE.indexOf(feature.fullTag) >= 0;
+            });
+
+            if (!foundMatching)
                 return next();
 
             if (!item.tags['name']) {
@@ -73,9 +79,7 @@ services.init(function(err) {
                 return next();
             }
 
-            feature.names = {};
-
-            feature.names.common = item.tags['name'];
+            feature.properties.names['en'] = item.tags['name'];
 
             if (item.type === 'node') {
                 let latitude = parseFloat(item.lat);
@@ -102,7 +106,7 @@ services.init(function(err) {
                 };
 
                 if (item.tags['ele']) {
-                    feature.elevation = parseFloat(item.tags['ele']);
+                    feature.properties.elevation = parseFloat(item.tags['ele']);
                 }
             }
 /*
@@ -124,4 +128,4 @@ services.init(function(err) {
         console.log('finished');
         setTimeout(process.exit, 5000);
     });
-// });
+});
