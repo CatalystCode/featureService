@@ -16,7 +16,7 @@ exports.post = function(req, res) {
         services.visits.updateVisitsFromIntersections(intersections, err => {
             if (err) return common.utils.handleError(res, err);
 
-            res.sendStatus(HttpStatus.OK);
+            res.send();
         });
     });
 };
