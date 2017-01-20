@@ -13,7 +13,7 @@ const express = require('express'),
 app.use(cors());
 
 app.use(morgan('combined'));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb' }));
 
 app.get('/features/bbox/:north/:west/:south/:east', controllers.features.getByBoundingBox);
 app.get('/features/point/:latitude/:longitude',     controllers.features.getByPoint);
