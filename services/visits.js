@@ -652,6 +652,10 @@ function updateVisitsFromIntersections(intersections, callback) {
                 return visits[visitId];
             });
 
+            newVisitList.forEach(visit => {
+                common.services.log.info(`visit update: ${visit.userId}: ${visit.featureId}: ${visit.start} ${visit.finish}`);
+            })
+
             upsert(newVisitList, err => {
                 //common.services.log.info('finished updateVisitsFromIntersection');
                 lock.unlock(lockErr => {
