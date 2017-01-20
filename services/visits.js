@@ -657,11 +657,12 @@ function updateVisitsFromIntersections(intersections, callback) {
             })
 
             upsert(newVisitList, err => {
+                if (err) common.services.log.error('visits upsert error: ' + err);
                 //common.services.log.info('finished updateVisitsFromIntersection');
                 lock.unlock(lockErr => {
                     if (lockErr) common.services.log.error(lockErr);
 
-                    return callback();
+                    return callback(err);
                 });
             });
         });
