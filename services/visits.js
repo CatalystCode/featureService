@@ -652,12 +652,17 @@ function updateVisitsFromIntersections(intersections, callback) {
                 return visits[visitId];
             });
 
+            newVisitList.forEach(visit => {
+                common.services.log.info(`visit update: ${visit.userId}: ${visit.featureId}: ${visit.start} ${visit.finish}`);
+            })
+
             upsert(newVisitList, err => {
+                if (err) common.services.log.error('visits upsert error: ' + err);
                 //common.services.log.info('finished updateVisitsFromIntersection');
                 lock.unlock(lockErr => {
                     if (lockErr) common.services.log.error(lockErr);
 
-                    return callback();
+                    return callback(err);
                 });
             });
         });

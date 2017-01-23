@@ -243,7 +243,7 @@ function intersectLocations(locations, callback) {
 
             let intersection = {
                 features: simplifiedFeatures,
-                timestamp: location.timestamp.getTime(),
+                timestamp: location.timestamp,
                 userId: location.userId
             };
 

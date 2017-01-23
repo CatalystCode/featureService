@@ -48,7 +48,7 @@ let fixtures = {
         },
     },
     location: {
-        timestamp: new Date(2016,5,15),
+        timestamp: new Date(2016,5,15).getTime(),
         userId: '747941cfb829',
         accuracy: 10,
         altitude: 102,
@@ -60,7 +60,7 @@ let fixtures = {
     },
     locations: [
         {
-            timestamp: new Date(1453640093710.236),
+            timestamp: 1453640093710,
             userId: '747941cfb829',
             accuracy: 10,
             altitude: 102,
@@ -71,7 +71,7 @@ let fixtures = {
             speed: 6.02
         },
         {
-            timestamp: new Date(1453640094710.236),
+            timestamp: 1453640094710,
             userId: '747941cfb829',
             accuracy: 10,
             altitude: 115,
@@ -82,7 +82,7 @@ let fixtures = {
             speed: 6.02
         },
         {
-            timestamp: new Date(1453640095710.236),
+            timestamp: 1453640095710,
             userId: '747941cfb829',
             accuracy: 10,
             altitude: 1116,
@@ -93,7 +93,7 @@ let fixtures = {
             speed: 6.02
         },
         {
-            timestamp: new Date(1453640096710.236),
+            timestamp: 1453640096710,
             userId: '747941cfb829',
             accuracy: 10,
             altitude: 1100,
