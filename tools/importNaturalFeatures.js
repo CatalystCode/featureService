@@ -15,7 +15,9 @@ const FULL_TAGS_TO_CAPTURE = [
   'historic:rune_stone',
   'man_made:beacon',
 */
+  'natural:saddle',
   'natural:peak',
+  'natural:volcano',
 /*
   'iata:*',
   'tourism:artwork',
@@ -49,16 +51,20 @@ services.init(function(err) {
         process.exit(1);
     }
 
+    console.log('init finished, starting');
+
     pbf2json.createReadStream(config).pipe(
         through.obj( (item, e, next) => {
             let feature = {
-                id: `'osm-${item.id}'`,
+                id: `osm-${item.id}`,
                 layer: 'osm',
                 properties: {
                     names: {},
                     tags: []
                 }
             };
+            count += 1;
+            if (count % 100 === 0) console.log(count);
 
             FEATURE_TAGS.forEach(featureTag => {
                 if (!item.tags[featureTag]) return;
@@ -68,18 +74,19 @@ services.init(function(err) {
 
             let foundMatching = false;
             feature.properties.tags.forEach(tag => {
-                foundMatching = foundMatching || FULL_TAGS_TO_CAPTURE.indexOf(feature.fullTag) >= 0;
+                foundMatching = foundMatching || FULL_TAGS_TO_CAPTURE.indexOf(tag) >= 0;
             });
 
-            if (!foundMatching)
+            if (!foundMatching) {
+                console.log('no matching tag ' + JSON.stringify(feature.properties.tags) + ' for feature, skipping.');
                 return next();
-
+            }
             if (!item.tags['name']) {
                 console.log('no name on matching feature, skipping.');
                 return next();
             }
 
-            feature.properties.names['en'] = item.tags['name'];
+            feature.name = feature.properties.names['en'] = item.tags['name'];
 
             if (item.type === 'node') {
                 let latitude = parseFloat(item.lat);
