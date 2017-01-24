@@ -9,9 +9,7 @@ const async = require('async'),
       process = require('process'),
       ServiceError = common.utils.ServiceError,
       turf = require('turf'),
-      url = require('url'),
-      geojsonBbox = require('geojson-bbox');
-
+      url = require('url');
 /*
 
 CREATE EXTENSION postgis;
@@ -25,8 +23,6 @@ CREATE TABLE features
 
   properties        jsonb                        NOT NULL,
 
-  bbox              geometry                     NOT NULL,
-  centroid          geometry                     NOT NULL,
   hull              geometry                     NOT NULL,
 
   created_at        timestamp                    NOT NULL,
@@ -34,13 +30,6 @@ CREATE TABLE features
 
   CONSTRAINT nodes_pkey PRIMARY KEY (id),
 
-  CONSTRAINT enforce_dims_centroid CHECK (st_ndims(centroid) = 2),
-  CONSTRAINT enforce_srid_centroid CHECK (st_srid(centroid) = 4326),
-
-  CONSTRAINT enforce_dims_bbox CHECK (st_ndims(bbox) = 2),
-  CONSTRAINT enforce_srid_bbox CHECK (st_srid(bbox) = 4326),
-
-  CONSTRAINT enforce_dims_hull CHECK (st_ndims(hull) = 2),
   CONSTRAINT enforce_srid_hull CHECK (st_srid(hull) = 4326)
 );
 
@@ -50,6 +39,7 @@ CREATE INDEX features_hull_index
   ON features
   USING gist
   (hull);
+
 
 */
 
@@ -85,13 +75,10 @@ function rowToFeature(row, columns) {
 
     row['createdAt'] = row['created_at'];
     row['updatedAt'] = row['updated_at'];
-    if (row['centroid_geo_json']) row['centroid'] = JSON.parse(row['centroid_geo_json']);
     if (row['hull_geo_json']) row['hull'] = JSON.parse(row['hull_geo_json']);
 
     delete row['created_at'];
     delete row['updated_at'];
-    delete row['bbox'];
-    delete row['centroid_geo_json'];
     delete row['hull_geo_json'];
 
     return row;
@@ -107,63 +94,6 @@ function resultsToFeatures(results) {
 
     return features;
 }
-/*
-function geoJsonFilter(features, geojson) {
-    let filteredFeatures = [];
-    features.forEach(feature => {
-        let intersects;
-        let hullGeoJson = {
-            type: "Feature",
-            properties: {},
-            geometry: feature.hull
-        };
-
-        if (geojson.geometry.type === "Polygon")
-            intersects = turf.intersect(hullGeoJson, geojson);
-        else
-            intersects = turf.inside(geojson, hullGeoJson);
-
-        if (intersects) {
-            console.log('hit: ' + feature.names.common);
-            filteredFeatures.push(feature);
-        } else {
-            console.log('miss: ' + feature.names.common);
-        }
-    });
-
-    return filteredFeatures;
-}
-
-function bboxToGeoJson(bbox) {
-    return {
-      "type": "Feature",
-      "properties": {},
-      "geometry": {
-        "type": "Polygon",
-        "coordinates":[
-            [
-                [bbox.west,bbox.north],
-                [bbox.east,bbox.north],
-                [bbox.east,bbox.south],
-                [bbox.west,bbox.south],
-                [bbox.west,bbox.north]
-            ]
-        ]
-      }
-    };
-}
-
-function pointToGeoJson(point) {
-    return {
-      "type": "Feature",
-      "properties": {},
-      "geometry": {
-        "type": "Point",
-        "coordinates": [point.longitude, point.latitude]
-      }
-    };
-}
-*/
 
 const COLUMN_QUERY = 'id, name, layer';
 
@@ -174,7 +104,6 @@ function buildQueryColumns(query) {
 
         if (includeArray.indexOf('hull') !== -1) queryColumns += ',ST_AsGeoJSON(hull) as hull_geo_json';
         if (includeArray.indexOf('properties') !== -1) queryColumns += ',properties';
-        if (includeArray.indexOf('centroid') !== -1) queryColumns += ',ST_AsGeoJSON(centroid) as centroid_geo_json';
     }
 
     return queryColumns;
@@ -256,40 +185,19 @@ function intersectLocations(locations, callback) {
     });
 }
 
-/*
-function summarizeByBoundingBox(boundingBox, callback) {
-    common.utils.postgresClientWrapper(process.env.FEATURES_CONNECTION_STRING, (client, wrapperCallback) => {
-        let boundingBoxQuery = `SELECT fullTag, count(*) FROM features WHERE ST_Intersects(centroid, ST_MakeEnvelope(
-            ${boundingBox.west}, ${boundingBox.south},
-            ${boundingBox.east}, ${boundingBox.north}, 4326
-        )) GROUP BY fullTag`;
-
-        client.query(boundingBoxQuery, (err, results) => {
-            if (err) return wrapperCallback(err);
-
-            return wrapperCallback(null, results.rows);
-        });
-    }, callback);
-}
-*/
-
 function upsert(feature, callback) {
     let prefix = "";
 
     if (!feature.layer)      return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'layer' not provided for feature."));
     if (!feature.name)       return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'name' not provided for feature."));
-    if (!feature.centroid)   return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'centroid' not provided for feature."));
     if (!feature.hull)       return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'hull' not provided for feature."));
     if (!feature.properties) return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'properties' not provided for feature."));
 
     feature.elevation = feature.elevation || 'null';
     feature.hierarchy = feature.hierarchy || '{}';
 
-    let extent = geojsonBbox(feature.hull);
-    let bbox = turf.bboxPolygon(extent);
-
     let upsertQuery = `INSERT INTO features (
-        id, name, layer, properties, hull, bbox, centroid, created_at, updated_at
+        id, name, layer, properties, hull, created_at, updated_at
     ) VALUES (
         '${feature.id}',
         '${feature.name.replace(/'/g,"''")}',
@@ -297,8 +205,6 @@ function upsert(feature, callback) {
         '${JSON.stringify(feature.properties).replace(/'/g,"''")}',
 
         ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(feature.hull)}'), 4326),
-        ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(bbox.geometry)}'), 4326),
-        ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(feature.centroid)}'), 4326),
 
         current_timestamp,
         current_timestamp
@@ -308,8 +214,6 @@ function upsert(feature, callback) {
         properties = '${JSON.stringify(feature.properties).replace(/'/g,"''")}',
 
         hull = ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(feature.hull)}'), 4326),
-        bbox = ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(bbox.geometry)}'), 4326),
-        centroid = ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(feature.centroid)}'), 4326),
 
         updated_at = current_timestamp
     ;`;
