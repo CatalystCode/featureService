@@ -615,6 +615,29 @@ function displayVisits(callback) {
     });
 }
 
+function reduceIntersections(intersections) {
+    let featureIds = {};
+    let properties = {
+        minTimestamp: null,
+        maxTimestamp: null
+    };
+
+    intersections.forEach(intersection => {
+        intersection.features.forEach(feature => {
+            featureIds[feature.id] = true;
+        });
+
+        if (!properties.minTimestamp || intersection.timestamp < properties.minTimestamp)
+            properties.minTimestamp = intersection.timestamp;
+
+        if (!properties.maxTimestamp || intersection.timestamp < properties.maxTimestamp)
+            properties.maxTimestamp = intersection.timestamp;
+    });
+
+    properties.featureIds = Object.keys(featureIds);
+    return properties;
+}
+
 function updateVisitsFromIntersections(intersections, callback) {
 
     // TODO: Revive tighter bound on the visits we actually need.
@@ -630,18 +653,25 @@ function updateVisitsFromIntersections(intersections, callback) {
     let resource = 'userVisits:' + userId;
     const LOCK_TTL = 5000;
 
+    let properties = reduceIntersections(intersections);
+
     redlock.lock(resource, LOCK_TTL, (err, lock) => {
         if (err) return callback(err);
 
         //common.services.log.info('starting updateVisitsFromIntersection');
 
         getVisits(userId, {}, (err, visitList) => {
+
             if (err) return callback(err);
 
             let visits = {};
 
             visitList.forEach(visit => {
-                visits[visit.id] = visit;
+                let visitHasIntersectionFeatureId = properties.featureIds.indexOf(visit.featureId) !== -1;
+                let visitSpansIntersection = visit.start >= properties.minTimestamp && visit.start <= properties.maxTimestamp ||
+                                             visit.finish >= properties.minTimestamp && visit.finish <= properties.maxTimestamp;
+                if (visitHasIntersectionFeatureId || visitSpansIntersection)
+                    visits[visit.id] = visit;
             });
 
             intersections.forEach(intersection => {
@@ -667,7 +697,6 @@ function updateVisitsFromIntersections(intersections, callback) {
             });
         });
     });
-
 }
 
 function upsert(visits, callback) {
