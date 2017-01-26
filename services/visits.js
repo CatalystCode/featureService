@@ -119,7 +119,7 @@ function getNextAfterTimestamp(userId, timestamp, callback) {
     executeQuery(`SELECT * FROM visits WHERE user_id='${userId}' AND start > ${timestamp} ORDER BY start ASC LIMIT 100`, callback);
 }
 
-function getVisits(userId, options, callback) {
+function getVisitsByUserId(userId, callback) {
     let query = `SELECT * FROM visits WHERE user_id='${userId}'`;
     executeQuery(query, callback);
 }
@@ -137,8 +137,8 @@ function getVisitsForIntersection(query, callback) {
         prefix = " OR "
     });
 
-    let startClause = `(start >= ${query.span.start} AND start <= ${query.span.finish})`;
-    let finishClause = `(finish >= ${query.span.start} AND finish <= ${query.span.finish})`;
+    let startClause = `(start <= ${query.span.start} AND finish >= ${query.span.start})`;
+    let finishClause = `(start <= ${query.span.finish} AND finish >= ${query.span.finish})`;
 
     let sql = `SELECT * FROM visits WHERE user_id='${query.userId}' AND (${featureIdsClause} OR ${startClause} OR ${finishClause})`;
     executeQuery(sql, callback);
@@ -612,7 +612,7 @@ let moment = require('moment');
 let dateFormatString = 'YYYY-MM-DD HH:mm:ss';
 
 function displayVisits(callback) {
-    getVisits('10152875766888406', {}, (err, visits) => {
+    getVisitsForUser('10152875766888406', (err, visits) => {
         if (err && callback) return callback(err);
         let visitDisplay = [];
 
@@ -703,12 +703,12 @@ function updateVisitsFromIntersections(intersections, callback) {
                 finish: properties.maxTimestamp
             }
         }, (err, visitList) => {
-
             if (err) return callback(err);
 
             let visits = {};
 
             visitList.forEach(visit => {
+                common.services.log.info(`existing visit: ${visit.userId}: ${visit.featureId}: ${visit.start} ${visit.finish}`);
                 /*
                 let visitHasIntersectionFeatureId = properties.featureIds.indexOf(visit.featureId) !== -1;
                 let visitSpansIntersection = visit.start >= properties.minTimestamp && visit.start <= properties.maxTimestamp ||
@@ -729,8 +729,8 @@ function updateVisitsFromIntersections(intersections, callback) {
             });
 
             dirtyVisitList.forEach(visit => {
-                common.services.log.info(`visit update: ${visit.userId}: ${visit.featureId}: ${visit.start} ${visit.finish}`);
-            })
+                common.services.log.info(`dirty visit: ${visit.userId}: ${visit.featureId}: ${visit.start} ${visit.finish}`);
+            });
 
             upsert(dirtyVisitList, err => {
                 if (err) common.services.log.error('visits upsert error: ' + err);
@@ -784,14 +784,30 @@ function upsert(visits, callback) {
 
 }
 
+function removeAllFixtures(callback) {
+    executeQuery("DELETE FROM visits WHERE user_id='user1'", callback);
+}
+
+function setupFixtures(visits, callback) {
+    removeAllFixtures(err => {
+        if (err) return callback(err);
+
+        upsert(visits, callback);
+    });
+}
+
 module.exports = {
-    fromJson:                       fromJson,
-    getByTimestamp:                 getByTimestamp,
-    getLastBeforeTimestamp:         getLastBeforeTimestamp,
-    getNextAfterTimestamp:          getNextAfterTimestamp,
-    getVisits:                      getVisits,
-    init:                           init,
-    intersectVisits:                intersectVisits,
-    updateVisitsFromIntersections:  updateVisitsFromIntersections,
-    upsert:                         upsert,
+    fromJson,
+    getByTimestamp,
+    getLastBeforeTimestamp,
+    getNextAfterTimestamp,
+    getVisitsByUserId,
+    init,
+    intersectVisits,
+    updateVisitsFromIntersections,
+    upsert,
+
+// FOR TEST ONLY
+
+    setupFixtures,
 };

@@ -6,7 +6,7 @@ const async = require('async'),
       services = require('../services');
 
 exports.get = function(req, res) {
-    services.visits.getVisits(req.params.userId, {}, (err, visits) => {
+    services.visits.getVisitsByUserId(req.params.userId, (err, visits) => {
         if (err) return common.utils.handleError(res, err);
 
         res.send({

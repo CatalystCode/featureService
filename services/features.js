@@ -222,11 +222,10 @@ function upsert(feature, callback) {
 }
 
 module.exports = {
-    getById:                    getById,
-    getByBoundingBox:           getByBoundingBox,
-    getByPoint:                 getByPoint,
-    init:                       init,
-    intersectLocations:         intersectLocations,
-//    summarizeByBoundingBox:     summarizeByBoundingBox,
-    upsert:                     upsert
+    getById,
+    getByBoundingBox,
+    getByPoint,
+    init,
+    intersectLocations,
+    upsert,
 };
