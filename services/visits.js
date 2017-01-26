@@ -43,6 +43,13 @@ CREATE INDEX visits_finish_index
   ON visits
   (finish);
 
+SELECT
+    v.feature_id, count(v.feature_id), f.name
+FROM visits as v
+JOIN features as f on f.id=v.feature_id
+GROUP BY v.feature_id, f.name;
+
+
 */
 
 function rowToVisit(row) {
@@ -117,6 +124,26 @@ function getVisits(userId, options, callback) {
     executeQuery(query, callback);
 }
 
+function getVisitsForIntersection(query, callback) {
+    if (!query.userId)     return callback(new Error('getVisitsForIntersection: missing userId'));
+    if (!query.featureIds) return callback(new Error('getVisitsForIntersection: missing featureIds'));
+    if (!query.span)       return callback(new Error('getVisitsForIntersection: missing span'));
+
+    let featureIdsClause = "";
+    let prefix = "";
+
+    query.featureIds.forEach(featureId => {
+        featureIdsClause += `${prefix}feature_id='${featureId}'`;
+        prefix = " OR "
+    });
+
+    let startClause = `(start >= ${query.span.start} AND start <= ${query.span.finish})`;
+    let finishClause = `(finish >= ${query.span.start} AND finish <= ${query.span.finish})`;
+
+    let sql = `SELECT * FROM visits WHERE user_id='${query.userId}' AND (${featureIdsClause} OR ${startClause} OR ${finishClause})`;
+    executeQuery(sql, callback);
+}
+
 function init(callback) {
     if (!process.env.FEATURES_CONNECTION_STRING)
         return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, "FEATURES_CONNECTION_STRING configuration not provided as environment variable"));
@@ -126,6 +153,10 @@ function init(callback) {
 
     if (!process.env.REDIS_KEY)
         return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, "REDIS_KEY configuration not provided as environment variable"));
+
+    // POSTGRES CONNECTION CODE
+
+    common.services.log.info('connecting to features database using: ' + process.env.FEATURES_CONNECTION_STRING);
 
     const params = url.parse(process.env.FEATURES_CONNECTION_STRING);
     const auth = params.auth.split(':');
@@ -140,12 +171,16 @@ function init(callback) {
 
     featureTablePool = new pg.Pool(config);
 
+    // REDIS CONNECTION CODE
+
     let client = require('redis').createClient(6380, process.env.REDIS_HOST, {
         auth_pass: process.env.REDIS_KEY,
         tls: {
             servername: process.env.REDIS_HOST
         }
     });
+
+    // REDLOCK SETUP
 
     var Redlock = require('redlock');
 
@@ -492,7 +527,7 @@ function intersectVisits(currentVisits, intersection) {
             if (beforeVisit.finish < intersection.timestamp) {
                 beforeVisit.finish = intersection.timestamp;
                 beforeVisit.finishIntersection = intersection;
-                beforeVisit.touched = intersection.timestamp;
+                beforeVisit.dirty = true;
                 //common.services.log.info('====> adjusting visit ' + beforeVisit.id + ' before intersection to end on intersection ' + feature.id);
                 //common.services.log.info(JSON.stringify(beforeVisit, null, 2));
             } else {
@@ -505,7 +540,7 @@ function intersectVisits(currentVisits, intersection) {
                 if (afterVisit.start > intersection.timestamp) {
                     afterVisit.start = intersection.timestamp;
                     afterVisit.startIntersection = intersection;
-                    afterVisit.touched = intersection.timestamp;
+                    afterVisit.dirty = true;
                     //common.services.log.info('====> adjusting visit ' + afterVisit.id + ' after intersection to start on intersection for ' + feature.id);
                     //common.services.log.info(JSON.stringify(afterVisit, null, 2));
                 } else {
@@ -533,13 +568,13 @@ function intersectVisits(currentVisits, intersection) {
                                 startIntersection: intersection,
                                 finish: visit.finish,
                                 finishIntersection: visit.finishIntersection,
-                                touched: intersection.timestamp
+                                dirty: true
                             };
                             newVisits[postIntersectionVisit.id] = postIntersectionVisit;
 
                             visit.finish = intersection.timestamp;
                             visit.finishIntersection = intersection;
-                            visit.touched = intersection.timestamp;
+                            visit.dirty = true;
                         } else if (visit.featureId === feature.id) {
                             //common.services.log.info('visit has featureId so we shouldnt need to create a new visit.');
                             featureHandled = true;
@@ -556,7 +591,7 @@ function intersectVisits(currentVisits, intersection) {
                         startIntersection: intersection,
                         finish:    intersection.timestamp,
                         finishIntersection: intersection,
-                        touched:   intersection.timestamp
+                        dirty:     true
                     };
 
                     //common.services.log.info('====> creating new visit for ' + feature.id);
@@ -651,7 +686,7 @@ function updateVisitsFromIntersections(intersections, callback) {
 
     let userId = intersections[0].userId;
     let resource = 'userVisits:' + userId;
-    const LOCK_TTL = 5000;
+    const LOCK_TTL = 60 * 1000;
 
     let properties = reduceIntersections(intersections);
 
@@ -660,33 +695,44 @@ function updateVisitsFromIntersections(intersections, callback) {
 
         //common.services.log.info('starting updateVisitsFromIntersection');
 
-        getVisits(userId, {}, (err, visitList) => {
+        getVisitsForIntersection({
+            userId,
+            featureIds: properties.featureIds,
+            span: {
+                start: properties.minTimestamp,
+                finish: properties.maxTimestamp
+            }
+        }, (err, visitList) => {
 
             if (err) return callback(err);
 
             let visits = {};
 
             visitList.forEach(visit => {
+                /*
                 let visitHasIntersectionFeatureId = properties.featureIds.indexOf(visit.featureId) !== -1;
                 let visitSpansIntersection = visit.start >= properties.minTimestamp && visit.start <= properties.maxTimestamp ||
                                              visit.finish >= properties.minTimestamp && visit.finish <= properties.maxTimestamp;
                 if (visitHasIntersectionFeatureId || visitSpansIntersection)
-                    visits[visit.id] = visit;
+                */
+                visits[visit.id] = visit;
             });
 
             intersections.forEach(intersection => {
                 visits = intersectVisits(visits, intersection);
             });
 
-            let newVisitList = Object.keys(visits).map(visitId => {
-                return visits[visitId];
+            let dirtyVisitList = [];
+
+            Object.keys(visits).map(visitId => {
+                if (visits[visitId].dirty) dirtyVisitList.push(visits[visitId]);
             });
 
-            newVisitList.forEach(visit => {
+            dirtyVisitList.forEach(visit => {
                 common.services.log.info(`visit update: ${visit.userId}: ${visit.featureId}: ${visit.start} ${visit.finish}`);
             })
 
-            upsert(newVisitList, err => {
+            upsert(dirtyVisitList, err => {
                 if (err) common.services.log.error('visits upsert error: ' + err);
                 //common.services.log.info('finished updateVisitsFromIntersection');
                 lock.unlock(lockErr => {
