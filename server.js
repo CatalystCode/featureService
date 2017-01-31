@@ -20,7 +20,7 @@ app.get('/features/point/:latitude/:longitude',     controllers.features.getByPo
 
 app.get('/visits/:userId',                          controllers.visits.get);
 
-app.post('/intersection',                           controllers.intersection.post);
+app.post('/intersections',                          controllers.intersection.post);
 
 app.get('/ops/health',                              controllers.ops.health);
 app.get('/',                                        controllers.ops.health);

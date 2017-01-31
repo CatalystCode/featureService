@@ -100,13 +100,13 @@ let fixtures = {
             speed: 6.02
         }
     ],
-    intersection: {
+    intersections: [{
         userId: '747941cfb829',
         features: [
             { id: '93de94d6-6561-446f-9a33-c1761b029bd5' }
         ],
         timestamp: new Date(2016, 12, 13, 16, 09).getTime()
-    },
+    }],
     userId: '747941cfb829'
 };
 

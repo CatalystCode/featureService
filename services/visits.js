@@ -16,6 +16,8 @@ let redlock;
 
 /*
 
+CREATE EXTENSION postgis;
+
 CREATE TABLE visits
 (
   id                    uuid                         NOT NULL,
@@ -49,6 +51,10 @@ FROM visits as v
 JOIN features as f on f.id=v.feature_id
 GROUP BY v.feature_id, f.name;
 
+SELECT v.feature_id, f.name, v.start, v.finish, (v.finish-v.start)/1000 as duration
+FROM visits as v
+JOIN features as f on f.id=v.feature_id
+ORDER BY v.start;
 
 */
 
@@ -140,7 +146,13 @@ function getVisitsForIntersection(query, callback) {
     let startClause = `(start <= ${query.span.start} AND finish >= ${query.span.start})`;
     let finishClause = `(start <= ${query.span.finish} AND finish >= ${query.span.finish})`;
 
-    let sql = `SELECT * FROM visits WHERE user_id='${query.userId}' AND (${featureIdsClause} OR ${startClause} OR ${finishClause})`;
+    let sql = `SELECT * FROM visits WHERE user_id='${query.userId}' AND (`;
+    if (query.featureIds.length > 0) {
+        sql += ` ${featureIdsClause} OR`;
+     }
+
+    sql += `${startClause} OR ${finishClause})`;
+
     executeQuery(sql, callback);
 }
 
@@ -444,6 +456,7 @@ function hasFeatureId(features, featureId) {
     features.forEach(feature => {
         if (feature.id === featureId)
             foundFeatureIdInIntersection = true;
+        //console.log(feature.id + ' vs. ' + featureId + ": " + foundFeatureIdInIntersection);
     });
     return foundFeatureIdInIntersection;
 }
@@ -520,18 +533,17 @@ function intersectVisits(currentVisits, intersection) {
 
     // perform pre-extending, extending, and new visits on all featureIds in intersection
     intersection.features.forEach(feature => {
-        //common.services.log.info('==> looking at intersection featureId: ' + feature.id);
-        let beforeEvent = selectEvent(events, feature.id, startIndex, -1);
-        if (beforeEvent) {
+        console.log('==> looking at intersection featureId: ' + feature.id);
+        let beforeEvent = selectEvent(events, feature.id, startIndex, -1);        if (beforeEvent) {
             let beforeVisit = newVisits[beforeEvent.visitId];
             if (beforeVisit.finish < intersection.timestamp) {
                 beforeVisit.finish = intersection.timestamp;
                 beforeVisit.finishIntersection = intersection;
                 beforeVisit.dirty = true;
-                //common.services.log.info('====> adjusting visit ' + beforeVisit.id + ' before intersection to end on intersection ' + feature.id);
+                console.log('====> adjusting visit ' + beforeVisit.id + ' before intersection to end on intersection ' + feature.id);
                 //common.services.log.info(JSON.stringify(beforeVisit, null, 2));
             } else {
-                //common.services.log.info('====> before visit spans this intersection: ' + beforeVisit.id);
+                console.log('====> before visit spans this intersection: ' + beforeVisit.id);
             }
         } else {
             let afterEvent = selectEvent(events, feature.id, startIndex, 1);
@@ -541,10 +553,9 @@ function intersectVisits(currentVisits, intersection) {
                     afterVisit.start = intersection.timestamp;
                     afterVisit.startIntersection = intersection;
                     afterVisit.dirty = true;
-                    //common.services.log.info('====> adjusting visit ' + afterVisit.id + ' after intersection to start on intersection for ' + feature.id);
-                    //common.services.log.info(JSON.stringify(afterVisit, null, 2));
+                    console.log('====> adjusting visit ' + afterVisit.id + ' after intersection to start on intersection for ' + feature.id);
                 } else {
-                    //common.services.log.info('====> after visit spans this intersection: ' + afterVisit.id);
+                    console.log('====> after visit spans this intersection: ' + afterVisit.id);
                 }
             } else {
                 // look for visits that span the intersection
@@ -554,11 +565,15 @@ function intersectVisits(currentVisits, intersection) {
                 let featureHandled = false;
                 Object.keys(newVisits).forEach(visitId => {
                     let visit = newVisits[visitId];
-                    if (visit.start < intersection.timestamp && visit.finish > intersection.timestamp) {
-                        //common.services.log.info('====> found spanning visit: ' + visit.id);
+                    if (visit.start <= intersection.timestamp && visit.finish >= intersection.timestamp) {
+                        console.log('found spanning visit: ' + visit.id);
 
-                        if (!hasFeatureId(intersection.features, visit.featureId)) {
-                            //common.services.log.info('====> visit doesnt have any of the intersection featureIds, splitting visit: ' + visit.id);
+                        //console.log(intersection.features);
+                        //console.log(visit.featureId);
+
+                        // look to see if we need to split visit.  only split if it is inside, not on the endpoints.
+                        if (!hasFeatureId(intersection.features, visit.featureId) && intersection.timestamp !== visit.start && intersection.timestamp !== visit.finish) {
+                            console.log('visit doesnt have any of the intersection featureIds, splitting visit: ' + visit.id);
 
                             let postIntersectionVisit = {
                                 id: uuid(),
@@ -576,7 +591,7 @@ function intersectVisits(currentVisits, intersection) {
                             visit.finishIntersection = intersection;
                             visit.dirty = true;
                         } else if (visit.featureId === feature.id) {
-                            //common.services.log.info('visit has featureId so we shouldnt need to create a new visit.');
+                            console.log('visit has featureId so we shouldnt need to create a new visit.');
                             featureHandled = true;
                         }
                     }
@@ -594,7 +609,7 @@ function intersectVisits(currentVisits, intersection) {
                         dirty:     true
                     };
 
-                    //common.services.log.info('====> creating new visit for ' + feature.id);
+                    console.log('====> creating new visit for ' + feature.id);
                     //common.services.log.info(JSON.stringify(newVisit, null, 2));
                     newVisits[newVisit.id] = newVisit;
                 }
@@ -665,7 +680,7 @@ function reduceIntersections(intersections) {
         if (!properties.minTimestamp || intersection.timestamp < properties.minTimestamp)
             properties.minTimestamp = intersection.timestamp;
 
-        if (!properties.maxTimestamp || intersection.timestamp < properties.maxTimestamp)
+        if (!properties.maxTimestamp || intersection.timestamp > properties.maxTimestamp)
             properties.maxTimestamp = intersection.timestamp;
     });
 
@@ -673,15 +688,46 @@ function reduceIntersections(intersections) {
     return properties;
 }
 
+function checkVisits(visits) {
+    visits.sort((a,b) => {
+        return a.start - b.start;
+    });
+
+    let visitsForFeatureId = {}
+
+    visits.forEach(visit => {
+        if (!visitsForFeatureId[visit.featureId]) {
+            visitsForFeatureId[visit.featureId] = [ visit ];
+        } else {
+            visitsForFeatureId[visit.featureId].push(visit);
+        }
+    });
+
+    let problems = 0;
+
+    Object.keys(visitsForFeatureId).forEach(featureId => {
+        let featureIdVisits = visitsForFeatureId[featureId];
+        let lastFeatureIdVisit;
+        featureIdVisits.forEach(featureIdVisit => {
+            if (lastFeatureIdVisit) {
+                if (lastFeatureIdVisit.finish > featureIdVisit.start) {
+                    console.log('found inconsistency: ');
+                    console.log('visit 1:');
+                    console.log(JSON.stringify(lastFeatureIdVisit, null, 2));
+                    console.log('visit 2:');
+                    console.log(JSON.stringify(featureIdVisit, null, 2));
+
+                    process.exit(0);
+                }
+            }
+            lastFeatureIdVisit = featureIdVisit;
+        });
+    });
+
+    console.log('checked: no problems');
+}
+
 function updateVisitsFromIntersections(intersections, callback) {
-
-    // TODO: Revive tighter bound on the visits we actually need.
-    // async.parallel([
-    //    callback => { getByTimestamp(intersection.userId, intersection.timestamp, callback); },
-    //    callback => { getLastBeforeTimestamp(intersection.userId, intersection.timestamp, callback); },
-    //    callback => { getNextAfterTimestamp(intersection.userId, intersection.timestamp, callback); }
-    // ], (err, results) => {
-
     if (intersections.length === 0) return callback();
 
     let userId = intersections[0].userId;
@@ -692,8 +738,6 @@ function updateVisitsFromIntersections(intersections, callback) {
 
     redlock.lock(resource, LOCK_TTL, (err, lock) => {
         if (err) return callback(err);
-
-        //common.services.log.info('starting updateVisitsFromIntersection');
 
         getVisitsForIntersection({
             userId,
@@ -708,7 +752,7 @@ function updateVisitsFromIntersections(intersections, callback) {
             let visits = {};
 
             visitList.forEach(visit => {
-                common.services.log.info(`existing visit: ${visit.userId}: ${visit.featureId}: ${visit.start} ${visit.finish}`);
+                //common.services.log.info(`existing visit: ${visit.userId}: ${visit.featureId}: ${visit.start} ${visit.finish}`);
                 /*
                 let visitHasIntersectionFeatureId = properties.featureIds.indexOf(visit.featureId) !== -1;
                 let visitSpansIntersection = visit.start >= properties.minTimestamp && visit.start <= properties.maxTimestamp ||
@@ -718,8 +762,39 @@ function updateVisitsFromIntersections(intersections, callback) {
                 visits[visit.id] = visit;
             });
 
+            console.log('intersection properties: ' + JSON.stringify(properties, null, 2));
+
             intersections.forEach(intersection => {
+                let visitList = [];
+                Object.keys(visits).forEach(visitId => {
+                    let visit = visits[visitId];
+                    visitList.push(visit);
+                });
+
+                console.log(JSON.stringify(visitList, null, 2));
+
+                visitList.forEach(visit => {
+                    console.log(`current visit: ${visit.id}: ${visit.featureId}: ${visit.start} ${visit.finish}`);
+                });
+
+                console.log('processing intersection: ' + JSON.stringify(intersection, null, 2));
                 visits = intersectVisits(visits, intersection);
+
+                visitList = [];
+                Object.keys(visits).forEach(visitId => {
+                    let visit = visits[visitId];
+                    visitList.push(visit);
+                });
+
+                visitList.sort((a,b) => {
+                    return a.start - b.start;
+                });
+
+                visitList.forEach(visit => {
+                    console.log(`new visits: ${visit.id}: ${visit.featureId}: ${visit.start} ${visit.finish}`);
+                });
+
+                checkVisits(visitList);
             });
 
             let dirtyVisitList = [];
@@ -729,12 +804,12 @@ function updateVisitsFromIntersections(intersections, callback) {
             });
 
             dirtyVisitList.forEach(visit => {
-                common.services.log.info(`dirty visit: ${visit.userId}: ${visit.featureId}: ${visit.start} ${visit.finish}`);
+                console.log(`final dirty visit: ${visit.id}: ${visit.featureId}: ${visit.start} ${visit.finish}`);
             });
 
             upsert(dirtyVisitList, err => {
                 if (err) common.services.log.error('visits upsert error: ' + err);
-                //common.services.log.info('finished updateVisitsFromIntersection');
+
                 lock.unlock(lockErr => {
                     if (lockErr) common.services.log.error(lockErr);
 

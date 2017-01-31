@@ -50,7 +50,6 @@ describe('visits service', function() {
         }];
 
         runIntersections(existingVisits, intersections, (err, newVisits) => {
-            console.log(err);
             assert(!err);
 
             assert(newVisits);
@@ -699,8 +698,451 @@ describe('visits service', function() {
         });
     });
 
+    it('matching intersection timestamp and visit start / finish timestamp doesnt cause split', function(done) {
+        let existingVisits = [{
+            "id": "1c4f3d63-e018-4542-8dee-5a0e4acbf116",
+            "start": 1477156258000,
+            "finish": 1482084877000,
+            "featureId": "casp-1087893243",
+            "userId": "user1",
+            "startIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575"
+                },
+                {
+                "id": "wof-85633793"
+                },
+                {
+                "id": "wof-85688637"
+                },
+                {
+                "id": "casp-1087893243"
+                }
+            ],
+            "timestamp": 1477156258000
+            },
+            "finishIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575"
+                },
+                {
+                "id": "wof-85633793"
+                },
+                {
+                "id": "wof-85688637"
+                },
+                {
+                "id": "casp-1087893243"
+                }
+            ],
+            "timestamp": 1482084877000
+            },
+            "createdAt": "2017-01-28T02:23:06.666Z",
+            "updatedAt": "2017-01-28T04:08:22.994Z"
+        },
+        {
+            "id": "580e59d5-39d0-44fe-a992-72448c3b2ceb",
+            "start": 1482086733000,
+            "finish": 1482095888000,
+            "featureId": "casp-1087893243",
+            "userId": "user1",
+            "startIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575"
+                },
+                {
+                "id": "wof-85633793"
+                },
+                {
+                "id": "wof-85688637"
+                },
+                {
+                "id": "casp-1087893243"
+                }
+            ],
+            "timestamp": 1482086733000
+            },
+            "finishIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575"
+                },
+                {
+                "id": "wof-85633793"
+                },
+                {
+                "id": "wof-85688637"
+                },
+                {
+                "id": "casp-1087893243"
+                }
+            ],
+            "timestamp": 1482095888000
+            },
+            "createdAt": "2017-01-28T02:23:58.635Z",
+            "updatedAt": "2017-01-28T02:27:17.464Z"
+        },
+        {
+            "id": "b6309be9-256f-4f0f-98cc-f80ac0eadf81",
+            "start": 1476571379000,
+            "finish": 1484516492000,
+            "featureId": "wof-102191575",
+            "userId": "user1",
+            "startIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575"
+                },
+                {
+                "id": "wof-85633793"
+                },
+                {
+                "id": "wof-85688637"
+                }
+            ],
+            "timestamp": 1476571379000
+            },
+            "finishIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575"
+                },
+                {
+                "id": "wof-85633793"
+                },
+                {
+                "id": "wof-85688637"
+                }
+            ],
+            "timestamp": 1484516492000
+            },
+            "createdAt": "2017-01-28T02:06:26.262Z",
+            "updatedAt": "2017-01-28T05:25:30.996Z"
+        },
+        {
+            "id": "931a4686-60a8-4785-966d-252ff1c4214c",
+            "start": 1482966053000,
+            "finish": 1484516492000,
+            "featureId": "wof-85688637",
+            "userId": "user1",
+            "startIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575"
+                },
+                {
+                "id": "wof-85633793"
+                },
+                {
+                "id": "wof-85688637"
+                }
+            ],
+            "timestamp": 1482966053000
+            },
+            "finishIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575"
+                },
+                {
+                "id": "wof-85633793"
+                },
+                {
+                "id": "wof-85688637"
+                }
+            ],
+            "timestamp": 1484516492000
+            },
+            "createdAt": "2017-01-28T02:06:26.270Z",
+            "updatedAt": "2017-01-28T03:35:04.047Z"
+        },
+        {
+            "id": "23d175f1-8f97-4ede-b185-0ee6b67865ca",
+            "start": 1482095889000,
+            "finish": 1482096403000,
+            "featureId": "casp-1087893243",
+            "userId": "user1",
+            "startIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575"
+                },
+                {
+                "id": "wof-85633793"
+                },
+                {
+                "id": "wof-85688637"
+                },
+                {
+                "id": "casp-1087893243"
+                }
+            ],
+            "timestamp": 1482095889000
+            },
+            "finishIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575"
+                },
+                {
+                "id": "wof-85633793"
+                },
+                {
+                "id": "wof-85688637"
+                },
+                {
+                "id": "casp-1087893243"
+                }
+            ],
+            "timestamp": 1482096403000
+            },
+            "createdAt": "2017-01-28T02:27:17.472Z",
+            "updatedAt": "2017-01-28T02:27:36.770Z"
+        },
+        {
+            "id": "e3339f4a-74cc-4de1-a900-73724f4ccf1c",
+            "start": 1482096404000,
+            "finish": 1482096706000,
+            "featureId": "casp-1087893243",
+            "userId": "user1",
+            "startIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575"
+                },
+                {
+                "id": "wof-85633793"
+                },
+                {
+                "id": "wof-85688637"
+                },
+                {
+                "id": "casp-1087893243"
+                }
+            ],
+            "timestamp": 1482096404000
+            },
+            "finishIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575"
+                },
+                {
+                "id": "wof-85633793"
+                },
+                {
+                "id": "wof-85688637"
+                },
+                {
+                "id": "casp-1087893243"
+                }
+            ],
+            "timestamp": 1482096706000
+            },
+            "createdAt": "2017-01-28T02:27:36.777Z",
+            "updatedAt": "2017-01-28T02:27:53.145Z"
+        },
+        {
+            "id": "3b47faea-e4ac-43ce-ae28-30ad9ee1090e",
+            "start": 1476571379000,
+            "finish": 1482362040000,
+            "featureId": "wof-85688637",
+            "userId": "user1",
+            "startIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575"
+                },
+                {
+                "id": "wof-85633793"
+                },
+                {
+                "id": "wof-85688637"
+                }
+            ],
+            "timestamp": 1476571379000
+            },
+            "finishIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575"
+                },
+                {
+                "id": "wof-85633793"
+                },
+                {
+                "id": "wof-85688637"
+                }
+            ],
+            "timestamp": 1482362040000
+            },
+            "createdAt": "2017-01-28T02:19:49.110Z",
+            "updatedAt": "2017-01-28T05:25:31.112Z"
+        },
+        {
+            "id": "bf11f816-0b7e-401c-a0ae-5348f379a8a3",
+            "start": 1476571637000,
+            "finish": 1480283505000,
+            "featureId": "casp-1223894223",
+            "userId": "user1",
+            "startIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575"
+                },
+                {
+                "id": "wof-85633793"
+                },
+                {
+                "id": "wof-85688637"
+                },
+                {
+                "id": "casp-1223894223"
+                }
+            ],
+            "timestamp": 1476571637000
+            },
+            "finishIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575"
+                },
+                {
+                "id": "wof-85633793"
+                },
+                {
+                "id": "wof-85688637"
+                },
+                {
+                "id": "casp-1223894223"
+                }
+            ],
+            "timestamp": 1480283505000
+            },
+            "createdAt": "2017-01-28T03:00:05.858Z",
+            "updatedAt": "2017-01-28T05:25:34.156Z"
+        },
+        {
+            "id": "fe618fb7-5da1-4460-b916-4b56afa9b6e3",
+            "start": 1476571379000,
+            "finish": 1484516492000,
+            "featureId": "wof-85633793",
+            "userId": "user1",
+            "startIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575"
+                },
+                {
+                "id": "wof-85633793"
+                },
+                {
+                "id": "wof-85688637"
+                }
+            ],
+            "timestamp": 1476571379000
+            },
+            "finishIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575"
+                },
+                {
+                "id": "wof-85633793"
+                },
+                {
+                "id": "wof-85688637"
+                }
+            ],
+            "timestamp": 1484516492000
+            },
+            "createdAt": "2017-01-28T02:06:26.270Z",
+            "updatedAt": "2017-01-28T05:25:31.205Z"
+        }];
+
+        let intersections = [{
+        "features": [
+            {
+            "id": "wof-102191575"
+            },
+            {
+            "id": "wof-85633793"
+            },
+            {
+            "id": "wof-85688637"
+            },
+            {
+            "id": "casp-1087893243"
+            }
+        ],
+        "timestamp": 1477156258000,
+        "userId": "user1"
+        }];
+
+        runIntersections(existingVisits, intersections, (err, newVisits) => {
+            assert(!err);
+            assert(newVisits);
+
+            assert.equal(newVisits.length, 10);
+
+            done();
+        });
+    });
+
+/*
+    it('strava issue', function(done) {
+        let existingVisits = [];
+
+        let intersections = [{
+            "features": [
+                {
+                "id": "wof-102191575"
+                },
+                {
+                "id": "wof-85633793"
+                },
+                {
+                "id": "wof-85688637"
+                }
+            ],
+            "timestamp": 1480972968000,
+            "userId": "10152875766888406"
+        }];
+
+        runIntersections(existingVisits, intersections, (err, newVisits) => {
+            assert(!err);
+            assert(newVisits);
+
+            //services.visits.checkVisits(newVisits);
+
+            done();
+        });
+    });
+*/
+
     it('can update visits from intersection', function(done) {
-        services.visits.updateVisitsFromIntersections([fixtures.intersection], err => {
+        services.visits.updateVisitsFromIntersections(fixtures.intersections, err => {
             assert(!err);
             done();
         });

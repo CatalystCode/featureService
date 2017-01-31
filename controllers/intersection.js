@@ -5,6 +5,15 @@ const common = require('service-utils'),
       services = require('../services');
 
 exports.post = function(req, res) {
+    services.visits.updateVisitsFromIntersections(req.body.intersections, err => {
+        if (err) return common.utils.handleError(res, err);
+
+        res.send();
+    });
+};
+
+/*
+exports.post = function(req, res) {
     services.features.intersectLocations(req.body.locations, (err, intersections) => {
         if (err) return common.utils.handleError(res, err);
 
@@ -15,3 +24,4 @@ exports.post = function(req, res) {
         });
     });
 };
+*/

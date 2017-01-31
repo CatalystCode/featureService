@@ -12,6 +12,8 @@ const async = require('async'),
       url = require('url');
 /*
 
+CREATE USER frontend PASSWORD '[euro4sure]';
+
 CREATE EXTENSION postgis;
 
 CREATE TABLE features
@@ -39,7 +41,6 @@ CREATE INDEX features_hull_index
   ON features
   USING gist
   (hull);
-
 
 */
 
@@ -154,9 +155,10 @@ function init(callback) {
     return callback();
 }
 
+/*
 function intersectLocations(locations, callback) {
     let intersections = [];
-    async.eachLimit(locations, 40, (location, locationCallback) => {
+    async.eachLimit(locations, 100, (location, locationCallback) => {
         getByPoint({
             latitude: location.latitude,
             longitude: location.longitude
@@ -184,6 +186,7 @@ function intersectLocations(locations, callback) {
         return callback(err, intersections);
     });
 }
+*/
 
 function upsert(feature, callback) {
     let prefix = "";
@@ -226,6 +229,6 @@ module.exports = {
     getByBoundingBox,
     getByPoint,
     init,
-    intersectLocations,
+/*  intersectLocations, */
     upsert,
 };
