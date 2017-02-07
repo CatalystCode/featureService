@@ -23,7 +23,7 @@ function runIntersections(existingVisits, intersections, callback) {
                     return 0;
                 });
 
-                return callback(null, visits);
+                return callback(services.visits.checkVisits(visits), visits);
             });
         });
     });
@@ -1110,36 +1110,3178 @@ describe('visits service', function() {
         });
     });
 
-/*
-    it('strava issue', function(done) {
-        let existingVisits = [];
-
-        let intersections = [{
+    it('handles events with the same feature id and timestamp correctly by sorting them', function(done) {
+        let existingVisits = [
+        {
+            "id": "ce24a567-456e-4dbe-946c-fcfc52f1c56e",
+            "start": 1474821826000,
+            "finish": 1485650495000,
+            "featureId": "wof-85633793",
+            "userId": "user1",
+            "startIntersection": {
+            "userId": "user1",
             "features": [
                 {
-                "id": "wof-102191575"
+                "id": "wof-102191575",
+                "name": "North America",
+                "layer": "continent"
                 },
                 {
-                "id": "wof-85633793"
+                "id": "wof-85633793",
+                "name": "United States",
+                "layer": "country"
                 },
                 {
-                "id": "wof-85688637"
+                "id": "wof-85688637",
+                "name": "California",
+                "layer": "region"
+                },
+                {
+                "id": "usnf-1825117944",
+                "name": "Tahoe National Forest",
+                "layer": "park"
                 }
             ],
-            "timestamp": 1480972968000,
-            "userId": "10152875766888406"
+            "timestamp": 1474821826000
+            },
+            "finishIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575",
+                "name": "North America",
+                "layer": "continent"
+                },
+                {
+                "id": "wof-85633793",
+                "name": "United States",
+                "layer": "country"
+                },
+                {
+                "id": "wof-85688637",
+                "name": "California",
+                "layer": "region"
+                },
+                {
+                "id": "usnf-1825117944",
+                "name": "Tahoe National Forest",
+                "layer": "park"
+                }
+            ],
+            "timestamp": 1485650495000
+            },
+            "createdAt": "2017-02-07T06:06:31.844Z",
+            "updatedAt": "2017-02-07T07:43:53.368Z"
+        },
+        {
+            "id": "03cf1ca9-d12d-487b-8770-6fac6a8c3a2f",
+            "start": 1474821826000,
+            "finish": 1485650495000,
+            "featureId": "wof-102191575",
+            "userId": "user1",
+            "startIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575",
+                "name": "North America",
+                "layer": "continent"
+                },
+                {
+                "id": "wof-85633793",
+                "name": "United States",
+                "layer": "country"
+                },
+                {
+                "id": "wof-85688637",
+                "name": "California",
+                "layer": "region"
+                },
+                {
+                "id": "usnf-1825117944",
+                "name": "Tahoe National Forest",
+                "layer": "park"
+                }
+            ],
+            "timestamp": 1474821826000
+            },
+            "finishIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575",
+                "name": "North America",
+                "layer": "continent"
+                },
+                {
+                "id": "wof-85633793",
+                "name": "United States",
+                "layer": "country"
+                },
+                {
+                "id": "wof-85688637",
+                "name": "California",
+                "layer": "region"
+                },
+                {
+                "id": "usnf-1825117944",
+                "name": "Tahoe National Forest",
+                "layer": "park"
+                }
+            ],
+            "timestamp": 1485650495000
+            },
+            "createdAt": "2017-02-07T06:06:31.750Z",
+            "updatedAt": "2017-02-07T07:43:53.463Z"
+        },
+        {
+            "id": "d9e07b40-8f34-4060-9c9b-bfb8296f71b2",
+            "start": 1474821826000,
+            "finish": 1482758862000,
+            "featureId": "wof-85688637",
+            "userId": "user1",
+            "startIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575",
+                "name": "North America",
+                "layer": "continent"
+                },
+                {
+                "id": "wof-85633793",
+                "name": "United States",
+                "layer": "country"
+                },
+                {
+                "id": "wof-85688637",
+                "name": "California",
+                "layer": "region"
+                },
+                {
+                "id": "usnf-1825117944",
+                "name": "Tahoe National Forest",
+                "layer": "park"
+                }
+            ],
+            "timestamp": 1474821826000
+            },
+            "finishIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575",
+                "name": "North America",
+                "layer": "continent"
+                },
+                {
+                "id": "wof-85633793",
+                "name": "United States",
+                "layer": "country"
+                },
+                {
+                "id": "wof-85688599",
+                "name": "Michigan",
+                "layer": "region"
+                }
+            ],
+            "timestamp": 1482758862000
+            },
+            "createdAt": "2017-02-07T06:06:31.930Z",
+            "updatedAt": "2017-02-07T07:43:53.553Z"
+        },
+        {
+            "id": "1377b9ad-8d53-4297-8491-ec5cbec48ae2",
+            "start": 1475344781000,
+            "finish": 1477155241000,
+            "featureId": "casp-1087893243",
+            "userId": "user1",
+            "startIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575",
+                "name": "North America",
+                "layer": "continent"
+                },
+                {
+                "id": "wof-85633793",
+                "name": "United States",
+                "layer": "country"
+                },
+                {
+                "id": "wof-85688637",
+                "name": "California",
+                "layer": "region"
+                },
+                {
+                "id": "casp-1087893243",
+                "name": "Wilder Ranch SP",
+                "layer": "park"
+                }
+            ],
+            "timestamp": 1475344781000
+            },
+            "finishIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575",
+                "name": "North America",
+                "layer": "continent"
+                },
+                {
+                "id": "wof-85633793",
+                "name": "United States",
+                "layer": "country"
+                },
+                {
+                "id": "wof-85688637",
+                "name": "California",
+                "layer": "region"
+                },
+                {
+                "id": "casp-2916694474",
+                "name": "Lighthouse Field SB",
+                "layer": "park"
+                }
+            ],
+            "timestamp": 1477155241000
+            },
+            "createdAt": "2017-02-07T06:11:39.313Z",
+            "updatedAt": "2017-02-07T07:43:53.640Z"
+        },
+        {
+            "id": "df84c5f1-7c4d-42c8-9c91-412161e67828",
+            "start": 1477155241000,
+            "finish": 1477155713000,
+            "featureId": "casp-1087893243",
+            "userId": "user1",
+            "startIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575",
+                "name": "North America",
+                "layer": "continent"
+                },
+                {
+                "id": "wof-85633793",
+                "name": "United States",
+                "layer": "country"
+                },
+                {
+                "id": "wof-85688637",
+                "name": "California",
+                "layer": "region"
+                },
+                {
+                "id": "casp-2916694474",
+                "name": "Lighthouse Field SB",
+                "layer": "park"
+                }
+            ],
+            "timestamp": 1477155241000
+            },
+            "finishIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575",
+                "name": "North America",
+                "layer": "continent"
+                },
+                {
+                "id": "wof-85633793",
+                "name": "United States",
+                "layer": "country"
+                },
+                {
+                "id": "wof-85688637",
+                "name": "California",
+                "layer": "region"
+                },
+                {
+                "id": "casp-2527187433",
+                "name": "Natural Bridges SB",
+                "layer": "park"
+                }
+            ],
+            "timestamp": 1477155713000
+            },
+            "createdAt": "2017-02-07T06:56:09.195Z",
+            "updatedAt": "2017-02-07T07:43:53.642Z"
+        },
+        {
+            "id": "54ef5a32-327c-4332-b475-bb3aa8524537",
+            "start": 1477155713000,
+            "finish": 1477155761000,
+            "featureId": "casp-1087893243",
+            "userId": "user1",
+            "startIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575",
+                "name": "North America",
+                "layer": "continent"
+                },
+                {
+                "id": "wof-85633793",
+                "name": "United States",
+                "layer": "country"
+                },
+                {
+                "id": "wof-85688637",
+                "name": "California",
+                "layer": "region"
+                },
+                {
+                "id": "casp-2527187433",
+                "name": "Natural Bridges SB",
+                "layer": "park"
+                }
+            ],
+            "timestamp": 1477155713000
+            },
+            "finishIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575",
+                "name": "North America",
+                "layer": "continent"
+                },
+                {
+                "id": "wof-85633793",
+                "name": "United States",
+                "layer": "country"
+                },
+                {
+                "id": "wof-85688637",
+                "name": "California",
+                "layer": "region"
+                },
+                {
+                "id": "casp-2527187433",
+                "name": "Natural Bridges SB",
+                "layer": "park"
+                },
+                {
+                "id": "casp-263136887",
+                "name": "Monarch Butterfly NP",
+                "layer": "park"
+                }
+            ],
+            "timestamp": 1477155761000
+            },
+            "createdAt": "2017-02-07T06:56:36.537Z",
+            "updatedAt": "2017-02-07T07:43:53.642Z"
+        },
+        {
+            "id": "fac9993e-4210-4e54-8d7f-65149b20375c",
+            "start": 1477155761000,
+            "finish": 1477156377000,
+            "featureId": "casp-1223894223",
+            "userId": "user1",
+            "startIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575",
+                "name": "North America",
+                "layer": "continent"
+                },
+                {
+                "id": "wof-85633793",
+                "name": "United States",
+                "layer": "country"
+                },
+                {
+                "id": "wof-85688637",
+                "name": "California",
+                "layer": "region"
+                },
+                {
+                "id": "casp-2527187433",
+                "name": "Natural Bridges SB",
+                "layer": "park"
+                },
+                {
+                "id": "casp-263136887",
+                "name": "Monarch Butterfly NP",
+                "layer": "park"
+                }
+            ],
+            "timestamp": 1477155761000
+            },
+            "finishIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575",
+                "name": "North America",
+                "layer": "continent"
+                },
+                {
+                "id": "wof-85633793",
+                "name": "United States",
+                "layer": "country"
+                },
+                {
+                "id": "wof-85688637",
+                "name": "California",
+                "layer": "region"
+                },
+                {
+                "id": "casp-1087893243",
+                "name": "Wilder Ranch SP",
+                "layer": "park"
+                },
+                {
+                "id": "casp-4220598026",
+                "name": "Wilder Dairy CP",
+                "layer": "park"
+                }
+            ],
+            "timestamp": 1477156377000
+            },
+            "createdAt": "2017-02-07T06:56:42.378Z",
+            "updatedAt": "2017-02-07T07:43:53.646Z"
+        },
+        {
+            "id": "4f8f6117-81b9-4c7c-a8fe-ab1d6ec31e89",
+            "start": 1477155761000,
+            "finish": 1482096706000,
+            "featureId": "casp-1087893243",
+            "userId": "user1",
+            "startIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575",
+                "name": "North America",
+                "layer": "continent"
+                },
+                {
+                "id": "wof-85633793",
+                "name": "United States",
+                "layer": "country"
+                },
+                {
+                "id": "wof-85688637",
+                "name": "California",
+                "layer": "region"
+                },
+                {
+                "id": "casp-2527187433",
+                "name": "Natural Bridges SB",
+                "layer": "park"
+                },
+                {
+                "id": "casp-263136887",
+                "name": "Monarch Butterfly NP",
+                "layer": "park"
+                }
+            ],
+            "timestamp": 1477155761000
+            },
+            "finishIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575",
+                "name": "North America",
+                "layer": "continent"
+                },
+                {
+                "id": "wof-85633793",
+                "name": "United States",
+                "layer": "country"
+                },
+                {
+                "id": "wof-85688637",
+                "name": "California",
+                "layer": "region"
+                },
+                {
+                "id": "casp-1087893243",
+                "name": "Wilder Ranch SP",
+                "layer": "park"
+                }
+            ],
+            "timestamp": 1482096706000
+            },
+            "createdAt": "2017-02-07T06:56:42.381Z",
+            "updatedAt": "2017-02-07T07:43:53.650Z"
+        },
+        {
+            "id": "d9153a88-7f77-4347-b320-c9f7ed98c7a1",
+            "start": 1477156374000,
+            "finish": 1477156377000,
+            "featureId": "casp-4220598026",
+            "userId": "user1",
+            "startIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575",
+                "name": "North America",
+                "layer": "continent"
+                },
+                {
+                "id": "wof-85633793",
+                "name": "United States",
+                "layer": "country"
+                },
+                {
+                "id": "wof-85688637",
+                "name": "California",
+                "layer": "region"
+                },
+                {
+                "id": "casp-1087893243",
+                "name": "Wilder Ranch SP",
+                "layer": "park"
+                },
+                {
+                "id": "casp-4220598026",
+                "name": "Wilder Dairy CP",
+                "layer": "park"
+                }
+            ],
+            "timestamp": 1477156374000
+            },
+            "finishIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575",
+                "name": "North America",
+                "layer": "continent"
+                },
+                {
+                "id": "wof-85633793",
+                "name": "United States",
+                "layer": "country"
+                },
+                {
+                "id": "wof-85688637",
+                "name": "California",
+                "layer": "region"
+                },
+                {
+                "id": "casp-1087893243",
+                "name": "Wilder Ranch SP",
+                "layer": "park"
+                },
+                {
+                "id": "casp-4220598026",
+                "name": "Wilder Dairy CP",
+                "layer": "park"
+                }
+            ],
+            "timestamp": 1477156377000
+            },
+            "createdAt": "2017-02-07T07:43:53.656Z",
+            "updatedAt": "2017-02-07T07:43:53.940Z"
+        },
+        {
+            "id": "98b6bc1e-d234-46d4-a101-78ab81d9fce3",
+            "start": 1477156377000,
+            "finish": 1480283505000,
+            "featureId": "casp-1223894223",
+            "userId": "user1",
+            "startIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575",
+                "name": "North America",
+                "layer": "continent"
+                },
+                {
+                "id": "wof-85633793",
+                "name": "United States",
+                "layer": "country"
+                },
+                {
+                "id": "wof-85688637",
+                "name": "California",
+                "layer": "region"
+                },
+                {
+                "id": "casp-1087893243",
+                "name": "Wilder Ranch SP",
+                "layer": "park"
+                },
+                {
+                "id": "casp-4220598026",
+                "name": "Wilder Dairy CP",
+                "layer": "park"
+                }
+            ],
+            "timestamp": 1477156377000
+            },
+            "finishIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575",
+                "name": "North America",
+                "layer": "continent"
+                },
+                {
+                "id": "wof-85633793",
+                "name": "United States",
+                "layer": "country"
+                },
+                {
+                "id": "wof-85688637",
+                "name": "California",
+                "layer": "region"
+                },
+                {
+                "id": "casp-1223894223",
+                "name": "Twin Lakes SB",
+                "layer": "park"
+                }
+            ],
+            "timestamp": 1480283505000
+            },
+            "createdAt": "2017-02-07T07:43:53.653Z",
+            "updatedAt": "2017-02-07T07:43:53.653Z"
+        },
+        {
+            "id": "6d855c58-a3e3-40e1-bc04-e3818b3e609a",
+            "start": 1482758862000,
+            "finish": 1485650495000,
+            "featureId": "wof-85688637",
+            "userId": "user1",
+            "startIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575",
+                "name": "North America",
+                "layer": "continent"
+                },
+                {
+                "id": "wof-85633793",
+                "name": "United States",
+                "layer": "country"
+                },
+                {
+                "id": "wof-85688599",
+                "name": "Michigan",
+                "layer": "region"
+                }
+            ],
+            "timestamp": 1482758862000
+            },
+            "finishIntersection": {
+            "userId": "user1",
+            "features": [
+                {
+                "id": "wof-102191575",
+                "name": "North America",
+                "layer": "continent"
+                },
+                {
+                "id": "wof-85633793",
+                "name": "United States",
+                "layer": "country"
+                },
+                {
+                "id": "wof-85688637",
+                "name": "California",
+                "layer": "region"
+                },
+                {
+                "id": "usnf-1825117944",
+                "name": "Tahoe National Forest",
+                "layer": "park"
+                }
+            ],
+            "timestamp": 1485650495000
+            },
+            "createdAt": "2017-02-07T06:26:53.954Z",
+            "updatedAt": "2017-02-07T07:43:53.649Z"
+        }];
+
+        let intersections = [{
+            "userId": "user1",
+            "features": [
+                {
+                "id": "casp-1087893243",
+                "name": "Wilder Ranch SP",
+                "layer": "park"
+                }
+            ],
+            "timestamp": 1477156337000
         }];
 
         runIntersections(existingVisits, intersections, (err, newVisits) => {
             assert(!err);
             assert(newVisits);
 
-            //services.visits.checkVisits(newVisits);
+            done();
+        });
+    });
+
+    it('handles event finding over spanning visit at initial search index correctly', function(done) {
+        let existingVisits = [
+  {
+    "id": "fc00709b-ac2e-4742-8c4b-80255b18ef82",
+    "start": 1466869377000,
+    "finish": 1466869377000,
+    "featureId": "usnf-2703867721",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688603",
+          "name": "Colorado",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-2703867721",
+          "name": "Arapaho and Roosevelt National Forests",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1466869377000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688603",
+          "name": "Colorado",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-2703867721",
+          "name": "Arapaho and Roosevelt National Forests",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1466869377000
+    },
+    "createdAt": "2017-02-07T13:38:00.045Z",
+    "updatedAt": "2017-02-07T13:38:00.045Z"
+  },
+  {
+    "id": "0de3dc3e-6c1c-4be8-a517-362324508189",
+    "start": 1466875503000,
+    "finish": 1466876390000,
+    "featureId": "usnf-2703867721",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688603",
+          "name": "Colorado",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-2703867721",
+          "name": "Arapaho and Roosevelt National Forests",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1466875503000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688603",
+          "name": "Colorado",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-2703867721",
+          "name": "Arapaho and Roosevelt National Forests",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1466876390000
+    },
+    "createdAt": "2017-02-07T13:38:22.326Z",
+    "updatedAt": "2017-02-07T13:38:26.993Z"
+  },
+  {
+    "id": "43af7990-61fa-4b07-81e8-831bc7161f1b",
+    "start": 1466876518000,
+    "finish": 1466877224000,
+    "featureId": "usnf-2703867721",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688603",
+          "name": "Colorado",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-2703867721",
+          "name": "Arapaho and Roosevelt National Forests",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1466876518000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688603",
+          "name": "Colorado",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-2703867721",
+          "name": "Arapaho and Roosevelt National Forests",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1466877224000
+    },
+    "createdAt": "2017-02-07T13:38:26.998Z",
+    "updatedAt": "2017-02-07T13:38:26.998Z",
+    "dirty": true
+  },
+  {
+    "id": "c8c55584-ff44-4375-9ea5-eb5d3404dbef",
+    "start": 1466869863000,
+    "finish": 1466875500000,
+    "featureId": "usnf-3429178507",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688603",
+          "name": "Colorado",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-3429178507",
+          "name": "White River National Forest",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1466869863000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688603",
+          "name": "Colorado",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-3429178507",
+          "name": "White River National Forest",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1466875500000
+    },
+    "createdAt": "2017-02-07T13:37:59.949Z",
+    "updatedAt": "2017-02-07T13:38:22.330Z"
+  },
+  {
+    "id": "78f53d00-d7ae-4dbc-a1a8-4450a2014e0f",
+    "start": 1466876394000,
+    "finish": 1466876527000,
+    "featureId": "usnf-3429178507",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688603",
+          "name": "Colorado",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-3429178507",
+          "name": "White River National Forest",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1466876394000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688603",
+          "name": "Colorado",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-2703867721",
+          "name": "Arapaho and Roosevelt National Forests",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1466876527000
+    },
+    "createdAt": "2017-02-07T13:28:18.787Z",
+    "updatedAt": "2017-02-07T13:38:26.996Z"
+  },
+  {
+    "id": "bca3ac41-2916-4c6c-801a-0acc4712f05b",
+    "start": 1466876527000,
+    "finish": 1467033593000,
+    "featureId": "usnf-3429178507",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688603",
+          "name": "Colorado",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-2703867721",
+          "name": "Arapaho and Roosevelt National Forests",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1466876527000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688603",
+          "name": "Colorado",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-3429178507",
+          "name": "White River National Forest",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1467033593000
+    },
+    "createdAt": "2017-02-07T13:38:26.993Z",
+    "updatedAt": "2017-02-07T13:38:26.993Z"
+  },
+  {
+    "id": "88a7c531-6300-4c8f-9bd6-b648f3c12cf6",
+    "start": 1467033619000,
+    "finish": 1467033755000,
+    "featureId": "usnf-3429178507",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688603",
+          "name": "Colorado",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-3429178507",
+          "name": "White River National Forest",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1467033619000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688603",
+          "name": "Colorado",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-3429178507",
+          "name": "White River National Forest",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1467033755000
+    },
+    "createdAt": "2017-02-07T13:28:25.655Z",
+    "updatedAt": "2017-02-07T13:28:30.276Z"
+  },
+  {
+    "id": "0f0057b2-720e-4889-b89e-68a2ec8991af",
+    "start": 1467033769000,
+    "finish": 1467034275000,
+    "featureId": "usnf-3429178507",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688603",
+          "name": "Colorado",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-3429178507",
+          "name": "White River National Forest",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1467033769000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688603",
+          "name": "Colorado",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-3429178507",
+          "name": "White River National Forest",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1467034275000
+    },
+    "createdAt": "2017-02-07T13:28:30.288Z",
+    "updatedAt": "2017-02-07T13:28:43.226Z"
+  },
+  {
+    "id": "c8848d70-fe7f-4080-a756-1d90b7646d9b",
+    "start": 1467034308000,
+    "finish": 1467034373000,
+    "featureId": "usnf-3429178507",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688603",
+          "name": "Colorado",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-3429178507",
+          "name": "White River National Forest",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1467034308000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688603",
+          "name": "Colorado",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-3429178507",
+          "name": "White River National Forest",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1467034373000
+    },
+    "createdAt": "2017-02-07T13:28:43.240Z",
+    "updatedAt": "2017-02-07T13:28:43.240Z"
+  },
+  {
+    "id": "c90420cf-d65d-4d2f-9f3f-f8cc52fad91b",
+    "start": 1467034523000,
+    "finish": 1467034561000,
+    "featureId": "usnf-3429178507",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688603",
+          "name": "Colorado",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-3429178507",
+          "name": "White River National Forest",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1467034523000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688603",
+          "name": "Colorado",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-3429178507",
+          "name": "White River National Forest",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1467034561000
+    },
+    "createdAt": "2017-02-07T13:28:48.438Z",
+    "updatedAt": "2017-02-07T13:28:48.438Z"
+  },
+  {
+    "id": "b3411ab8-e49a-4a5a-859a-4bc8de998326",
+    "start": 1466869377000,
+    "finish": 1474673046000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688603",
+          "name": "Colorado",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-2703867721",
+          "name": "Arapaho and Roosevelt National Forests",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1466869377000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-1825117944",
+          "name": "Tahoe National Forest",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1474673046000
+    },
+    "createdAt": "2017-02-07T10:59:52.467Z",
+    "updatedAt": "2017-02-07T13:37:59.747Z"
+  },
+  {
+    "id": "cc9841a1-4585-45b9-a7d0-84658b70f77a",
+    "start": 1474673048000,
+    "finish": 1483690374000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-1825117944",
+          "name": "Tahoe National Forest",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1474673048000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483690374000
+    },
+    "createdAt": "2017-02-07T09:55:21.328Z",
+    "updatedAt": "2017-02-07T10:59:52.191Z"
+  },
+  {
+    "id": "8e039f7c-b340-438d-b7f6-4d69dedde7ab",
+    "start": 1483690374000,
+    "finish": 1483691041000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483690374000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691041000
+    },
+    "createdAt": "2017-02-07T10:14:11.285Z",
+    "updatedAt": "2017-02-07T10:14:38.967Z"
+  },
+  {
+    "id": "7dc1d257-2c56-453e-bf95-aabe3f633c84",
+    "start": 1483691041000,
+    "finish": 1483691240000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691041000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691240000
+    },
+    "createdAt": "2017-02-07T10:14:38.975Z",
+    "updatedAt": "2017-02-07T10:14:47.743Z"
+  },
+  {
+    "id": "231c7546-1a11-4e16-9db0-558dddf53baf",
+    "start": 1483691240000,
+    "finish": 1483691392000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691240000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691392000
+    },
+    "createdAt": "2017-02-07T10:14:47.788Z",
+    "updatedAt": "2017-02-07T10:15:05.933Z"
+  },
+  {
+    "id": "7ac66cb0-ce6a-4e00-8116-3c5bd4a5d23a",
+    "start": 1483691392000,
+    "finish": 1483691423000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691392000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691423000
+    },
+    "createdAt": "2017-02-07T10:15:05.954Z",
+    "updatedAt": "2017-02-07T10:15:05.954Z"
+  },
+  {
+    "id": "10cf458c-8151-4f12-847e-b0ea1f965ec2",
+    "start": 1483691423000,
+    "finish": 1483691439000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691423000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691439000
+    },
+    "createdAt": "2017-02-07T10:15:06.026Z",
+    "updatedAt": "2017-02-07T10:15:06.026Z"
+  },
+  {
+    "id": "5f8ccd18-3919-4426-b344-c6c00dd4f35f",
+    "start": 1483691439000,
+    "finish": 1483691477000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691439000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691477000
+    },
+    "createdAt": "2017-02-07T10:15:06.058Z",
+    "updatedAt": "2017-02-07T10:15:06.058Z"
+  },
+  {
+    "id": "53687037-bec1-4e8e-9c41-b7be8ef3b200",
+    "start": 1483691477000,
+    "finish": 1483691481000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691477000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691481000
+    },
+    "createdAt": "2017-02-07T10:15:06.081Z",
+    "updatedAt": "2017-02-07T10:15:06.081Z"
+  },
+  {
+    "id": "2b9a4b54-076a-43a4-984f-0bcf2b4e140d",
+    "start": 1483691481000,
+    "finish": 1483691885000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691481000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691885000
+    },
+    "createdAt": "2017-02-07T10:15:06.137Z",
+    "updatedAt": "2017-02-07T10:15:32.302Z"
+  },
+  {
+    "id": "64cb956f-4869-4685-a0c0-3feab4a87473",
+    "start": 1483691885000,
+    "finish": 1483691897000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691885000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691897000
+    },
+    "createdAt": "2017-02-07T10:15:32.340Z",
+    "updatedAt": "2017-02-07T10:15:32.340Z"
+  },
+  {
+    "id": "70211c83-54c1-47fd-ac77-6c3611f0a540",
+    "start": 1483691897000,
+    "finish": 1483691927000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691897000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691927000
+    },
+    "createdAt": "2017-02-07T10:15:32.391Z",
+    "updatedAt": "2017-02-07T10:15:32.391Z"
+  },
+  {
+    "id": "bb523784-7008-40f2-9f26-51baab765ac0",
+    "start": 1483691927000,
+    "finish": 1483692080000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691927000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483692080000
+    },
+    "createdAt": "2017-02-07T10:15:32.431Z",
+    "updatedAt": "2017-02-07T10:15:39.130Z"
+  },
+  {
+    "id": "b162f60e-24ed-4f6c-bec7-f39e3c202b78",
+    "start": 1483692080000,
+    "finish": 1483692259000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483692080000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483692259000
+    },
+    "createdAt": "2017-02-07T10:15:39.137Z",
+    "updatedAt": "2017-02-07T10:15:46.519Z"
+  },
+  {
+    "id": "ae8ddef2-8010-459a-b7d8-32d40dc2a979",
+    "start": 1483692259000,
+    "finish": 1486443792328,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483692259000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1486443792328.293
+    },
+    "createdAt": "2017-02-07T10:15:46.536Z",
+    "updatedAt": "2017-02-07T13:03:21.850Z"
+  },
+  {
+    "id": "5636f452-8f26-4bc3-b09d-f4a9c0369d0c",
+    "start": 1466869377000,
+    "finish": 1483690374000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688603",
+          "name": "Colorado",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-2703867721",
+          "name": "Arapaho and Roosevelt National Forests",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1466869377000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483690374000
+    },
+    "createdAt": "2017-02-07T09:55:21.421Z",
+    "updatedAt": "2017-02-07T13:37:59.860Z"
+  },
+  {
+    "id": "bd29d6f2-3bf1-48d8-a6a6-47248ea07f18",
+    "start": 1483690374000,
+    "finish": 1483691041000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483690374000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691041000
+    },
+    "createdAt": "2017-02-07T10:14:11.284Z",
+    "updatedAt": "2017-02-07T10:14:38.966Z"
+  },
+  {
+    "id": "2b4ad6bc-c6f2-45ab-86c1-ffbaa0c0e1e8",
+    "start": 1483691041000,
+    "finish": 1483691240000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691041000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691240000
+    },
+    "createdAt": "2017-02-07T10:14:38.972Z",
+    "updatedAt": "2017-02-07T10:14:47.732Z"
+  },
+  {
+    "id": "a885b3bb-db52-496f-9aba-5aa3e36c8093",
+    "start": 1483691240000,
+    "finish": 1483691392000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691240000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691392000
+    },
+    "createdAt": "2017-02-07T10:14:47.761Z",
+    "updatedAt": "2017-02-07T10:15:05.947Z"
+  },
+  {
+    "id": "ca772ed9-898a-44dd-9cde-e8d03f2f8f95",
+    "start": 1483691392000,
+    "finish": 1483691423000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691392000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691423000
+    },
+    "createdAt": "2017-02-07T10:15:05.962Z",
+    "updatedAt": "2017-02-07T10:15:05.962Z"
+  },
+  {
+    "id": "911e66c9-c9e2-467e-a444-1859ad0c3cfc",
+    "start": 1483691423000,
+    "finish": 1483691439000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691423000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691439000
+    },
+    "createdAt": "2017-02-07T10:15:06.027Z",
+    "updatedAt": "2017-02-07T10:15:06.027Z"
+  },
+  {
+    "id": "ceca4538-a861-4468-8529-ca4d9260fdc1",
+    "start": 1483691439000,
+    "finish": 1483691477000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691439000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691477000
+    },
+    "createdAt": "2017-02-07T10:15:06.061Z",
+    "updatedAt": "2017-02-07T10:15:06.061Z"
+  },
+  {
+    "id": "606177be-4ae0-46cd-977a-626f30df7fd7",
+    "start": 1483691477000,
+    "finish": 1483691481000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691477000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691481000
+    },
+    "createdAt": "2017-02-07T10:15:06.116Z",
+    "updatedAt": "2017-02-07T10:15:06.116Z"
+  },
+  {
+    "id": "902a1669-a7c9-46d0-9406-7d3a72e09b1f",
+    "start": 1483691481000,
+    "finish": 1483691885000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691481000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691885000
+    },
+    "createdAt": "2017-02-07T10:15:06.138Z",
+    "updatedAt": "2017-02-07T10:15:32.310Z"
+  },
+  {
+    "id": "e61473ee-f727-41b7-bdb5-4348c2d76784",
+    "start": 1483691885000,
+    "finish": 1483691897000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691885000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691897000
+    },
+    "createdAt": "2017-02-07T10:15:32.320Z",
+    "updatedAt": "2017-02-07T10:15:32.320Z"
+  },
+  {
+    "id": "44db0a99-a5ba-44cf-9ac9-3fc932c5acd5",
+    "start": 1483691897000,
+    "finish": 1483691927000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691897000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691927000
+    },
+    "createdAt": "2017-02-07T10:15:32.392Z",
+    "updatedAt": "2017-02-07T10:15:32.392Z"
+  },
+  {
+    "id": "3f3405a1-aa4e-4403-9d09-118e24c90572",
+    "start": 1483691927000,
+    "finish": 1483692080000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691927000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483692080000
+    },
+    "createdAt": "2017-02-07T10:15:32.430Z",
+    "updatedAt": "2017-02-07T10:15:39.129Z"
+  },
+  {
+    "id": "c88ec65f-ab0b-46de-b026-a2323273620e",
+    "start": 1483692080000,
+    "finish": 1483692259000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483692080000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483692259000
+    },
+    "createdAt": "2017-02-07T10:15:39.139Z",
+    "updatedAt": "2017-02-07T10:15:46.517Z"
+  },
+  {
+    "id": "5954dc2a-d786-4511-a718-974fd71c7ffd",
+    "start": 1483692259000,
+    "finish": 1486443792328,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483692259000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1486443792328.293
+    },
+    "createdAt": "2017-02-07T10:15:46.528Z",
+    "updatedAt": "2017-02-07T13:03:21.859Z"
+  },
+  {
+    "id": "1fa7c164-9d45-476d-b4f9-411f55494de7",
+    "start": 1466869377000,
+    "finish": 1467039608000,
+    "featureId": "wof-85688603",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688603",
+          "name": "Colorado",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-2703867721",
+          "name": "Arapaho and Roosevelt National Forests",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1466869377000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688603",
+          "name": "Colorado",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-2318597394",
+          "name": "Grand Mesa, Uncompahgre and Gunnison National Forests",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1467039608000
+    },
+    "createdAt": "2017-02-07T13:26:27.568Z",
+    "updatedAt": "2017-02-07T13:37:58.543Z"
+  }];
+
+        let intersections = [{
+            "userId": "user1",
+            "features": [
+                {
+                "id": "usnf-3429178507",
+                "name": "White River National Forest",
+                "layer": "park"
+                }
+            ],
+            "timestamp": 1466877228000
+        }];
+
+        runIntersections(existingVisits, intersections, (err, newVisits) => {
+            assert(!err);
+            assert(newVisits);
 
             done();
         });
     });
-*/
 
     it('can update visits from intersection', function(done) {
         services.visits.updateVisitsFromIntersections(fixtures.intersections, err => {

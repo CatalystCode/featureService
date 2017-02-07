@@ -431,20 +431,20 @@ function visitsToEvents(visits) {
     Object.keys(visits).forEach(visitId => {
         let visit = visits[visitId];
         events.push({
-            visitId: visit.id,
             timestamp: visit.start,
             featureId: visit.featureId,
             type: 'start',
-            features: visit.startIntersection.features
+            features: visit.startIntersection.features,
+            visit
         });
 
         if (visit.finish) {
             events.push({
-                visitId: visit.id,
                 timestamp: visit.finish,
                 featureId: visit.featureId,
                 type: 'finish',
-                features: visit.finishIntersection.features
+                features: visit.finishIntersection.features,
+                visit
             });
         }
     });
@@ -462,22 +462,22 @@ function hasFeatureId(features, featureId) {
 }
 
 function selectEvent(events, featureId, startIndex, direction) {
-    //log.info('====> finding event for featureId: ' + featureId + ' at index: ' + startIndex);
+    //console.log('====> finding event for featureId: ' + featureId + ' at index: ' + startIndex);
     for (let index = startIndex + direction;
         index < events.length && index >= 0;
         index += direction) {
-        //log.info('======> index: ' + index);
-        //log.info(JSON.stringify(events[index], null, 2));
-        //log.info(featureId);
+        //console.log('======> index: ' + index);
+        //console.log(JSON.stringify(events[index], null, 2));
+        //console.log(featureId);
         if (events[index].featureId === featureId) {
-            //log.info('found matching event');
-            //log.info(JSON.stringify(events[index], null, 2));
+            //console.log('found matching event');
+            //console.log(JSON.stringify(events[index], null, 2));
             return events[index];
         }
 
         if (!hasFeatureId(events[index].features, featureId)) {
-            //log.info('found disqualifying stopping event');
-            //log.info(JSON.stringify(events[index], null, 2));
+            //console.log('found disqualifying stopping event');
+            //console.log(JSON.stringify(events[index], null, 2));
             return null;
         }
     }
@@ -501,21 +501,23 @@ function intersectVisits(currentVisits, intersection) {
 
     let events = visitsToEvents(currentVisits);
     events.sort((a,b) => {
-        return a.timestamp - b.timestamp;
+        if (a.timestamp < b.timestamp) return -1;
+        if (a.timestamp > b.timestamp) return 1;
+        return a.visit.start - b.visit.start;
     });
 
-    /*
+/*
     console.log('=> events:');
     let index = 0;
     events.forEach(event => {
-        let eventString = `${index}: ${event.featureId}: `;
+        let eventString = `${index}: ${event.timestamp}: ${event.visit.id}: ${event.featureId}: `;
         event.features.forEach(feature => {
             eventString += `${feature.id},`;
         });
         index += 1;
         console.log(eventString);
     });
-    */
+*/
 
     let startIndex = 0;
     while (startIndex < events.length && events[startIndex].timestamp < intersection.timestamp)
@@ -525,7 +527,7 @@ function intersectVisits(currentVisits, intersection) {
 
     // if we already have an event at this timestamp, we have already handled it, so NOP.
     if (events[startIndex.timestamp] === intersection.timestamp) {
-        //console.log('already handled.');
+        console.log('already have an intersection timestamp equal to this one, hence its already handled.');
         return currentVisits;
     }
 
@@ -535,7 +537,7 @@ function intersectVisits(currentVisits, intersection) {
     intersection.features.forEach(feature => {
         //console.log('==> looking at intersection featureId: ' + feature.id);
         let beforeEvent = selectEvent(events, feature.id, startIndex, -1);        if (beforeEvent) {
-            let beforeVisit = newVisits[beforeEvent.visitId];
+            let beforeVisit = newVisits[beforeEvent.visit.id];
             if (beforeVisit.finish < intersection.timestamp) {
                 beforeVisit.finish = intersection.timestamp;
                 beforeVisit.finishIntersection = intersection;
@@ -548,7 +550,7 @@ function intersectVisits(currentVisits, intersection) {
         } else {
             let afterEvent = selectEvent(events, feature.id, startIndex, 1);
             if (afterEvent) {
-                let afterVisit = newVisits[afterEvent.visitId];
+                let afterVisit = newVisits[afterEvent.visit.id];
                 if (afterVisit.start > intersection.timestamp) {
                     afterVisit.start = intersection.timestamp;
                     afterVisit.startIntersection = intersection;
@@ -718,6 +720,7 @@ function checkVisits(visits) {
                     console.log(JSON.stringify(featureIdVisit, null, 2));
 
                     process.exit(0);
+                    return true;
                 }
             }
             lastFeatureIdVisit = featureIdVisit;
@@ -725,6 +728,7 @@ function checkVisits(visits) {
     });
 
     console.log('checked: no problems');
+    return false;
 }
 
 function updateVisitsFromIntersections(intersections, callback) {
@@ -739,6 +743,7 @@ function updateVisitsFromIntersections(intersections, callback) {
     redlock.lock(resource, LOCK_TTL, (err, lock) => {
         if (err) return callback(err);
 
+        //getVisitsByUserId(userId
         getVisitsForIntersection({
             userId,
             featureIds: properties.featureIds,
@@ -750,6 +755,8 @@ function updateVisitsFromIntersections(intersections, callback) {
             if (err) return callback(err);
 
             let visits = {};
+
+            checkVisits(visitList);
 
             visitList.forEach(visit => {
                 //common.services.log.info(`existing visit: ${visit.userId}: ${visit.featureId}: ${visit.start} ${visit.finish}`);
@@ -765,20 +772,25 @@ function updateVisitsFromIntersections(intersections, callback) {
             //console.log('intersection properties: ' + JSON.stringify(properties, null, 2));
 
             intersections.forEach(intersection => {
-                console.log(intersection.timestamp);
                 let visitList = [];
                 Object.keys(visits).forEach(visitId => {
                     let visit = visits[visitId];
                     visitList.push(visit);
                 });
 
-                //console.log(JSON.stringify(visitList, null, 2));
-
-                visitList.forEach(visit => {
-                    //console.log(`current visit: ${visit.id}: ${visit.featureId}: ${visit.start} ${visit.finish}`);
+                visitList.sort((a,b) => {
+                    if (a.featureId < b.featureId) return -1;
+                    if (a.featureId > b.featureId) return 1;
+                    return a.start - b.start;
                 });
 
-                //console.log('processing intersection: ' + JSON.stringify(intersection, null, 2));
+                console.log(JSON.stringify(visitList, null, 2));
+
+                visitList.forEach(visit => {
+                    console.log(`current visit: ${visit.id}: ${visit.featureId}: ${visit.start} ${visit.finish}`);
+                });
+
+                console.log('processing intersection: ' + JSON.stringify(intersection, null, 2));
                 visits = intersectVisits(visits, intersection);
 
                 visitList = [];
@@ -788,11 +800,14 @@ function updateVisitsFromIntersections(intersections, callback) {
                 });
 
                 visitList.sort((a,b) => {
-                    return a.start - b.start;
+                    if (a.featureId < b.featureId) return -1;
+                    if (a.featureId > b.featureId) return 1;
+                    if (a.start - b.start !== 0) return a.start - b.start;
+                    return 0;
                 });
 
                 visitList.forEach(visit => {
-                    //console.log(`new visits: ${visit.id}: ${visit.featureId}: ${visit.start} ${visit.finish}`);
+                    console.log(`new visits: ${visit.id}: ${visit.featureId}: ${visit.start} ${visit.finish}`);
                 });
 
                 checkVisits(visitList);
@@ -885,5 +900,6 @@ module.exports = {
 
 // FOR TEST ONLY
 
+    checkVisits,
     setupFixtures,
 };
