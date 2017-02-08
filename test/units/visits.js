@@ -1104,7 +1104,7 @@ describe('visits service', function() {
             assert(!err);
             assert(newVisits);
 
-            assert.equal(newVisits.length, 10);
+            assert.equal(newVisits.length, 9);
 
             done();
         });
@@ -4274,6 +4274,3523 @@ describe('visits service', function() {
             ],
             "timestamp": 1466877228000
         }];
+
+        runIntersections(existingVisits, intersections, (err, newVisits) => {
+            assert(!err);
+            assert(newVisits);
+
+            done();
+        });
+    });
+
+    it('strava issue', function(done) {
+      let existingVisits = [
+  {
+    "id": "16c65fd0-3f22-4373-b16f-89edbfccb76f",
+    "start": 1450634422000,
+    "finish": 1454785894000,
+    "featureId": "casp-1087893243",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        },
+        {
+          "id": "casp-1087893243",
+          "name": "Wilder Ranch SP",
+          "layer": "park"
+        },
+        {
+          "id": "casp-4220598026",
+          "name": "Wilder Dairy CP",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1450634422000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        },
+        {
+          "id": "casp-1087893243",
+          "name": "Wilder Ranch SP",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1454785894000
+    },
+    "createdAt": "2017-02-09T01:19:14.719Z",
+    "updatedAt": "2017-02-09T01:54:07.365Z"
+  },
+  {
+    "id": "826bba94-6193-436c-8540-956b25daaea8",
+    "start": 1449441391000,
+    "finish": 1451765983000,
+    "featureId": "casp-1223894223",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        },
+        {
+          "id": "casp-1223894223",
+          "name": "Twin Lakes SB",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1449441391000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        },
+        {
+          "id": "casp-3020349416",
+          "name": "Andrew Molera SP",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1451765983000
+    },
+    "createdAt": "2017-02-09T01:04:36.797Z",
+    "updatedAt": "2017-02-09T02:07:20.428Z"
+  },
+  {
+    "id": "ef09b79e-f916-4cd6-9f48-302f7a387265",
+    "start": 1451765983000,
+    "finish": 1455327636000,
+    "featureId": "casp-1223894223",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        },
+        {
+          "id": "casp-3020349416",
+          "name": "Andrew Molera SP",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1451765983000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        },
+        {
+          "id": "casp-1223894223",
+          "name": "Twin Lakes SB",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1455327636000
+    },
+    "createdAt": "2017-02-09T01:42:59.345Z",
+    "updatedAt": "2017-02-09T01:42:59.345Z"
+  },
+  {
+    "id": "8a405617-4159-4602-9da6-156b06d00682",
+    "start": 1456004303000,
+    "finish": 1459985368000,
+    "featureId": "casp-1223894223",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        },
+        {
+          "id": "casp-1223894223",
+          "name": "Twin Lakes SB",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1456004303000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        },
+        {
+          "id": "casp-1223894223",
+          "name": "Twin Lakes SB",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1459985368000
+    },
+    "createdAt": "2017-02-08T07:09:45.964Z",
+    "updatedAt": "2017-02-09T00:44:21.479Z"
+  },
+  {
+    "id": "bbaaa34d-d47d-40c8-a5a5-0bb103f37bcd",
+    "start": 1468087015000,
+    "finish": 1468087071000,
+    "featureId": "casp-1223894223",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        },
+        {
+          "id": "casp-1223894223",
+          "name": "Twin Lakes SB",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1468087015000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        },
+        {
+          "id": "casp-1223894223",
+          "name": "Twin Lakes SB",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1468087071000
+    },
+    "createdAt": "2017-02-07T12:53:07.541Z",
+    "updatedAt": "2017-02-07T12:53:11.773Z"
+  },
+  {
+    "id": "73cf131c-7bca-4473-af6c-dbdef267e4a8",
+    "start": 1471824464000,
+    "finish": 1471824495000,
+    "featureId": "casp-1223894223",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        },
+        {
+          "id": "casp-1223894223",
+          "name": "Twin Lakes SB",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1471824464000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        },
+        {
+          "id": "casp-1223894223",
+          "name": "Twin Lakes SB",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1471824495000
+    },
+    "createdAt": "2017-02-07T11:58:49.204Z",
+    "updatedAt": "2017-02-07T11:58:49.204Z"
+  },
+  {
+    "id": "84f25677-de74-4d9c-8e1f-788f60965c80",
+    "start": 1476571637000,
+    "finish": 1480283505000,
+    "featureId": "casp-1223894223",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        },
+        {
+          "id": "casp-1223894223",
+          "name": "Twin Lakes SB",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1476571637000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        },
+        {
+          "id": "casp-1223894223",
+          "name": "Twin Lakes SB",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1480283505000
+    },
+    "createdAt": "2017-02-07T10:46:38.276Z",
+    "updatedAt": "2017-02-07T10:53:02.143Z"
+  },
+  {
+    "id": "5bda10fe-cbbd-4708-94da-543217195249",
+    "start": 1450633849000,
+    "finish": 1454781382000,
+    "featureId": "casp-263136887",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        },
+        {
+          "id": "casp-2527187433",
+          "name": "Natural Bridges SB",
+          "layer": "park"
+        },
+        {
+          "id": "casp-263136887",
+          "name": "Monarch Butterfly NP",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1450633849000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        },
+        {
+          "id": "casp-1087893243",
+          "name": "Wilder Ranch SP",
+          "layer": "park"
+        },
+        {
+          "id": "casp-4220598026",
+          "name": "Wilder Dairy CP",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1454781382000
+    },
+    "createdAt": "2017-02-09T00:45:40.638Z",
+    "updatedAt": "2017-02-09T01:53:22.535Z"
+  },
+  {
+    "id": "aad45c3b-6e51-4a43-b41e-0979b64cd44e",
+    "start": 1450633792000,
+    "finish": 1454781382000,
+    "featureId": "casp-2916694474",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        },
+        {
+          "id": "casp-2527187433",
+          "name": "Natural Bridges SB",
+          "layer": "park"
+        },
+        {
+          "id": "casp-263136887",
+          "name": "Monarch Butterfly NP",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1450633792000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        },
+        {
+          "id": "casp-1087893243",
+          "name": "Wilder Ranch SP",
+          "layer": "park"
+        },
+        {
+          "id": "casp-4220598026",
+          "name": "Wilder Dairy CP",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1454781382000
+    },
+    "createdAt": "2017-02-09T01:53:23.347Z",
+    "updatedAt": "2017-02-09T01:53:23.347Z"
+  },
+  {
+    "id": "f169ea8e-11d1-40fd-8afe-0c95202987d3",
+    "start": 1450634422000,
+    "finish": 1454781430000,
+    "featureId": "casp-4220598026",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        },
+        {
+          "id": "casp-1087893243",
+          "name": "Wilder Ranch SP",
+          "layer": "park"
+        },
+        {
+          "id": "casp-4220598026",
+          "name": "Wilder Dairy CP",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1450634422000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        },
+        {
+          "id": "casp-1087893243",
+          "name": "Wilder Ranch SP",
+          "layer": "park"
+        },
+        {
+          "id": "casp-4220598026",
+          "name": "Wilder Dairy CP",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1454781430000
+    },
+    "createdAt": "2017-02-09T01:19:14.720Z",
+    "updatedAt": "2017-02-09T01:54:07.375Z"
+  },
+  {
+    "id": "8b27b475-77e2-461e-8293-bda873e147f2",
+    "start": 1449435591000,
+    "finish": 1463094285000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1449435591000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1463094285000
+    },
+    "createdAt": "2017-02-08T05:21:56.765Z",
+    "updatedAt": "2017-02-09T02:01:24.162Z"
+  },
+  {
+    "id": "b3411ab8-e49a-4a5a-859a-4bc8de998326",
+    "start": 1463241490000,
+    "finish": 1474673046000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1463241490000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-1825117944",
+          "name": "Tahoe National Forest",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1474673046000
+    },
+    "createdAt": "2017-02-07T10:59:52.467Z",
+    "updatedAt": "2017-02-08T04:59:13.341Z"
+  },
+  {
+    "id": "cc9841a1-4585-45b9-a7d0-84658b70f77a",
+    "start": 1474673048000,
+    "finish": 1483690374000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        },
+        {
+          "id": "usnf-1825117944",
+          "name": "Tahoe National Forest",
+          "layer": "park"
+        }
+      ],
+      "timestamp": 1474673048000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483690374000
+    },
+    "createdAt": "2017-02-07T09:55:21.328Z",
+    "updatedAt": "2017-02-07T10:59:52.191Z"
+  },
+  {
+    "id": "8e039f7c-b340-438d-b7f6-4d69dedde7ab",
+    "start": 1483690374000,
+    "finish": 1483691041000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483690374000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691041000
+    },
+    "createdAt": "2017-02-07T10:14:11.285Z",
+    "updatedAt": "2017-02-07T10:14:38.967Z"
+  },
+  {
+    "id": "7dc1d257-2c56-453e-bf95-aabe3f633c84",
+    "start": 1483691041000,
+    "finish": 1483691240000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691041000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691240000
+    },
+    "createdAt": "2017-02-07T10:14:38.975Z",
+    "updatedAt": "2017-02-07T10:14:47.743Z"
+  },
+  {
+    "id": "231c7546-1a11-4e16-9db0-558dddf53baf",
+    "start": 1483691240000,
+    "finish": 1483691392000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691240000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691392000
+    },
+    "createdAt": "2017-02-07T10:14:47.788Z",
+    "updatedAt": "2017-02-07T10:15:05.933Z"
+  },
+  {
+    "id": "7ac66cb0-ce6a-4e00-8116-3c5bd4a5d23a",
+    "start": 1483691392000,
+    "finish": 1483691423000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691392000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691423000
+    },
+    "createdAt": "2017-02-07T10:15:05.954Z",
+    "updatedAt": "2017-02-07T10:15:05.954Z"
+  },
+  {
+    "id": "10cf458c-8151-4f12-847e-b0ea1f965ec2",
+    "start": 1483691423000,
+    "finish": 1483691439000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691423000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691439000
+    },
+    "createdAt": "2017-02-07T10:15:06.026Z",
+    "updatedAt": "2017-02-07T10:15:06.026Z"
+  },
+  {
+    "id": "5f8ccd18-3919-4426-b344-c6c00dd4f35f",
+    "start": 1483691439000,
+    "finish": 1483691477000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691439000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691477000
+    },
+    "createdAt": "2017-02-07T10:15:06.058Z",
+    "updatedAt": "2017-02-07T10:15:06.058Z"
+  },
+  {
+    "id": "53687037-bec1-4e8e-9c41-b7be8ef3b200",
+    "start": 1483691477000,
+    "finish": 1483691481000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691477000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691481000
+    },
+    "createdAt": "2017-02-07T10:15:06.081Z",
+    "updatedAt": "2017-02-07T10:15:06.081Z"
+  },
+  {
+    "id": "2b9a4b54-076a-43a4-984f-0bcf2b4e140d",
+    "start": 1483691481000,
+    "finish": 1483691885000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691481000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691885000
+    },
+    "createdAt": "2017-02-07T10:15:06.137Z",
+    "updatedAt": "2017-02-07T10:15:32.302Z"
+  },
+  {
+    "id": "64cb956f-4869-4685-a0c0-3feab4a87473",
+    "start": 1483691885000,
+    "finish": 1483691897000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691885000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691897000
+    },
+    "createdAt": "2017-02-07T10:15:32.340Z",
+    "updatedAt": "2017-02-07T10:15:32.340Z"
+  },
+  {
+    "id": "70211c83-54c1-47fd-ac77-6c3611f0a540",
+    "start": 1483691897000,
+    "finish": 1483691927000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691897000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691927000
+    },
+    "createdAt": "2017-02-07T10:15:32.391Z",
+    "updatedAt": "2017-02-07T10:15:32.391Z"
+  },
+  {
+    "id": "bb523784-7008-40f2-9f26-51baab765ac0",
+    "start": 1483691927000,
+    "finish": 1483692080000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691927000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483692080000
+    },
+    "createdAt": "2017-02-07T10:15:32.431Z",
+    "updatedAt": "2017-02-07T10:15:39.130Z"
+  },
+  {
+    "id": "b162f60e-24ed-4f6c-bec7-f39e3c202b78",
+    "start": 1483692080000,
+    "finish": 1483692259000,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483692080000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483692259000
+    },
+    "createdAt": "2017-02-07T10:15:39.137Z",
+    "updatedAt": "2017-02-07T10:15:46.519Z"
+  },
+  {
+    "id": "ae8ddef2-8010-459a-b7d8-32d40dc2a979",
+    "start": 1483692259000,
+    "finish": 1486569998812,
+    "featureId": "wof-102191575",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483692259000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1486569998811.9412
+    },
+    "createdAt": "2017-02-07T10:15:46.536Z",
+    "updatedAt": "2017-02-09T00:06:43.301Z"
+  },
+  {
+    "id": "22bf2ebe-8f00-46a8-99af-634f8d3f3c8b",
+    "start": 1449435591000,
+    "finish": 1463089859000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1449435591000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1463089859000
+    },
+    "createdAt": "2017-02-08T05:21:57.325Z",
+    "updatedAt": "2017-02-09T02:01:22.709Z"
+  },
+  {
+    "id": "5636f452-8f26-4bc3-b09d-f4a9c0369d0c",
+    "start": 1463089868000,
+    "finish": 1483690374000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1463089868000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483690374000
+    },
+    "createdAt": "2017-02-07T09:55:21.421Z",
+    "updatedAt": "2017-02-08T05:21:55.859Z"
+  },
+  {
+    "id": "bd29d6f2-3bf1-48d8-a6a6-47248ea07f18",
+    "start": 1483690374000,
+    "finish": 1483691041000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483690374000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691041000
+    },
+    "createdAt": "2017-02-07T10:14:11.284Z",
+    "updatedAt": "2017-02-07T10:14:38.966Z"
+  },
+  {
+    "id": "2b4ad6bc-c6f2-45ab-86c1-ffbaa0c0e1e8",
+    "start": 1483691041000,
+    "finish": 1483691240000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691041000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691240000
+    },
+    "createdAt": "2017-02-07T10:14:38.972Z",
+    "updatedAt": "2017-02-07T10:14:47.732Z"
+  },
+  {
+    "id": "a885b3bb-db52-496f-9aba-5aa3e36c8093",
+    "start": 1483691240000,
+    "finish": 1483691392000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691240000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691392000
+    },
+    "createdAt": "2017-02-07T10:14:47.761Z",
+    "updatedAt": "2017-02-07T10:15:05.947Z"
+  },
+  {
+    "id": "ca772ed9-898a-44dd-9cde-e8d03f2f8f95",
+    "start": 1483691392000,
+    "finish": 1483691423000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691392000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691423000
+    },
+    "createdAt": "2017-02-07T10:15:05.962Z",
+    "updatedAt": "2017-02-07T10:15:05.962Z"
+  },
+  {
+    "id": "911e66c9-c9e2-467e-a444-1859ad0c3cfc",
+    "start": 1483691423000,
+    "finish": 1483691439000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691423000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691439000
+    },
+    "createdAt": "2017-02-07T10:15:06.027Z",
+    "updatedAt": "2017-02-07T10:15:06.027Z"
+  },
+  {
+    "id": "ceca4538-a861-4468-8529-ca4d9260fdc1",
+    "start": 1483691439000,
+    "finish": 1483691477000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691439000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691477000
+    },
+    "createdAt": "2017-02-07T10:15:06.061Z",
+    "updatedAt": "2017-02-07T10:15:06.061Z"
+  },
+  {
+    "id": "606177be-4ae0-46cd-977a-626f30df7fd7",
+    "start": 1483691477000,
+    "finish": 1483691481000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691477000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691481000
+    },
+    "createdAt": "2017-02-07T10:15:06.116Z",
+    "updatedAt": "2017-02-07T10:15:06.116Z"
+  },
+  {
+    "id": "902a1669-a7c9-46d0-9406-7d3a72e09b1f",
+    "start": 1483691481000,
+    "finish": 1483691885000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691481000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691885000
+    },
+    "createdAt": "2017-02-07T10:15:06.138Z",
+    "updatedAt": "2017-02-07T10:15:32.310Z"
+  },
+  {
+    "id": "e61473ee-f727-41b7-bdb5-4348c2d76784",
+    "start": 1483691885000,
+    "finish": 1483691897000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691885000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691897000
+    },
+    "createdAt": "2017-02-07T10:15:32.320Z",
+    "updatedAt": "2017-02-07T10:15:32.320Z"
+  },
+  {
+    "id": "44db0a99-a5ba-44cf-9ac9-3fc932c5acd5",
+    "start": 1483691897000,
+    "finish": 1483691927000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691897000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691927000
+    },
+    "createdAt": "2017-02-07T10:15:32.392Z",
+    "updatedAt": "2017-02-07T10:15:32.392Z"
+  },
+  {
+    "id": "3f3405a1-aa4e-4403-9d09-118e24c90572",
+    "start": 1483691927000,
+    "finish": 1483692080000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691927000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483692080000
+    },
+    "createdAt": "2017-02-07T10:15:32.430Z",
+    "updatedAt": "2017-02-07T10:15:39.129Z"
+  },
+  {
+    "id": "c88ec65f-ab0b-46de-b026-a2323273620e",
+    "start": 1483692080000,
+    "finish": 1483692259000,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483692080000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483692259000
+    },
+    "createdAt": "2017-02-07T10:15:39.139Z",
+    "updatedAt": "2017-02-07T10:15:46.517Z"
+  },
+  {
+    "id": "5954dc2a-d786-4511-a718-974fd71c7ffd",
+    "start": 1483692259000,
+    "finish": 1486569998812,
+    "featureId": "wof-85633793",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483692259000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1486569998811.9412
+    },
+    "createdAt": "2017-02-07T10:15:46.528Z",
+    "updatedAt": "2017-02-09T00:06:43.303Z"
+  },
+  {
+    "id": "b8c35cc3-0dd6-4c75-b052-ae904c6a2cd7",
+    "start": 1449435591000,
+    "finish": 1466205246000,
+    "featureId": "wof-85688637",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1449435591000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1466205246000
+    },
+    "createdAt": "2017-02-08T03:36:55.427Z",
+    "updatedAt": "2017-02-09T02:01:24.253Z"
+  },
+  {
+    "id": "4585154e-ec9f-49b4-ba51-06de83996a93",
+    "start": 1467474635000,
+    "finish": 1468792596000,
+    "featureId": "wof-85688637",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1467474635000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1468792596000
+    },
+    "createdAt": "2017-02-07T12:19:25.753Z",
+    "updatedAt": "2017-02-07T13:15:12.532Z"
+  },
+  {
+    "id": "49d4c72e-3a01-4ff2-91e1-d6d9e3063970",
+    "start": 1471647481000,
+    "finish": 1482758861000,
+    "featureId": "wof-85688637",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1471647481000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688599",
+          "name": "Michigan",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1482758861000
+    },
+    "createdAt": "2017-02-07T09:55:21.517Z",
+    "updatedAt": "2017-02-07T12:00:07.628Z"
+  },
+  {
+    "id": "b7b002c2-6b3f-447e-8142-cbb98cbc676f",
+    "start": 1482758861000,
+    "finish": 1483690374000,
+    "featureId": "wof-85688637",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688599",
+          "name": "Michigan",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1482758861000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483690374000
+    },
+    "createdAt": "2017-02-07T10:23:09.042Z",
+    "updatedAt": "2017-02-07T10:23:09.042Z"
+  },
+  {
+    "id": "d2f7ebab-f74e-42b9-815e-be7e2765c4eb",
+    "start": 1483690374000,
+    "finish": 1483691041000,
+    "featureId": "wof-85688637",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483690374000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691041000
+    },
+    "createdAt": "2017-02-07T10:14:11.293Z",
+    "updatedAt": "2017-02-07T10:14:38.969Z"
+  },
+  {
+    "id": "b211b836-c078-44ee-9c8b-4ce37bad3d2c",
+    "start": 1483691041000,
+    "finish": 1483691240000,
+    "featureId": "wof-85688637",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691041000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691240000
+    },
+    "createdAt": "2017-02-07T10:14:38.972Z",
+    "updatedAt": "2017-02-07T10:14:47.737Z"
+  },
+  {
+    "id": "2cdf6c1c-7b9a-4924-8a73-0ed575738803",
+    "start": 1483691240000,
+    "finish": 1483691392000,
+    "featureId": "wof-85688637",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691240000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691392000
+    },
+    "createdAt": "2017-02-07T10:14:47.764Z",
+    "updatedAt": "2017-02-07T10:15:05.950Z"
+  },
+  {
+    "id": "58c2240d-d1ef-41e5-8a28-9b6e3b62bc64",
+    "start": 1483691392000,
+    "finish": 1483691423000,
+    "featureId": "wof-85688637",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691392000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691423000
+    },
+    "createdAt": "2017-02-07T10:15:05.969Z",
+    "updatedAt": "2017-02-07T10:15:05.969Z"
+  },
+  {
+    "id": "57f5bb3b-9228-4f8c-96c7-f7508e017144",
+    "start": 1483691423000,
+    "finish": 1483691439000,
+    "featureId": "wof-85688637",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691423000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691439000
+    },
+    "createdAt": "2017-02-07T10:15:06.044Z",
+    "updatedAt": "2017-02-07T10:15:06.044Z"
+  },
+  {
+    "id": "4afb7101-d7bb-4c37-85c5-72cb9f3a38e5",
+    "start": 1483691439000,
+    "finish": 1483691477000,
+    "featureId": "wof-85688637",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691439000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691477000
+    },
+    "createdAt": "2017-02-07T10:15:06.065Z",
+    "updatedAt": "2017-02-07T10:15:06.065Z"
+  },
+  {
+    "id": "5bda309e-c70d-49a0-9614-6b6c0bded5e2",
+    "start": 1483691477000,
+    "finish": 1483691481000,
+    "featureId": "wof-85688637",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691477000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691481000
+    },
+    "createdAt": "2017-02-07T10:15:06.120Z",
+    "updatedAt": "2017-02-07T10:15:06.120Z"
+  },
+  {
+    "id": "c83d689d-f177-48e6-9992-3b6f0ceff2ab",
+    "start": 1483691481000,
+    "finish": 1483691885000,
+    "featureId": "wof-85688637",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691481000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691885000
+    },
+    "createdAt": "2017-02-07T10:15:06.144Z",
+    "updatedAt": "2017-02-07T10:15:32.311Z"
+  },
+  {
+    "id": "822f7f41-68d8-477f-babd-ecc81259b798",
+    "start": 1483691885000,
+    "finish": 1483691897000,
+    "featureId": "wof-85688637",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691885000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691897000
+    },
+    "createdAt": "2017-02-07T10:15:32.325Z",
+    "updatedAt": "2017-02-07T10:15:32.325Z"
+  },
+  {
+    "id": "f20359cc-2404-4b7c-bd1d-e3a3357a7f53",
+    "start": 1483691897000,
+    "finish": 1483691927000,
+    "featureId": "wof-85688637",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691897000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691927000
+    },
+    "createdAt": "2017-02-07T10:15:32.400Z",
+    "updatedAt": "2017-02-07T10:15:32.400Z"
+  },
+  {
+    "id": "3cb5fcfd-3787-43be-b14c-a373cb4d6b7b",
+    "start": 1483691927000,
+    "finish": 1483692080000,
+    "featureId": "wof-85688637",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483691927000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483692080000
+    },
+    "createdAt": "2017-02-07T10:15:32.440Z",
+    "updatedAt": "2017-02-07T10:15:39.129Z"
+  },
+  {
+    "id": "db8a735e-b7ec-4505-b555-0acecb7e8960",
+    "start": 1483692080000,
+    "finish": 1483692259000,
+    "featureId": "wof-85688637",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85683667",
+          "name": "Kensington and Chelsea",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483692080000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483692259000
+    },
+    "createdAt": "2017-02-07T10:15:39.164Z",
+    "updatedAt": "2017-02-07T10:15:46.516Z"
+  },
+  {
+    "id": "f06dcd72-b7d4-4d9a-a58b-0f37a644b663",
+    "start": 1483692259000,
+    "finish": 1486569998812,
+    "featureId": "wof-85688637",
+    "userId": "user1",
+    "startIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191581",
+          "name": "Europe",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-404227469",
+          "name": "England",
+          "layer": "macroregion"
+        },
+        {
+          "id": "wof-85633159",
+          "name": "United Kingdom",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85684061",
+          "name": "City of Westminster",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1483692259000
+    },
+    "finishIntersection": {
+      "userId": "user1",
+      "features": [
+        {
+          "id": "wof-102191575",
+          "name": "North America",
+          "layer": "continent"
+        },
+        {
+          "id": "wof-85633793",
+          "name": "United States",
+          "layer": "country"
+        },
+        {
+          "id": "wof-85688637",
+          "name": "California",
+          "layer": "region"
+        }
+      ],
+      "timestamp": 1486569998811.9412
+    },
+    "createdAt": "2017-02-07T10:15:46.556Z",
+    "updatedAt": "2017-02-09T00:06:43.293Z"
+  }
+];
+
+        let intersections = [{
+  "userId": "user1",
+  "features": [
+    {
+      "id": "casp-1223894223",
+      "name": "Twin Lakes SB",
+      "layer": "park"
+    }
+  ],
+  "timestamp": 1451428194000
+}];
 
         runIntersections(existingVisits, intersections, (err, newVisits) => {
             assert(!err);

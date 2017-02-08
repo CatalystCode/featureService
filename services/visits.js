@@ -462,7 +462,6 @@ function hasFeatureId(features, featureId) {
 }
 
 function selectEvent(events, featureId, startIndex, direction) {
-    //console.log('====> finding event for featureId: ' + featureId + ' at index: ' + startIndex);
     for (let index = startIndex + direction;
         index < events.length && index >= 0;
         index += direction) {
@@ -518,7 +517,6 @@ function intersectVisits(currentVisits, intersection) {
         console.log(eventString);
     });
 */
-
     let startIndex = 0;
     while (startIndex < events.length && events[startIndex].timestamp < intersection.timestamp)
         startIndex += 1;
@@ -535,29 +533,30 @@ function intersectVisits(currentVisits, intersection) {
 
     // perform pre-extending, extending, and new visits on all featureIds in intersection
     intersection.features.forEach(feature => {
-        //console.log('==> looking at intersection featureId: ' + feature.id);
-        let beforeEvent = selectEvent(events, feature.id, startIndex, -1);        if (beforeEvent) {
+        console.log('==> looking at intersection featureId: ' + feature.id);
+        let beforeEvent = selectEvent(events, feature.id, startIndex, -1);
+        if (beforeEvent) {
             let beforeVisit = newVisits[beforeEvent.visit.id];
             if (beforeVisit.finish < intersection.timestamp) {
                 beforeVisit.finish = intersection.timestamp;
                 beforeVisit.finishIntersection = intersection;
                 beforeVisit.dirty = true;
-                //console.log('====> adjusting visit ' + beforeVisit.id + ' before intersection to end on intersection ' + feature.id);
+                console.log('====> adjusting visit ' + beforeVisit.id + ' before intersection to end on intersection ' + feature.id);
                 //common.services.log.info(JSON.stringify(beforeVisit, null, 2));
             } else {
-                //console.log('====> before visit spans this intersection: ' + beforeVisit.id);
+                console.log('====> before visit spans this intersection: ' + beforeVisit.id);
             }
         } else {
-            let afterEvent = selectEvent(events, feature.id, startIndex, 1);
+            let afterEvent = selectEvent(events, feature.id, startIndex - 1, 1);
             if (afterEvent) {
                 let afterVisit = newVisits[afterEvent.visit.id];
                 if (afterVisit.start > intersection.timestamp) {
                     afterVisit.start = intersection.timestamp;
                     afterVisit.startIntersection = intersection;
                     afterVisit.dirty = true;
-                    //console.log('====> adjusting visit ' + afterVisit.id + ' after intersection to start on intersection for ' + feature.id);
+                    console.log('====> adjusting visit ' + afterVisit.id + ' after intersection to start on intersection for ' + feature.id);
                 } else {
-                    //console.log('====> after visit spans this intersection: ' + afterVisit.id);
+                    console.log('====> after visit spans this intersection: ' + afterVisit.id);
                 }
             } else {
                 // look for visits that span the intersection
@@ -575,7 +574,7 @@ function intersectVisits(currentVisits, intersection) {
 
                         // look to see if we need to split visit.  only split if it is inside, not on the endpoints.
                         if (!hasFeatureId(intersection.features, visit.featureId) && intersection.timestamp !== visit.start && intersection.timestamp !== visit.finish) {
-                            //console.log('visit doesnt have any of the intersection featureIds, splitting visit: ' + visit.id);
+                            console.log('visit doesnt have any of the intersection featureIds, splitting visit: ' + visit.id);
 
                             let postIntersectionVisit = {
                                 id: uuid(),
@@ -593,7 +592,7 @@ function intersectVisits(currentVisits, intersection) {
                             visit.finishIntersection = intersection;
                             visit.dirty = true;
                         } else if (visit.featureId === feature.id) {
-                            //console.log('visit has featureId so we shouldnt need to create a new visit.');
+                            console.log('visit has featureId so we shouldnt need to create a new visit.');
                             featureHandled = true;
                         }
                     }
@@ -611,7 +610,7 @@ function intersectVisits(currentVisits, intersection) {
                         dirty:     true
                     };
 
-                    //console.log('====> creating new visit for ' + feature.id);
+                    console.log('====> creating new visit for ' + feature.id);
                     //common.services.log.info(JSON.stringify(newVisit, null, 2));
                     newVisits[newVisit.id] = newVisit;
                 }
