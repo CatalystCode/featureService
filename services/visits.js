@@ -185,7 +185,9 @@ function init(callback) {
 
     // REDIS CONNECTION CODE
 
-    let client = require('redis').createClient(6380, process.env.REDIS_HOST, {
+    let redisPort = process.env.REDIS_PORT || 6380;
+
+    let client = require('redis').createClient(redisPort, process.env.REDIS_HOST, {
         auth_pass: process.env.REDIS_KEY,
         tls: {
             servername: process.env.REDIS_HOST
