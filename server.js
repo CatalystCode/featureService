@@ -19,8 +19,7 @@ app.get('/features/bbox/:north/:west/:south/:east', controllers.features.getByBo
 app.get('/features/point/:latitude/:longitude',     controllers.features.getByPoint);
 
 app.get('/visits/:userId',                          controllers.visits.get);
-
-app.post('/intersections',                          controllers.intersection.post);
+app.put('/visits/:userId',                          controllers.visits.put);
 
 app.get('/ops/health',                              controllers.ops.health);
 app.get('/',                                        controllers.ops.health);

@@ -6,11 +6,22 @@ const async = require('async'),
       services = require('../services');
 
 exports.get = function(req, res) {
-    services.visits.getVisitsByUserId(req.params.userId, (err, visits) => {
+    services.visits.getByUserId(req.params.userId, (err, visits) => {
         if (err) return common.utils.handleError(res, err);
 
-        res.send({
-            visits: visits
+        let visitResponse = services.visits.toResponse(visits);
+        res.send(visitResponse);
+    });
+};
+
+exports.put = function(req, res) {
+    services.visits.fromRequest(req.body, function(err, visits) {
+        if (err) return common.utils.handleError(res, err);
+
+        services.visits.put(visits, err => {
+            if (err) return common.utils.handleError(res, err);
+
+            res.sendStatus(HttpStatus.OK);
         });
     });
 };

@@ -27,21 +27,7 @@ let fixtures = {
         userId: '747941cfb829',
         featureId: '93de94d6-6561-446f-9a33-c1761b029bd5',
         start: new Date(2016,12,13,16,09).getTime(),
-        startIntersection: {
-            userId: '747941cfb829',
-            features: [
-                { id: '93de94d6-6561-446f-9a33-c1761b029bd5' }
-            ],
-            timestamp: new Date(2016, 12, 13, 16, 09).getTime()
-        },
-        finish: new Date(2016,12,13,16,09).getTime(),
-        finishIntersection: {
-            userId: '747941cfb829',
-            features: [
-                { id: '93de94d6-6561-446f-9a33-c1761b029bd5' }
-            ],
-            timestamp: new Date(2016, 12, 13, 16, 09).getTime()
-        },
+        finish: new Date(2016,12,13,16,19).getTime()
     },
     location: {
         timestamp: new Date(2016,5,15).getTime(),

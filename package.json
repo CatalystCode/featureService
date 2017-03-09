@@ -29,7 +29,7 @@
     "uuid": "^3.0.1"
   },
   "scripts": {
-    "test": "PORT=3035 mocha"
+    "test": "PORT=3035 FEATURES_CONNECTION_STRING='postgres://frontend:[euro4sure]@127.0.0.1/geofeatures' mocha"
   },
   "devDependencies": {
     "country-language": "^0.1.7",
