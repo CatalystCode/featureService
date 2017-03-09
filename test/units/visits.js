@@ -4,10 +4,12 @@ let app = require('../../server'),
     assert = require('assert'),
     common = require('service-utils'),
     fixtures = require('../fixtures'),
-    services = require('../../services');
+    services = require('../../services'),
+    uuid = require('uuid/v4');
 
 describe('visits service', function() {
     it('can upsert visit', function(done) {
+      fixtures.visit.id = uuid();
         services.visits.upsert([ fixtures.visit ], err => {
             assert(!err);
             done();

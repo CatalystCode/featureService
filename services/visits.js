@@ -107,7 +107,8 @@ function fromRequest(visitsJson, callback) {
         if (!visit.id)
             visit.id = uuid();
     });
-    return callback(null, visitsJson.visits);
+
+    return callback(null, visits);
 }
 
 function getByTimestamp(userId, timestamp, callback) {

@@ -23,7 +23,6 @@ let fixtures = {
         }
     },
     visit: {
-        id: '93de94d6-6561-446f-9a33-c1761b029bd5',
         userId: '747941cfb829',
         featureId: '93de94d6-6561-446f-9a33-c1761b029bd5',
         start: new Date(2016,12,13,16,09).getTime(),
