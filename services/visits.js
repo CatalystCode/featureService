@@ -6,7 +6,6 @@ const async = require('async'),
       HttpStatus = require('http-status-codes'),
       pg = require('pg'),
       process = require('process'),
-      Redlock = require('redlock'),
       ServiceError = common.utils.ServiceError,
       url = require('url'),
       uuid = require('uuid/v4');
@@ -103,6 +102,11 @@ function executeQuery(query, callback) {
 }
 
 function fromRequest(visitsJson, callback) {
+    let visits = visitsJson.visits;
+    visits.forEach(visit => {
+        if (!visit.id)
+            visit.id = uuid();
+    });
     return callback(null, visitsJson.visits);
 }
 
