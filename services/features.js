@@ -8,6 +8,7 @@ const async = require('async'),
       pg = require('pg'),
       process = require('process'),
       ServiceError = common.utils.ServiceError,
+      SqlString = require('sqlstring'),
       turf = require('turf'),
       url = require('url');
 /*
@@ -136,7 +137,7 @@ function getByPoint(query, callback) {
 }
 
 function getByName(query, callback) {
-    let nameQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE name ilike '${query.name}'`;
+    let nameQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE name ilike ${SqlString.escape(query.name)}`;
 
     if (query.layer) {
         nameQuery += ` AND layer='${query.layer}'`;
