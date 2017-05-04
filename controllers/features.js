@@ -49,6 +49,23 @@ exports.getByPoint = function(req, res) {
     });
 };
 
+exports.getByName = function(req, res) {
+    let query = {
+        name: req.params.name,
+        include: req.query.include
+    };
+
+    if (req.query.layer) {
+        query.layer = encodeURIComponent(req.query.layer);
+    }
+
+    services.features.getByName(query, (err, features) => {
+        if (err) return common.utils.handleError(res, err);
+
+        res.send({ "features": features });
+    });
+};
+
 exports.getByBoundingBox = function(req, res) {
     let query = {
         north: parseFloat(req.params.north),

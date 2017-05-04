@@ -135,6 +135,16 @@ function getByPoint(query, callback) {
     return executeQuery(pointQuery, callback);
 }
 
+function getByName(query, callback) {
+    let nameQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE name ilike '${query.name}'`;
+
+    if (query.layer) {
+        nameQuery += ` AND layer='${query.layer}'`;
+    }
+
+    executeQuery(nameQuery, callback);
+}
+
 function init(callback) {
     if (!process.env.FEATURES_CONNECTION_STRING)
         return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, "FEATURES_CONNECTION_STRING configuration not provided as environment variable"));
@@ -228,6 +238,7 @@ module.exports = {
     getById,
     getByBoundingBox,
     getByPoint,
+    getByName,
     init,
 /*  intersectLocations, */
     upsert,
