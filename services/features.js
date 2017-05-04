@@ -63,7 +63,7 @@ function executeQuery(query, callback) {
 }
 
 function getById(query, callback) {
-    let getQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE id = '${query.id}'`;
+    let getQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE id = ${SqlString.escape(query.id)}`;
     executeQuery(getQuery, (err, rows) => {
         if (err) return callback(err);
         if (!rows || rows.length === 0) return callback(null, null);
@@ -118,7 +118,7 @@ function getByBoundingBox(query, callback) {
     ))`;
 
     if (query.layer) {
-        boundingBoxQuery += ` AND layer='${query.layer}'`;
+        boundingBoxQuery += ` AND layer=${SqlString.escape(query.layer)}`;
     }
 
     return executeQuery(boundingBoxQuery, callback);
@@ -130,7 +130,7 @@ function getByPoint(query, callback) {
     )`;
 
     if (query.layer) {
-        pointQuery += ` AND layer='${query.layer}'`;
+        pointQuery += ` AND layer=${SqlString.escape(query.layer)}`;
     }
 
     return executeQuery(pointQuery, callback);
@@ -140,7 +140,7 @@ function getByName(query, callback) {
     let nameQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE name ilike ${SqlString.escape(query.name)}`;
 
     if (query.layer) {
-        nameQuery += ` AND layer='${query.layer}'`;
+        nameQuery += ` AND layer=${SqlString.escape(query.layer)}`;
     }
 
     executeQuery(nameQuery, callback);
@@ -213,21 +213,21 @@ function upsert(feature, callback) {
     let upsertQuery = `INSERT INTO features (
         id, name, layer, properties, hull, created_at, updated_at
     ) VALUES (
-        '${feature.id}',
-        '${feature.name.replace(/'/g,"''")}',
-        '${feature.layer}',
-        '${JSON.stringify(feature.properties).replace(/'/g,"''")}',
+        ${SqlString.escape(feature.id)},
+        ${SqlString.escape(feature.name)},
+        ${SqlString.escape(feature.layer)},
+        ${SqlString.escape(JSON.stringify(feature.properties))},
 
-        ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(feature.hull)}'), 4326),
+        ST_SetSRID(ST_GeomFromGeoJSON(${SqlString.escape(JSON.stringify(feature.hull))}), 4326),
 
         current_timestamp,
         current_timestamp
     ) ON CONFLICT (id) DO UPDATE SET
-        name = '${feature.name.replace(/'/g,"''")}',
-        layer = '${feature.layer}',
-        properties = '${JSON.stringify(feature.properties).replace(/'/g,"''")}',
+        name = ${SqlString.escape(feature.name)},
+        layer = ${SqlString.escape(query.layer)},
+        properties = ${SqlString.escape(JSON.stringify(feature.properties))},
 
-        hull = ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(feature.hull)}'), 4326),
+        hull = ST_SetSRID(ST_GeomFromGeoJSON(${SqlString.escape(JSON.stringify(feature.hull))}), 4326),
 
         updated_at = current_timestamp
     ;`;
