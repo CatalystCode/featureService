@@ -21,7 +21,6 @@
     "pg": "^6.1.2",
     "request": "^2.79.0",
     "service-utils": "^1.0.28",
-    "sqlstring": "^2.2.0",
     "through2": "^2.0.3",
     "turf": "^3.0.14",
     "uuid": "^3.0.1"

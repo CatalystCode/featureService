@@ -8,7 +8,6 @@ const async = require('async'),
       pg = require('pg'),
       process = require('process'),
       ServiceError = common.utils.ServiceError,
-      SqlString = require('sqlstring'),
       turf = require('turf'),
       url = require('url');
 /*
@@ -47,6 +46,10 @@ CREATE INDEX features_hull_index
 
 let featureDatabasePool;
 
+function escapeSql(value) {
+    return `'${value.replace(/'/g,"''")}'`;
+}
+
 function executeQuery(query, callback) {
     featureDatabasePool.connect((err, client, done) => {
         if (err) return callback(err);
@@ -63,7 +66,7 @@ function executeQuery(query, callback) {
 }
 
 function getById(query, callback) {
-    let getQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE id = ${SqlString.escape(query.id)}`;
+    let getQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE id = ${escapeSql(query.id)}`;
     executeQuery(getQuery, (err, rows) => {
         if (err) return callback(err);
         if (!rows || rows.length === 0) return callback(null, null);
@@ -118,7 +121,7 @@ function getByBoundingBox(query, callback) {
     ))`;
 
     if (query.layer) {
-        boundingBoxQuery += ` AND layer=${SqlString.escape(query.layer)}`;
+        boundingBoxQuery += ` AND layer=${escapeSqlSqlString.escape(query.layer)}`;
     }
 
     return executeQuery(boundingBoxQuery, callback);
@@ -130,17 +133,17 @@ function getByPoint(query, callback) {
     )`;
 
     if (query.layer) {
-        pointQuery += ` AND layer=${SqlString.escape(query.layer)}`;
+        pointQuery += ` AND layer=${escapeSql(query.layer)}`;
     }
 
     return executeQuery(pointQuery, callback);
 }
 
 function getByName(query, callback) {
-    let nameQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE name ilike ${SqlString.escape(query.name)}`;
+    let nameQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE name ilike ${escapeSql(query.name)}`;
 
     if (query.layer) {
-        nameQuery += ` AND layer=${SqlString.escape(query.layer)}`;
+        nameQuery += ` AND layer=${escapeSql(query.layer)}`;
     }
 
     executeQuery(nameQuery, callback);
@@ -213,21 +216,21 @@ function upsert(feature, callback) {
     let upsertQuery = `INSERT INTO features (
         id, name, layer, properties, hull, created_at, updated_at
     ) VALUES (
-        ${SqlString.escape(feature.id)},
-        ${SqlString.escape(feature.name)},
-        ${SqlString.escape(feature.layer)},
-        ${SqlString.escape(JSON.stringify(feature.properties))},
+        ${escapeSql(feature.id)},
+        ${escapeSql(feature.name)},
+        ${escapeSql(feature.layer)},
+        ${escapeSql(JSON.stringify(feature.properties))},
 
-        ST_SetSRID(ST_GeomFromGeoJSON(${SqlString.escape(JSON.stringify(feature.hull))}), 4326),
+        ST_SetSRID(ST_GeomFromGeoJSON(${escapeSql(JSON.stringify(feature.hull))}), 4326),
 
         current_timestamp,
         current_timestamp
     ) ON CONFLICT (id) DO UPDATE SET
-        name = ${SqlString.escape(feature.name)},
-        layer = ${SqlString.escape(query.layer)},
-        properties = ${SqlString.escape(JSON.stringify(feature.properties))},
+        name = ${escapeSql(feature.name)},
+        layer = ${escapeSql(query.layer)},
+        properties = ${escapeSql(JSON.stringify(feature.properties))},
 
-        hull = ST_SetSRID(ST_GeomFromGeoJSON(${SqlString.escape(JSON.stringify(feature.hull))}), 4326),
+        hull = ST_SetSRID(ST_GeomFromGeoJSON(${escapeSql(JSON.stringify(feature.hull))}), 4326),
 
         updated_at = current_timestamp
     ;`;
