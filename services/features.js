@@ -140,7 +140,8 @@ function getByPoint(query, callback) {
 }
 
 function getByName(query, callback) {
-    let nameQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE name ilike ${escapeSql(query.name)}`;
+    let namesDisjunction = query.name.split(',').map(function(name) { return `name ilike ${escapeSql(name)}`; }).join(" OR ");
+    let nameQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE ${namesDisjunction}`;
 
     if (query.layer) {
         nameQuery += ` AND layer=${escapeSql(query.layer)}`;
