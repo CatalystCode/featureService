@@ -231,7 +231,7 @@ function upsert(feature, callback) {
         current_timestamp
     ) ON CONFLICT (id) DO UPDATE SET
         name = ${escapeSql(feature.name)},
-        layer = ${escapeSql(query.layer)},
+        layer = ${escapeSql(feature.layer)},
         properties = ${escapeSql(JSON.stringify(feature.properties))},
 
         hull = ST_SetSRID(ST_GeomFromGeoJSON(${escapeSql(JSON.stringify(feature.hull))}), 4326),
