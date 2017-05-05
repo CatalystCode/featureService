@@ -12,6 +12,8 @@ const async = require('async'),
       url = require('url');
 /*
 
+kubectl run postgis-shell -i --tty --image=timfpark/postgis:9.6 -- bash
+
 CREATE USER frontend PASSWORD '[euro4sure]';
 
 CREATE EXTENSION postgis;
@@ -35,12 +37,13 @@ CREATE TABLE features
   CONSTRAINT enforce_srid_hull CHECK (st_srid(hull) = 4326)
 );
 
-GRANT SELECT, UPDATE, INSERT, DELETE ON features TO frontend;
-
 CREATE INDEX features_hull_index
   ON features
   USING gist
   (hull);
+
+
+GRANT SELECT, UPDATE, INSERT, DELETE ON features TO frontend;
 
 */
 
