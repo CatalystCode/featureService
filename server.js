@@ -17,6 +17,7 @@ app.use(bodyParser.json({ limit: '50mb' }));
 
 app.get('/features/bbox/:north/:west/:south/:east', controllers.features.getByBoundingBox);
 app.get('/features/point/:latitude/:longitude',     controllers.features.getByPoint);
+app.get('/features/name/:name',                     controllers.features.getByName);
 
 app.get('/visits/:userId',                          controllers.visits.get);
 app.put('/visits/:userId',                          controllers.visits.put);

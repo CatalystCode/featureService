@@ -49,6 +49,10 @@ GRANT SELECT, UPDATE, INSERT, DELETE ON features TO frontend;
 
 let featureDatabasePool;
 
+function escapeSql(value) {
+    return `'${value.replace(/'/g,"''")}'`;
+}
+
 function executeQuery(query, callback) {
     featureDatabasePool.connect((err, client, done) => {
         if (err) return callback(err);
@@ -65,7 +69,7 @@ function executeQuery(query, callback) {
 }
 
 function getById(query, callback) {
-    let getQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE id = '${query.id}'`;
+    let getQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE id = ${escapeSql(query.id)}`;
     executeQuery(getQuery, (err, rows) => {
         if (err) return callback(err);
         if (!rows || rows.length === 0) return callback(null, null);
@@ -120,7 +124,7 @@ function getByBoundingBox(query, callback) {
     ))`;
 
     if (query.layer) {
-        boundingBoxQuery += ` AND layer='${query.layer}'`;
+        boundingBoxQuery += ` AND layer=${escapeSql(query.layer)}`;
     }
 
     return executeQuery(boundingBoxQuery, callback);
@@ -132,10 +136,21 @@ function getByPoint(query, callback) {
     )`;
 
     if (query.layer) {
-        pointQuery += ` AND layer='${query.layer}'`;
+        pointQuery += ` AND layer=${escapeSql(query.layer)}`;
     }
 
     return executeQuery(pointQuery, callback);
+}
+
+function getByName(query, callback) {
+    let namesDisjunction = query.name.split(',').map(function(name) { return `name ilike ${escapeSql(name)}`; }).join(" OR ");
+    let nameQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE ${namesDisjunction}`;
+
+    if (query.layer) {
+        nameQuery += ` AND layer=${escapeSql(query.layer)}`;
+    }
+
+    executeQuery(nameQuery, callback);
 }
 
 function init(callback) {
@@ -205,21 +220,21 @@ function upsert(feature, callback) {
     let upsertQuery = `INSERT INTO features (
         id, name, layer, properties, hull, created_at, updated_at
     ) VALUES (
-        '${feature.id}',
-        '${feature.name.replace(/'/g,"''")}',
-        '${feature.layer}',
-        '${JSON.stringify(feature.properties).replace(/'/g,"''")}',
+        ${escapeSql(feature.id)},
+        ${escapeSql(feature.name)},
+        ${escapeSql(feature.layer)},
+        ${escapeSql(JSON.stringify(feature.properties))},
 
-        ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(feature.hull)}'), 4326),
+        ST_SetSRID(ST_GeomFromGeoJSON(${escapeSql(JSON.stringify(feature.hull))}), 4326),
 
         current_timestamp,
         current_timestamp
     ) ON CONFLICT (id) DO UPDATE SET
-        name = '${feature.name.replace(/'/g,"''")}',
-        layer = '${feature.layer}',
-        properties = '${JSON.stringify(feature.properties).replace(/'/g,"''")}',
+        name = ${escapeSql(feature.name)},
+        layer = ${escapeSql(query.layer)},
+        properties = ${escapeSql(JSON.stringify(feature.properties))},
 
-        hull = ST_SetSRID(ST_GeomFromGeoJSON('${JSON.stringify(feature.hull)}'), 4326),
+        hull = ST_SetSRID(ST_GeomFromGeoJSON(${escapeSql(JSON.stringify(feature.hull))}), 4326),
 
         updated_at = current_timestamp
     ;`;
@@ -231,6 +246,7 @@ module.exports = {
     getById,
     getByBoundingBox,
     getByPoint,
+    getByName,
     init,
 /*  intersectLocations, */
     upsert,

@@ -83,4 +83,29 @@ describe('features endpoint', function() {
             done();
         });
     });
+
+    it('can get features by name', function(done) {
+        request.get(`${featuresEndpoint}/name/Sal's?include=properties,hull`, {
+            headers: {
+                Authorization: "Bearer " + fixtures.accessToken
+            },
+            json: true
+        }, function(err, resp) {
+            assert(!err);
+            assert.equal(resp.statusCode, HttpStatus.OK);
+
+            assert(resp.body.features);
+            assert(resp.body.features.length > 0);
+
+            let feature = resp.body.features[0];
+
+            assert.equal(feature.id, fixtures.feature.id);
+            assert.equal(feature.name, fixtures.feature.name);
+            assert.equal(feature.layer, fixtures.feature.layer);
+            assert.equal(feature.properties.tags[0], fixtures.feature.properties.tags[0]);
+            assert(feature.hull);
+
+            done();
+        });
+    });
 });
