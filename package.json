@@ -31,6 +31,7 @@
   "devDependencies": {
     "country-language": "^0.1.7",
     "geotile": "^0.1.9",
+    "mocha": "^3.3.0",
     "node-uuid": "^1.4.7",
     "pbf2json": "^4.2.0",
     "through2": "^2.0.1"
