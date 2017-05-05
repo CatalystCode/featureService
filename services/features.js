@@ -121,7 +121,7 @@ function getByBoundingBox(query, callback) {
     ))`;
 
     if (query.layer) {
-        boundingBoxQuery += ` AND layer=${escapeSqlSqlString.escape(query.layer)}`;
+        boundingBoxQuery += ` AND layer=${escapeSql(query.layer)}`;
     }
 
     return executeQuery(boundingBoxQuery, callback);
