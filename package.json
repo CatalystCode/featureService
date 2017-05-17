@@ -11,6 +11,7 @@
     "azure-storage": "^1.4.0",
     "body-parser": "^1.14.1",
     "cors": "^2.8.1",
+    "documentdb": "^1.12.0",
     "express": "^4.13.3",
     "geojson-bbox": "0.0.0",
     "geopoint": "^1.0.1",
