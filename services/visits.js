@@ -4,6 +4,7 @@ const async = require('async'),
       azure = require('azure-storage'),
       common = require('service-utils'),
       HttpStatus = require('http-status-codes'),
+      log = common.services.log("featureService/services/visits"),
       pg = require('pg'),
       process = require('process'),
       ServiceError = common.utils.ServiceError,
@@ -42,16 +43,28 @@ CREATE INDEX visits_userid_index
   ON visits
   (user_id);
 
-SELECT
-    v.feature_id, count(v.feature_id), f.name
+SELECT v.feature_id, count(v.feature_id), sum(v.finish-v.start) AS duration, f.name
 FROM visits as v
 JOIN features as f on f.id=v.feature_id
-GROUP BY v.feature_id, f.name;
+WHERE v.user_id='10152875766888406'
+GROUP BY v.feature_id, f.name
+ORDER BY duration DESC;
 
 SELECT v.feature_id, f.name, v.start, v.finish, (v.finish-v.start)/1000 as duration
 FROM visits as v
 JOIN features as f on f.id=v.feature_id
+WHERE v.user_id='10152875766888406'
 ORDER BY v.start;
+
+SELECT v.feature_id,
+       (v.finish-v.start)/(1000*3600.0) AS duration,
+       to_timestamp(v.start/1000.0) AT TIME ZONE 'PST' AS start,
+       to_timestamp(v.finish/1000.0) AT TIME ZONE 'PST' AS finish,
+       f.name
+FROM visits as v
+JOIN features as vi serf on f.id=v.feature_id
+WHERE v.user_id='10152875766888406' and v.feature_id='wof-102191581'
+ORDER BY duration DESC;
 
 */
 
@@ -126,7 +139,7 @@ function init(callback) {
 
     // POSTGRES CONNECTION CODE
 
-    common.services.log.info('connecting to features database using: ' + process.env.FEATURES_CONNECTION_STRING);
+    log.info('connecting to features database using: ' + process.env.FEATURES_CONNECTION_STRING);
 
     const params = url.parse(process.env.FEATURES_CONNECTION_STRING);
     const auth = params.auth.split(':');
