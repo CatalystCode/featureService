@@ -12,7 +12,7 @@ const express = require('express'),
       controllers = require('./controllers');
 
 app.use(cors());
-app.use(morgan('combined'));
+app.use(morgan("combined", { "stream": log.stream }));
 app.use(bodyParser.json({ limit: '50mb' }));
 
 app.get('/features/bbox/:north/:west/:south/:east', controllers.features.getByBoundingBox);
