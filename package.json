@@ -6,7 +6,6 @@
     "node": "6.9.x"
   },
   "dependencies": {
-    "applicationinsights": "^0.17.2",
     "async": "^2.1.4",
     "azure-storage": "^1.4.0",
     "body-parser": "^1.14.1",
