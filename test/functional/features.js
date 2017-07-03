@@ -108,4 +108,27 @@ describe('features endpoint', function() {
             done();
         });
     });
+
+    it('can get features by id', function(done) {
+        request.get(`${featuresEndpoint}/id/fake-3830198`, {
+            headers: {
+                Authorization: "Bearer " + fixtures.accessToken
+            },
+            json: true
+        }, function(err, resp) {
+            assert(!err);
+            assert.equal(resp.statusCode, HttpStatus.OK);
+
+            assert(resp.body.features);
+            assert(resp.body.features.length > 0);
+
+            let feature = resp.body.features[0];
+
+            assert.equal(feature.id, fixtures.feature.id);
+            assert.equal(feature.name, fixtures.feature.name);
+            assert.equal(feature.layer, fixtures.feature.layer);
+
+            done();
+        });
+    });
 });

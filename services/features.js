@@ -33,12 +33,13 @@ function executeQuery(query, callback) {
 }
 
 function getById(query, callback) {
-    let getQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE id = ${escapeSql(query.id)}`;
+    const ids = query.id.constructor === Array ? query.id : [query.id];
+    const getQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE id IN (${escapeSql(ids.join(','))})`;
     executeQuery(getQuery, (err, rows) => {
         if (err) return callback(err);
         if (!rows || rows.length === 0) return callback(null, null);
 
-        return callback(null, rows[0]);
+        return callback(null, rows);
     });
 }
 
