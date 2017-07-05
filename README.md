@@ -19,6 +19,8 @@ You will be welcomed with the postgres prompt. Now, create the geofeatures datab
 ```
 CREATE DATABASE geofeatures;
 \c geofeatures;
+
+CREATE USER frontend PASSWORD your_password_here;
 ```
 
 Next, load the database schema:
@@ -36,7 +38,7 @@ GRANT ALL PRIVILEGES ON DATABASE geofeatures TO frontend;
 Then, make sure the environment variable for the newly-created user is set:
 
 ```
-export FEATURES_CONNECTION_STRING='postgres://frontend:[euro4sure]@127.0.0.1/geofeatures'
+export FEATURES_CONNECTION_STRING='postgres://frontend:your_password_here@127.0.0.1/geofeatures'
 export PORT=3035
 ```
 

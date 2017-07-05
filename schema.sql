@@ -1,5 +1,3 @@
-CREATE USER frontend PASSWORD '[euro4sure]';
-
 CREATE EXTENSION postgis;
 
 ------------------------------------------------------------------------------
