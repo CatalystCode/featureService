@@ -14,60 +14,6 @@ const async = require('async'),
 let featureTablePool;
 let redlock;
 
-/*
-
-CREATE EXTENSION postgis;
-
-CREATE TABLE visits
-(
-  id                    uuid                         NOT NULL,
-  user_id               character varying(128)       NOT NULL,
-  feature_id            character varying(64)        NOT NULL,
-
-  start                 bigint                       NOT NULL,
-  finish                bigint                       NOT NULL,
-
-  created_at            timestamp                    NOT NULL,
-  updated_at            timestamp                    NOT NULL,
-
-  CONSTRAINT visits_pkey PRIMARY KEY (id)
-);
-
-GRANT SELECT, UPDATE, INSERT, DELETE ON visits TO frontend;
-
-CREATE INDEX visits_start_index
-  ON visits
-  (start);
-
-CREATE INDEX visits_userid_index
-  ON visits
-  (user_id);
-
-SELECT v.feature_id, count(v.feature_id), sum(v.finish-v.start) AS duration, f.name
-FROM visits as v
-JOIN features as f on f.id=v.feature_id
-WHERE v.user_id='10152875766888406'
-GROUP BY v.feature_id, f.name
-ORDER BY duration DESC;
-
-SELECT v.feature_id, f.name, v.start, v.finish, (v.finish-v.start)/1000 as duration
-FROM visits as v
-JOIN features as f on f.id=v.feature_id
-WHERE v.user_id='10152875766888406'
-ORDER BY v.start;
-
-SELECT v.feature_id,
-       (v.finish-v.start)/(1000*3600.0) AS duration,
-       to_timestamp(v.start/1000.0) AT TIME ZONE 'PST' AS start,
-       to_timestamp(v.finish/1000.0) AT TIME ZONE 'PST' AS finish,
-       f.name
-FROM visits as v
-JOIN features as vi serf on f.id=v.feature_id
-WHERE v.user_id='10152875766888406' and v.feature_id='wof-102191581'
-ORDER BY duration DESC;
-
-*/
-
 function rowToVisit(row) {
     if (!row) return;
 

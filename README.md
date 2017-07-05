@@ -21,11 +21,10 @@ CREATE DATABASE geofeatures;
 \c geofeatures;
 ```
 
-There enter the SQL statements at the top of these two files (in that order):
+Next, load the database schema:
 
 ```
-services/features.js
-services/visits.js
+psql -d geofeatures < schema.sql
 ```
 
 Make sure the frontend user has access to the geofeatures database:
