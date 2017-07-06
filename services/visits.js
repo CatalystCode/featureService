@@ -5,10 +5,8 @@ const async = require('async'),
       common = require('service-utils'),
       HttpStatus = require('http-status-codes'),
       log = common.services.log("featureService/services/visits"),
-      pg = require('pg'),
-      process = require('process'),
+      postgres = require('./postgres'),
       ServiceError = common.utils.ServiceError,
-      url = require('url'),
       uuid = require('uuid/v4');
 
 let featureTablePool;
@@ -80,27 +78,14 @@ function getByUserId(userId, callback) {
 }
 
 function init(callback) {
-    if (!process.env.FEATURES_CONNECTION_STRING)
-        return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, "FEATURES_CONNECTION_STRING configuration not provided as environment variable"));
+    postgres.init(function(err, pool) {
+        if (err) {
+            return callback(err);
+        }
 
-    // POSTGRES CONNECTION CODE
-
-    log.info('connecting to features database using: ' + process.env.FEATURES_CONNECTION_STRING);
-
-    const params = url.parse(process.env.FEATURES_CONNECTION_STRING);
-    const auth = params.auth.split(':');
-
-    const config = {
-        user: auth[0],
-        password: auth[1],
-        host: params.hostname,
-        port: params.port,
-        database: params.pathname.split('/')[1]
-    };
-
-    featureTablePool = new pg.Pool(config);
-
-    return callback();
+        featureTablePool = pool;
+        return callback();
+    });
 }
 
 function put(visits, callback) {
