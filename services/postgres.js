@@ -1,5 +1,6 @@
 const pg = require('pg'),
       process = require('process'),
+      querystring = require('querystring'),
       url = require('url');
 
 function init(callback) {
@@ -11,6 +12,7 @@ function init(callback) {
     }
 
     const params = url.parse(connectionString);
+    const query = querystring.parse(params.query);
     const auth = params.auth.split(':');
 
     const config = {
@@ -18,6 +20,7 @@ function init(callback) {
         password: auth[1],
         host: params.hostname,
         port: params.port,
+        ssl: query['ssl'],
         database: params.pathname.split('/')[1]
     };
 
