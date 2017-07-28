@@ -5,11 +5,9 @@ const async = require('async'),
       common = require('service-utils'),
       GeoPoint = require('geopoint'),
       HttpStatus = require('http-status-codes'),
-      pg = require('pg'),
-      process = require('process'),
+      postgres = require('./postgres'),
       ServiceError = common.utils.ServiceError,
-      turf = require('turf'),
-      url = require('url');
+      turf = require('turf');
 
 let featureDatabasePool;
 
@@ -146,23 +144,14 @@ function getByName(query, callback) {
 }
 
 function init(callback) {
-    if (!process.env.FEATURES_CONNECTION_STRING)
-        return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, "FEATURES_CONNECTION_STRING configuration not provided as environment variable"));
+    postgres.init(function(err, pool) {
+        if (err) {
+            return callback(err);
+        }
 
-    const params = url.parse(process.env.FEATURES_CONNECTION_STRING);
-    const auth = params.auth.split(':');
-
-    const config = {
-        user: auth[0],
-        password: auth[1],
-        host: params.hostname,
-        port: params.port,
-        database: params.pathname.split('/')[1]
-    };
-
-    featureDatabasePool = new pg.Pool(config);
-
-    return callback();
+        featureDatabasePool = pool;
+        return callback();
+    });
 }
 
 /*
