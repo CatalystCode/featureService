@@ -33,13 +33,38 @@ function executeQuery(query, callback) {
 }
 
 function getById(query, callback) {
-    let getQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE id = ${escapeSql(query.id)}`;
+    const ids = query.id.constructor === Array ? query.id : [query.id];
+    const getQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE id IN (${escapeSql(ids.join(','))})`;
     executeQuery(getQuery, (err, rows) => {
         if (err) return callback(err);
         if (!rows || rows.length === 0) return callback(null, null);
 
-        return callback(null, rows[0]);
+        return callback(null, rows);
     });
+}
+
+function parseBoundingBox(bbox_geo_json) {
+    const match = /^POLYGON\(\((.*)\)\)$/.exec(bbox_geo_json)
+    if (!match || match.length !== 2) {
+        return null;
+    }
+
+    const coords = match[1].split(',').map(point => point.split(' '));
+    if (coords.length !== 5 || coords.some(point => point.length !== 2)) {
+        return null;
+    }
+
+    const minX = parseFloat(coords[0][0]);
+    const minY = parseFloat(coords[0][1]);
+    const maxX = parseFloat(coords[2][0]);
+    const maxY = parseFloat(coords[2][1]);
+
+    return [
+        maxY, // north
+        minX, // west
+        minY, // south
+        maxX // east
+    ];
 }
 
 function rowToFeature(row, columns) {
@@ -48,10 +73,12 @@ function rowToFeature(row, columns) {
     row['createdAt'] = row['created_at'];
     row['updatedAt'] = row['updated_at'];
     if (row['hull_geo_json']) row['hull'] = JSON.parse(row['hull_geo_json']);
+    if (row['bbox_geo_json']) row['bbox'] = parseBoundingBox(row['bbox_geo_json']);
 
     delete row['created_at'];
     delete row['updated_at'];
     delete row['hull_geo_json'];
+    delete row['bbox_geo_json'];
 
     return row;
 }
@@ -74,6 +101,7 @@ function buildQueryColumns(query) {
     if (query.include) {
         let includeArray = query.include.split(',');
 
+        if (includeArray.indexOf('bbox') !== -1) queryColumns += ',ST_AsText(ST_Envelope(hull)) as bbox_geo_json';
         if (includeArray.indexOf('hull') !== -1) queryColumns += ',ST_AsGeoJSON(hull) as hull_geo_json';
         if (includeArray.indexOf('properties') !== -1) queryColumns += ',properties';
     }

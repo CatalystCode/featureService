@@ -15,6 +15,7 @@ app.use(cors());
 app.use(morgan("combined", { "stream": log.stream }));
 app.use(bodyParser.json({ limit: '50mb' }));
 
+app.get('/features/id/:id',                         controllers.features.getById);
 app.get('/features/bbox/:north/:west/:south/:east', controllers.features.getByBoundingBox);
 app.get('/features/point/:latitude/:longitude',     controllers.features.getByPoint);
 app.get('/features/name/:name',                     controllers.features.getByName);

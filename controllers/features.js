@@ -18,18 +18,20 @@ exports.upsert = function(req, res) {
         });
     });
 };
+*/
 
 exports.getById = function(req, res) {
-    services.activities.get(req.params.userId, req.params.activityId, function(err, activity) {
+    let query = {
+        id: req.query.id.split(','),
+        include: req.query.include
+    };
+
+    services.features.getById(query, (err, features) => {
         if (err) return common.utils.handleError(res, err);
 
-        services.activities.toJsonApi(activity, function(err, activityJson) {
-            if (err) return common.utils.handleError(res, err);
-            res.send(activityJson);
-        });
+        res.send({ "features": features });
     });
 };
-*/
 
 exports.getByPoint = function(req, res) {
     let query = {
