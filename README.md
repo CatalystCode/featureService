@@ -5,8 +5,8 @@ Development Setup
 =====
 In order to install on your local machine, you will need to install:
 
-1. Postgres + postgis
-2. Node
+1. Postgres + postgis ([instructions for Ubuntu 16.04](http://www.gis-blog.com/how-to-install-postgis-2-3-on-ubuntu-16-04-lts/))
+2. Node ([instructions for Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-16-04))
 
 Once those are installed, go open a bash shell on the project directory and type:
 
