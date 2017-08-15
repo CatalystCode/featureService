@@ -22,7 +22,7 @@ exports.upsert = function(req, res) {
 
 exports.getById = function(req, res) {
     let query = {
-        id: req.query.id.split(','),
+        id: req.params.id.split(','),
         include: req.query.include
     };
 
