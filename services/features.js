@@ -133,7 +133,11 @@ function getByPoint(query, callback) {
 }
 
 function getByName(query, callback) {
-    let namesDisjunction = query.name.split(',').map(function(name) { return `name ilike ${escapeSql(name)}`; }).join(" OR ");
+    const names = query.name.constructor === Array ? query.name : [query.name];
+
+    let namesDisjunction = names.map(function(name) {
+        return `lower(name) = ${escapeSql(name.toLowerCase())}`;
+    }).join(" OR ");
     let nameQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE ${namesDisjunction}`;
 
     if (query.layer) {
