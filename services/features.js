@@ -42,20 +42,19 @@ function getById(query, callback) {
 }
 
 function parseBoundingBox(bbox_geo_json) {
-    const match = /^POLYGON\(\((.*)\)\)$/.exec(bbox_geo_json)
-    if (!match || match.length !== 2) {
+    const feature = JSON.parse(bbox_geo_json);
+    const coords = feature.coordinates && feature.coordinates[0];
+    if (feature.type !== 'Polygon' || coords.length !== 5) {
         return null;
     }
 
-    const coords = match[1].split(',').map(point => point.split(' '));
-    if (coords.length !== 5 || coords.some(point => point.length !== 2)) {
-        return null;
-    }
+    const xs = coords.map(point => point[0]);
+    const ys = coords.map(point => point[1]);
 
-    const minX = parseFloat(coords[0][0]);
-    const minY = parseFloat(coords[0][1]);
-    const maxX = parseFloat(coords[2][0]);
-    const maxY = parseFloat(coords[2][1]);
+    const minX = Math.min(...xs);
+    const minY = Math.min(...ys);
+    const maxX = Math.max(...xs);
+    const maxY = Math.max(...ys);
 
     return [
         maxY, // north
@@ -99,7 +98,7 @@ function buildQueryColumns(query) {
     if (query.include) {
         let includeArray = query.include.split(',');
 
-        if (includeArray.indexOf('bbox') !== -1) queryColumns += ',ST_AsText(ST_Envelope(hull)) as bbox_geo_json';
+        if (includeArray.indexOf('bbox') !== -1) queryColumns += ',ST_AsGeoJSON(ST_Envelope(hull)) as bbox_geo_json';
         if (includeArray.indexOf('hull') !== -1) queryColumns += ',ST_AsGeoJSON(hull) as hull_geo_json';
         if (includeArray.indexOf('properties') !== -1) queryColumns += ',properties';
     }
