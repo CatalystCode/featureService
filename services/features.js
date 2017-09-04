@@ -64,6 +64,19 @@ function parseBoundingBox(bbox_geo_json) {
     ];
 }
 
+function parseCentroid(centroid_geo_json) {
+    const feature = JSON.parse(centroid_geo_json);
+    const coords = feature.coordinates;
+    if (feature.type !== 'Point' || coords.length !== 2) {
+        return null;
+    }
+
+    const x = coords[0];
+    const y = coords[1];
+
+    return [x, y];
+}
+
 function rowToFeature(row, columns) {
     if (!row) return;
 
@@ -71,11 +84,13 @@ function rowToFeature(row, columns) {
     row['updatedAt'] = row['updated_at'];
     if (row['hull_geo_json']) row['hull'] = JSON.parse(row['hull_geo_json']);
     if (row['bbox_geo_json']) row['bbox'] = parseBoundingBox(row['bbox_geo_json']);
+    if (row['centroid_geo_json']) row['centroid'] = parseCentroid(row['centroid_geo_json']);
 
     delete row['created_at'];
     delete row['updated_at'];
     delete row['hull_geo_json'];
     delete row['bbox_geo_json'];
+    delete row['centroid_geo_json'];
 
     return row;
 }
@@ -99,6 +114,7 @@ function buildQueryColumns(query) {
         let includeArray = query.include.split(',');
 
         if (includeArray.indexOf('bbox') !== -1) queryColumns += ',ST_AsGeoJSON(ST_Envelope(hull)) as bbox_geo_json';
+        if (includeArray.indexOf('centroid') !== -1) queryColumns += ',ST_AsGeoJSON(ST_Centroid(hull)) as centroid_geo_json';
         if (includeArray.indexOf('hull') !== -1) queryColumns += ',ST_AsGeoJSON(hull) as hull_geo_json';
         if (includeArray.indexOf('properties') !== -1) queryColumns += ',properties';
     }
