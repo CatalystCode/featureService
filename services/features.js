@@ -71,8 +71,8 @@ function parseCentroid(centroid_geo_json) {
         return null;
     }
 
-    const x = coords[0];
-    const y = coords[1];
+    const x = coords[0]; // longitude
+    const y = coords[1]; // latitude
 
     return [x, y];
 }
