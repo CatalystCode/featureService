@@ -128,7 +128,7 @@ function addQueryPredicates(sql, query) {
     }
 
     if (query.filter_name) {
-        sql += ` AND strpos(lower(name), ${escapeSql(query.filter_name.toLowerCase())}) > 0`;
+        sql += ` AND strpos(lower(name), lower(${escapeSql(query.filter_name)})) > 0`;
     }
 
     return sql;
