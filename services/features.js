@@ -159,7 +159,7 @@ function getByName(query, callback) {
     const names = query.name.constructor === Array ? query.name : [query.name];
 
     let namesDisjunction = `(${names.map(function(name) {
-        return `lower(name) = ${escapeSql(name.toLowerCase())}`;
+        return `lower(name) = lower(${escapeSql(name)})`;
     }).join(" OR ")})`;
     let nameQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE ${namesDisjunction}`;
 
