@@ -127,6 +127,10 @@ function addQueryPredicates(sql, query) {
         sql += ` AND layer = ${escapeSql(query.layer)}`;
     }
 
+    if (query.filter_name) {
+        sql += ` AND strpos(lower(name), ${escapeSql(query.filter_name.toLowerCase())}) > 0`;
+    }
+
     return sql;
 }
 
