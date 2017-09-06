@@ -150,9 +150,9 @@ function getByPoint(query, callback) {
 function getByName(query, callback) {
     const names = query.name.constructor === Array ? query.name : [query.name];
 
-    let namesDisjunction = names.map(function(name) {
+    let namesDisjunction = `(${names.map(function(name) {
         return `lower(name) = ${escapeSql(name.toLowerCase())}`;
-    }).join(" OR ");
+    }).join(" OR ")})`;
     let nameQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE ${namesDisjunction}`;
 
     if (query.layer) {
