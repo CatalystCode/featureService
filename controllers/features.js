@@ -53,7 +53,7 @@ exports.getByPoint = function(req, res) {
 
 exports.getByName = function(req, res) {
     let query = {
-        name: req.params.name.split(','),
+        name: req.params.name.split(/,(?=[^ ])/),
         include: req.query.include
     };
 
