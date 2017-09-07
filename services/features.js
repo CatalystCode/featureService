@@ -131,6 +131,10 @@ function addQueryPredicates(sql, query) {
         sql += ` AND strpos(lower(name), lower(${escapeSql(query.filter_name)})) > 0`;
     }
 
+    if (query.filter_namespace) {
+        sql += ` AND lower(split_part(id, '-', 1)) = lower(${escapeSql(query.filter_namespace)})`;
+    }
+
     return sql;
 }
 

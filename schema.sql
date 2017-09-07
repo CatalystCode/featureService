@@ -25,6 +25,7 @@ CREATE TABLE features
 
 CREATE INDEX features_hull_index ON features USING gist (hull);
 CREATE INDEX features_name_lower_index ON features(lower(name));
+CREATE INDEX features_namespace_index ON features(lower(split_part(id, '-', 1)));
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON features TO frontend;
 
