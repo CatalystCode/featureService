@@ -74,6 +74,7 @@ exports.getByBoundingBox = function(req, res) {
         west: parseFloat(req.params.west),
         south: parseFloat(req.params.south),
         east: parseFloat(req.params.east),
+        filter_name: req.query.filter_name,
         include: req.query.include
     };
 

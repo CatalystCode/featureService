@@ -122,15 +122,25 @@ function buildQueryColumns(query) {
     return queryColumns;
 }
 
+function addQueryPredicates(sql, query) {
+    if (query.layer) {
+        sql += ` AND layer = ${escapeSql(query.layer)}`;
+    }
+
+    if (query.filter_name) {
+        sql += ` AND strpos(lower(name), lower(${escapeSql(query.filter_name)})) > 0`;
+    }
+
+    return sql;
+}
+
 function getByBoundingBox(query, callback) {
     let boundingBoxQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE ST_Intersects(hull, ST_MakeEnvelope(
         ${query.west}, ${query.south},
         ${query.east}, ${query.north}, 4326
     ))`;
 
-    if (query.layer) {
-        boundingBoxQuery += ` AND layer=${escapeSql(query.layer)}`;
-    }
+    boundingBoxQuery = addQueryPredicates(boundingBoxQuery, query);
 
     return executeQuery(boundingBoxQuery, callback);
 }
@@ -140,9 +150,7 @@ function getByPoint(query, callback) {
         'POINT(${query.longitude} ${query.latitude})', 4326)
     )`;
 
-    if (query.layer) {
-        pointQuery += ` AND layer=${escapeSql(query.layer)}`;
-    }
+    pointQuery = addQueryPredicates(pointQuery, query);
 
     return executeQuery(pointQuery, callback);
 }
@@ -150,14 +158,12 @@ function getByPoint(query, callback) {
 function getByName(query, callback) {
     const names = query.name.constructor === Array ? query.name : [query.name];
 
-    let namesDisjunction = names.map(function(name) {
+    let namesDisjunction = `(${names.map(function(name) {
         return `lower(name) = ${escapeSql(name.toLowerCase())}`;
-    }).join(" OR ");
+    }).join(" OR ")})`;
     let nameQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE ${namesDisjunction}`;
 
-    if (query.layer) {
-        nameQuery += ` AND layer=${escapeSql(query.layer)}`;
-    }
+    nameQuery = addQueryPredicates(nameQuery, query);
 
     executeQuery(nameQuery, callback);
 }
