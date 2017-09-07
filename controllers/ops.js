@@ -1,11 +1,12 @@
 "use strict";
 
 let fs = require('fs');
+let path = require('path');
 
 let services = require('../services');
 
 let deploymentSHA;
-fs.readFile('./deployment_sha', 'utf8', (err, sha) => {
+fs.readFile(path.join(__dirname, '..', 'deployment_sha'), 'utf8', (err, sha) => {
     deploymentSHA = sha.trim();
 });
 
