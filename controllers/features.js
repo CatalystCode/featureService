@@ -24,6 +24,7 @@ exports.getById = function(req, res) {
     let query = {
         id: req.params.id.split(','),
         filter_namespace: req.query.filter_namespace,
+        filter_layer: req.query.filter_layer,
         include: req.query.include
     };
 
@@ -39,6 +40,7 @@ exports.getByPoint = function(req, res) {
         latitude: parseFloat(req.params.latitude),
         longitude: parseFloat(req.params.longitude),
         filter_namespace: req.query.filter_namespace,
+        filter_layer: req.query.filter_layer,
         include: req.query.include
     };
 
@@ -57,6 +59,7 @@ exports.getByName = function(req, res) {
     let query = {
         name: req.params.name.split(/,(?=[^ ])/),
         filter_namespace: req.query.filter_namespace,
+        filter_layer: req.query.filter_layer,
         include: req.query.include
     };
 
@@ -79,6 +82,7 @@ exports.getByBoundingBox = function(req, res) {
         east: parseFloat(req.params.east),
         filter_name: req.query.filter_name,
         filter_namespace: req.query.filter_namespace,
+        filter_layer: req.query.filter_layer,
         include: req.query.include
     };
 
