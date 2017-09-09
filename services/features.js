@@ -135,6 +135,10 @@ function addQueryPredicates(sql, query) {
         sql += ` AND lower(split_part(id, '-', 1)) = lower(${escapeSql(query.filter_namespace)})`;
     }
 
+    if (query.filter_layer) {
+        sql += ` AND lower(layer) IN (${query.filter_layer.split(',').map(layer => `lower(${escapeSql(layer)})`).join(',')})`;
+    }
+
     return sql;
 }
 
