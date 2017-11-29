@@ -6,6 +6,7 @@ const async = require('async'),
       GeoPoint = require('geopoint'),
       HttpStatus = require('http-status-codes'),
       process = require('process'),
+      escapeSql = require('./postgres').escapeSql,
       ServiceError = common.utils.ServiceError,
       turf = require('turf'),
       url = require('url');
