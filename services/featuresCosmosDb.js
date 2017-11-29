@@ -6,6 +6,7 @@ const async = require('async'),
       GeoPoint = require('geopoint'),
       HttpStatus = require('http-status-codes'),
       process = require('process'),
+      escapeSql = require('./postgres').escapeSql,
       ServiceError = common.utils.ServiceError,
       turf = require('turf'),
       url = require('url');
@@ -114,7 +115,7 @@ function init(callback) {
 
 function getById(query, callback) {
     const ids = query.id.constructor === Array ? query.id : [query.id];
-    const getQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE id IN (${escapeSql(ids.join(','))})`;
+    const getQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE id IN (${ids.map(escapeSql).join(',')})`;
     executeQuery(getQuery, (err, rows) => {
         if (err) return callback(err);
         if (!rows || rows.length === 0) return callback(null, null);

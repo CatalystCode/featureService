@@ -3,6 +3,10 @@ const pg = require('pg'),
       querystring = require('querystring'),
       url = require('url');
 
+function escapeSql(value) {
+    return `'${value.replace(/'/g,"''")}'`;
+}
+
 function init(callback) {
     const connectionString = process.env.FEATURES_CONNECTION_STRING;
 
@@ -30,5 +34,6 @@ function init(callback) {
 }
 
 module.exports = {
+    escapeSql: escapeSql,
     init: init
 };

@@ -6,6 +6,7 @@ const async = require('async'),
       HttpStatus = require('http-status-codes'),
       log = common.services.log("featureService/services/visits"),
       postgres = require('./postgres'),
+      escapeSql = postgres.escapeSql,
       ServiceError = common.utils.ServiceError,
       uuid = require('uuid/v4');
 
@@ -40,7 +41,7 @@ function resultsToVisits(results) {
 }
 
 function deleteByUserId(userId, callback) {
-    executeQuery(`DELETE FROM visits WHERE user_id='${userId}'`, callback);
+    executeQuery(`DELETE FROM visits WHERE user_id=${escapeSql(userId)}`, callback);
 }
 
 function executeQuery(query, callback) {
@@ -69,11 +70,11 @@ function fromRequest(visitsJson, callback) {
 }
 
 function getByTimestamp(userId, timestamp, callback) {
-    executeQuery(`SELECT * FROM visits WHERE user_id='${userId}' AND start >= ${timestamp} AND finish <= ${timestamp}`, callback);
+    executeQuery(`SELECT * FROM visits WHERE user_id=${escapeSql(userId)} AND start >= ${timestamp} AND finish <= ${timestamp}`, callback);
 }
 
 function getByUserId(userId, callback) {
-    let query = `SELECT * FROM visits WHERE user_id='${userId}'`;
+    let query = `SELECT * FROM visits WHERE user_id=${escapeSql(userId)}`;
     executeQuery(query, callback);
 }
 
@@ -119,16 +120,16 @@ function upsert(visits, callback) {
         let upsertQuery = `INSERT INTO visits (
             id, user_id, feature_id, start, finish, created_at, updated_at
         ) VALUES (
-            '${visit.id}',
-            '${visit.userId}',
-            '${visit.featureId}',
+            ${escapeSql(visit.id)},
+            ${escapeSql(visit.userId)},
+            ${escapeSql(visit.featureId)},
             ${visit.start},
             ${visit.finish},
             current_timestamp,
             current_timestamp
         ) ON CONFLICT (id) DO UPDATE SET
-            user_id  = '${visit.userId}',
-            feature_id = '${visit.featureId}',
+            user_id = ${escapeSql(visit.userId)},
+            feature_id = ${escapeSql(visit.featureId)},
             start = ${visit.start},
             finish = ${visit.finish},
             updated_at = current_timestamp

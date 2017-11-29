@@ -6,14 +6,11 @@ const async = require('async'),
       GeoPoint = require('geopoint'),
       HttpStatus = require('http-status-codes'),
       postgres = require('./postgres'),
+      escapeSql = postgres.escapeSql,
       ServiceError = common.utils.ServiceError,
       turf = require('turf');
 
 let featureDatabasePool;
-
-function escapeSql(value) {
-    return `'${value.replace(/'/g,"''")}'`;
-}
 
 function executeQuery(query, callback) {
     featureDatabasePool.connect((err, client, done) => {
