@@ -4,22 +4,6 @@ const common = require('service-utils'),
       HttpStatus = require('http-status-codes'),
       services = require('../services');
 
-/*
-exports.upsert = function(req, res) {
-    services.features.fromJsonApi(req.body, function(err, activity) {
-        if (err) return common.utils.handleError(res, err);
-
-        services.features.create(features, function(err) {
-            if (err) return common.utils.handleError(res, err);
-
-            services.features.toJsonApi(feature, function(featureJson) {
-                res.send(activityJson);
-            });
-        });
-    });
-};
-*/
-
 exports.getById = function(req, res) {
     let query = {
         id: req.params.id.split(','),
