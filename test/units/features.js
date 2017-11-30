@@ -8,6 +8,7 @@ var app = require('../../server')
 describe('features service', function() {
     it('can upsert feature', function(done) {
         services.features.upsert(fixtures.feature, (err, feature) => {
+            console.log(err);
             assert(!err);
             assert(feature);
 

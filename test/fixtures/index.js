@@ -22,12 +22,6 @@ let fixtures = {
             "coordinates":[[[[-22.8724103,16.6696193],[-22.924919,16.585595],[-22.9840127,16.8273509],[-22.8892456,16.8339415],[-22.8724103,16.6696193]]]]
         }
     },
-    visit: {
-        userId: '747941cfb829',
-        featureId: '93de94d6-6561-446f-9a33-c1761b029bd5',
-        start: new Date(2016,12,13,16,09).getTime(),
-        finish: new Date(2016,12,13,16,19).getTime()
-    },
     location: {
         timestamp: new Date(2016,5,15).getTime(),
         userId: '747941cfb829',
@@ -85,13 +79,6 @@ let fixtures = {
             speed: 6.02
         }
     ],
-    intersections: [{
-        userId: '747941cfb829',
-        features: [
-            { id: '93de94d6-6561-446f-9a33-c1761b029bd5' }
-        ],
-        timestamp: new Date(2016, 12, 13, 16, 09).getTime()
-    }],
     userId: '747941cfb829'
 };
 
