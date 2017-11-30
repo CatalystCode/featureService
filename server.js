@@ -20,12 +20,6 @@ app.get('/features/bbox/:north/:west/:south/:east', controllers.features.getByBo
 app.get('/features/point/:latitude/:longitude',     controllers.features.getByPoint);
 app.get('/features/name/:name',                     controllers.features.getByName);
 
-app.get('/visits/:userId',                          controllers.visits.get);
-app.put('/visits/:userId',                          controllers.visits.put);
-
-app.get('/ops/health',                              controllers.ops.health);
-app.get('/',                                        controllers.ops.health);
-
 services.init(function(err) {
     if (err) {
         return log.error('failed to initialize: ' + err);
