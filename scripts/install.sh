@@ -7,6 +7,7 @@ DUMP_VERSION='v2'
 # setup
 build_dependencies='curl git build-essential'
 sudo apt-get update > /dev/null
+sudo apt-get upgrade -y > /dev/null
 sudo apt-get install -y ${build_dependencies} > /dev/null
 
 # install postgres
@@ -66,6 +67,41 @@ environment=PORT=80,FEATURES_CONNECTION_STRING="postgres://frontend:${frontend_p
 EOF
 sudo supervisorctl reread
 sudo supervisorctl update
+
+# harden ssh
+sudo apt-get install -y fail2ban > /dev/null
+sudo tee '/etc/ssh/sshd_config' > /dev/null << EOF
+Port 22
+Protocol 2
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_dsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+UsePrivilegeSeparation yes
+KeyRegenerationInterval 3600
+ServerKeyBits 1024
+SyslogFacility AUTH
+LogLevel INFO
+LoginGraceTime 120
+PermitRootLogin no
+StrictModes yes
+RSAAuthentication yes
+PubkeyAuthentication yes
+IgnoreRhosts yes
+RhostsRSAAuthentication no
+HostbasedAuthentication no
+PermitEmptyPasswords no
+ChallengeResponseAuthentication no
+PasswordAuthentication no
+X11Forwarding no
+PrintMotd no
+PrintLastLog yes
+TCPKeepAlive yes
+AcceptEnv LANG LC_*
+Subsystem sftp /usr/lib/openssh/sftp-server
+UsePAM no
+EOF
+sudo systemctl reload ssh
 
 # cleanup
 sudo apt-get remove -y ${build_dependencies} > /dev/null
