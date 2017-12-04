@@ -7,6 +7,7 @@ DUMP_VERSION='v2'
 # setup
 build_dependencies='curl git build-essential'
 sudo apt-get update > /dev/null
+sudo apt-get upgrade > /dev/null
 sudo apt-get install -y ${build_dependencies} > /dev/null
 
 # install postgres
