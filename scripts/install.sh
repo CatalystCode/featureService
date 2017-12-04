@@ -69,6 +69,7 @@ sudo supervisorctl reread
 sudo supervisorctl update
 
 # harden ssh
+sudo apt-get install -y fail2ban > /dev/null
 sudo tee '/etc/ssh/sshd_config' > /dev/null << EOF
 Port 22
 Protocol 2
