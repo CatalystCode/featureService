@@ -6,7 +6,6 @@ const async = require('async'),
       HttpStatus = require('http-status-codes'),
       log = common.services.log("featureService/services/visits"),
       postgres = require('./postgres'),
-      escapeSql = postgres.escapeSql,
       ServiceError = common.utils.ServiceError,
       uuid = require('uuid/v4');
 
@@ -41,14 +40,17 @@ function resultsToVisits(results) {
 }
 
 function deleteByUserId(userId, callback) {
-    executeQuery(`DELETE FROM visits WHERE user_id=${escapeSql(userId)}`, callback);
+    const query = `DELETE FROM visits WHERE user_id = $1`;
+    const params = [userId];
+
+    executeQuery(query, params, callback);
 }
 
-function executeQuery(query, callback) {
+function executeQuery(query, params, callback) {
     featureTablePool.connect((err, client, done) => {
         if (err) return callback(err);
 
-        client.query(query, (err, results) => {
+        client.query(query, params, (err, results) => {
             done();
 
             if (err)
@@ -70,12 +72,17 @@ function fromRequest(visitsJson, callback) {
 }
 
 function getByTimestamp(userId, timestamp, callback) {
-    executeQuery(`SELECT * FROM visits WHERE user_id=${escapeSql(userId)} AND start >= ${timestamp} AND finish <= ${timestamp}`, callback);
+    const query = `SELECT * FROM visits WHERE user_id = $1 AND start >= $2 AND finish <= $3`;
+    const params = [userId, timestamp, timestamp];
+
+    executeQuery(query, params, callback);
 }
 
 function getByUserId(userId, callback) {
-    let query = `SELECT * FROM visits WHERE user_id=${escapeSql(userId)}`;
-    executeQuery(query, callback);
+    const query = `SELECT * FROM visits WHERE user_id = $1`;
+    const params = [userId];
+
+    executeQuery(query, params, callback);
 }
 
 function init(callback) {
@@ -106,8 +113,6 @@ function toResponse(visits) {
 }
 
 function upsert(visits, callback) {
-    let prefix = "";
-
     visits.forEach(visit => {
         if (!visit.id)        return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'id' not provided for visit: " + JSON.stringify(visit, null ,2)));
         if (!visit.userId)    return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'userId' not provided for visit: " + JSON.stringify(visit, null ,2)));
@@ -117,25 +122,30 @@ function upsert(visits, callback) {
     });
 
     async.each(visits, (visit, visitCallback) => {
-        let upsertQuery = `INSERT INTO visits (
+        const upsertQuery = `INSERT INTO visits (
             id, user_id, feature_id, start, finish, created_at, updated_at
         ) VALUES (
-            ${escapeSql(visit.id)},
-            ${escapeSql(visit.userId)},
-            ${escapeSql(visit.featureId)},
-            ${visit.start},
-            ${visit.finish},
+            $1,
+            $2,
+            $3,
+            $4,
+            $5,
             current_timestamp,
             current_timestamp
         ) ON CONFLICT (id) DO UPDATE SET
-            user_id = ${escapeSql(visit.userId)},
-            feature_id = ${escapeSql(visit.featureId)},
-            start = ${visit.start},
-            finish = ${visit.finish},
+            user_id = $6,
+            feature_id = $7,
+            start = $8,
+            finish = $9,
             updated_at = current_timestamp
         ;`;
 
-        executeQuery(upsertQuery, visitCallback);
+        const upsertParams = [
+            visit.id, visit.userId, visit.featureId, visit.start, visit.finish,
+            visit.userId, visit.featureId, visit.start, visit.finish,
+        ];
+
+        executeQuery(upsertQuery, upsertParams, visitCallback);
     }, callback);
 }
 

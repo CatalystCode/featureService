@@ -6,17 +6,16 @@ const async = require('async'),
       GeoPoint = require('geopoint'),
       HttpStatus = require('http-status-codes'),
       postgres = require('./postgres'),
-      escapeSql = postgres.escapeSql,
       ServiceError = common.utils.ServiceError,
       turf = require('turf');
 
 let featureDatabasePool;
 
-function executeQuery(query, callback) {
+function executeQuery(query, params, callback) {
     featureDatabasePool.connect((err, client, done) => {
         if (err) return callback(err);
 
-        client.query(query, (err, results) => {
+        client.query(query, params, (err, results) => {
             done();
 
             if (err)
@@ -29,8 +28,15 @@ function executeQuery(query, callback) {
 
 function getById(query, callback) {
     const ids = query.id.constructor === Array ? query.id : [query.id];
-    const getQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE id IN (${ids.map(escapeSql).join(',')})`;
-    executeQuery(getQuery, (err, rows) => {
+
+    const getParams = [];
+
+    const getQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE id IN (${ids.map(id => {
+        getParams.push(id);
+        return `$${getParams.length}`;
+    }).join(',')})`;
+
+    executeQuery(getQuery, getParams, (err, rows) => {
         if (err) return callback(err);
         if (!rows || rows.length === 0) return callback(null, null);
 
@@ -119,21 +125,27 @@ function buildQueryColumns(query) {
     return queryColumns;
 }
 
-function addQueryPredicates(sql, query) {
+function addQueryPredicates(sql, query, params) {
     if (query.layer) {
-        sql += ` AND layer = ${escapeSql(query.layer)}`;
+        params.push(query.layer);
+        sql += ` AND layer = $${params.length}`;
     }
 
     if (query.filter_name) {
-        sql += ` AND strpos(lower(name), lower(${escapeSql(query.filter_name)})) > 0`;
+        params.push(query.filter_name);
+        sql += ` AND strpos(lower(name), lower($${params.length})) > 0`;
     }
 
     if (query.filter_namespace) {
-        sql += ` AND lower(split_part(id, '-', 1)) = lower(${escapeSql(query.filter_namespace)})`;
+        params.push(query.filter_namespace);
+        sql += ` AND lower(split_part(id, '-', 1)) = lower($${params.length})`;
     }
 
     if (query.filter_layer) {
-        sql += ` AND lower(layer) IN (${query.filter_layer.split(',').map(layer => `lower(${escapeSql(layer)})`).join(',')})`;
+        sql += ` AND lower(layer) IN (${query.filter_layer.split(',').map(layer => {
+            params.push(layer);
+            return `lower($${params.length})`
+        }).join(',')})`;
     }
 
     return sql;
@@ -141,36 +153,44 @@ function addQueryPredicates(sql, query) {
 
 function getByBoundingBox(query, callback) {
     let boundingBoxQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE ST_Intersects(hull, ST_MakeEnvelope(
-        ${query.west}, ${query.south},
-        ${query.east}, ${query.north}, 4326
+        $1, $2,
+        $3, $4, 4326
     ))`;
 
-    boundingBoxQuery = addQueryPredicates(boundingBoxQuery, query);
+    const boundingBoxParams = [query.west, query.south, query.east, query.north];
 
-    return executeQuery(boundingBoxQuery, callback);
+    boundingBoxQuery = addQueryPredicates(boundingBoxQuery, query, boundingBoxParams);
+
+    return executeQuery(boundingBoxQuery, boundingBoxParams, callback);
 }
 
 function getByPoint(query, callback) {
-    let pointQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE ST_Contains(hull, ST_GeomFromText(
-        'POINT(${query.longitude} ${query.latitude})', 4326)
+    let pointQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE ST_Contains(hull,
+        ST_SetSRID(ST_MakePoint($1, $2), 4326)
     )`;
 
-    pointQuery = addQueryPredicates(pointQuery, query);
+    const pointParams = [query.longitude, query.latitude];
 
-    return executeQuery(pointQuery, callback);
+    pointQuery = addQueryPredicates(pointQuery, query, pointParams);
+
+    return executeQuery(pointQuery, pointParams, callback);
 }
 
 function getByName(query, callback) {
     const names = query.name.constructor === Array ? query.name : [query.name];
 
-    let namesDisjunction = `(${names.map(function(name) {
-        return `lower(name) = lower(${escapeSql(name)})`;
+    const nameParams = [];
+
+    const namesDisjunction = `(${names.map(name => {
+        nameParams.push(name);
+        return `lower(name) = lower($${nameParams.length})`;
     }).join(" OR ")})`;
+
     let nameQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE ${namesDisjunction}`;
 
-    nameQuery = addQueryPredicates(nameQuery, query);
+    nameQuery = addQueryPredicates(nameQuery, query, nameParams);
 
-    executeQuery(nameQuery, callback);
+    executeQuery(nameQuery, nameParams, callback);
 }
 
 function init(callback) {
@@ -228,29 +248,39 @@ function upsert(feature, callback) {
     feature.elevation = feature.elevation || 'null';
     feature.hierarchy = feature.hierarchy || '{}';
 
-    let upsertQuery = `INSERT INTO features (
+    const upsertQuery = `
+    INSERT INTO features (
         id, name, layer, properties, hull, created_at, updated_at
     ) VALUES (
-        ${escapeSql(feature.id)},
-        ${escapeSql(feature.name)},
-        ${escapeSql(feature.layer)},
-        ${escapeSql(JSON.stringify(feature.properties))},
+        $1,
+        $2,
+        $3,
+        $4,
 
-        ST_SetSRID(ST_GeomFromGeoJSON(${escapeSql(JSON.stringify(feature.hull))}), 4326),
+        ST_SetSRID(ST_GeomFromGeoJSON($5), 4326),
 
         current_timestamp,
         current_timestamp
     ) ON CONFLICT (id) DO UPDATE SET
-        name = ${escapeSql(feature.name)},
-        layer = ${escapeSql(feature.layer)},
-        properties = ${escapeSql(JSON.stringify(feature.properties))},
+        name = $6,
+        layer = $7,
+        properties = $8,
 
-        hull = ST_SetSRID(ST_GeomFromGeoJSON(${escapeSql(JSON.stringify(feature.hull))}), 4326),
+        hull = ST_SetSRID(ST_GeomFromGeoJSON($9), 4326),
 
         updated_at = current_timestamp
     ;`;
 
-    executeQuery(upsertQuery, callback);
+    const hullJson = JSON.stringify(feature.hull);
+    const propertiesJson = JSON.stringify(feature.properties);
+
+    const upsertParams = [
+        feature.id, feature.name, feature.layer, propertiesJson,
+        hullJson, feature.name, feature.layer, propertiesJson,
+        hullJson,
+    ];
+
+    executeQuery(upsertQuery, upsertParams, callback);
 }
 
 module.exports = {
