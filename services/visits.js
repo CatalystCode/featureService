@@ -48,15 +48,20 @@ function deleteByUserId(userId, callback) {
 
 function executeQuery(query, params, callback) {
     featureTablePool.connect((err, client, done) => {
-        if (err) return callback(err);
+        if (err) {
+            console.error(err);
+            return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, "Error connecting to the visits DB"));
+        }
 
         client.query(query, params, (err, results) => {
             done();
 
-            if (err)
-                return callback(err);
-            else
+            if (err) {
+                console.error(err);
+                return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, "Error querying the visits DB"));
+            } else {
                 return callback(null, resultsToVisits(results));
+            }
         });
     });
 }

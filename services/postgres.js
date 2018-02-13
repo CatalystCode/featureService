@@ -10,8 +10,7 @@ function init(callback) {
     const connectionString = process.env.FEATURES_CONNECTION_STRING;
 
     if (!connectionString) {
-        const err = new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, "FEATURES_CONNECTION_STRING configuration not provided as environment variable");
-        return callback(err);
+        return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, "Environment not set up to connect to DB"));
     }
 
     const params = url.parse(connectionString);
