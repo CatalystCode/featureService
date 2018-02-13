@@ -1,6 +1,9 @@
 const pg = require('pg'),
       process = require('process'),
       querystring = require('querystring'),
+      HttpStatus = require('http-status-codes'),
+      common = require('service-utils'),
+      ServiceError = common.utils.ServiceError,
       url = require('url');
 
 function init(callback) {
