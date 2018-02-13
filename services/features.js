@@ -13,15 +13,20 @@ let featureDatabasePool;
 
 function executeQuery(query, params, callback) {
     featureDatabasePool.connect((err, client, done) => {
-        if (err) return callback(err);
+        if (err) {
+            console.error(err);
+            return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, "Error connecting to the features DB"));
+        }
 
         client.query(query, params, (err, results) => {
             done();
 
-            if (err)
-                return callback(err);
-            else
+            if (err) {
+                console.error(err);
+                return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, "Error querying the features DB"));
+            } else {
                 return callback(null, resultsToFeatures(results));
+            }
         });
     });
 }
