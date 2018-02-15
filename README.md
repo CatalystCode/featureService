@@ -1,5 +1,14 @@
 # featureService #
 
+## What's this? ##
+
+The featureService is a simple JSON REST API that enables you to work with the
+[OpenStreetMap](https://www.openstreetmap.org/) data-set.
+
+Using the featureService you can, for example, discover all the locations or
+points of interest in a particular area or look up properties of locations such
+as their bounding box, centroid or name.
+
 ## Setup ##
 
 ### System dependencies ###
@@ -63,6 +72,8 @@ The first time that you run this command, it will take about 90 minutes while
 your Postgres on Azure instance is getting populated with over 2GB of global
 geo-spatial features and appropriate indices are being built. On subsequent
 runs, the start should be instantaneous.
+
+### Using the application ##
 
 After starting the service, you will be able to call the featureService, for
 example via the following requests:
