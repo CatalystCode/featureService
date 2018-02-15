@@ -8,6 +8,7 @@ const express = require('express'),
       log = common.services.log("featureService/server"),
       morgan = require('morgan'),
       server = require('http').createServer(app),
+      config = require('./config'),
       services = require('./services'),
       controllers = require('./controllers');
 
@@ -26,8 +27,8 @@ services.init(function(err) {
         process.exit(1);
     }
 
-    server.listen(process.env.PORT);
-    log.info('feature server listening on port: ' + process.env.PORT);
+    server.listen(config.port);
+    log.info('feature server listening on port: ' + config.port);
 });
 
 module.exports = server;

@@ -3,10 +3,11 @@
 const assert = require('assert'),
       app = require('../../server'),
       fixtures = require('../fixtures'),
+      config = require('../../config'),
       HttpStatus = require('http-status-codes'),
       request = require('request');
 
-const featuresEndpoint = 'http://localhost:' + process.env.PORT + '/features';
+const featuresEndpoint = 'http://localhost:' + config.port + '/features';
 
 describe('features endpoint', function() {
     it('can get features within a boundingBox and layer', function(done) {

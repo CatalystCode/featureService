@@ -2,6 +2,7 @@
 
 let pbf2json = require('pbf2json'),
     services = require('../services'),
+    config = require('../config'),
     through = require('through2'),
     Tile = require('geotile');
 
@@ -40,7 +41,7 @@ const FEATURE_TAGS = [
 ];
 
 let config = {
-    file: process.env.OSM_FILE,
+    file: config.osmFile,
     tags: FEATURE_TAGS
 };
 

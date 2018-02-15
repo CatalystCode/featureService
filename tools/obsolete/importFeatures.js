@@ -2,6 +2,7 @@
 
 var pbf2json = require('pbf2json'),
     through = require('through2'),
+    config = require('../../config'),
     services = require('./services');
 
 let featureTags = [
@@ -14,9 +15,9 @@ let featureTags = [
 ];
 
 let config = {
-    file: process.env.OSM_FILE,
+    file: config.osmFile,
     tags: featureTags,
-    leveldb: process.env.LEVELDB_DIR
+    leveldb: config.leveldbDir
 };
 
 let count = 0;
