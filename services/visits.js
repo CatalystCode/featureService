@@ -1,16 +1,14 @@
-"use strict"
+'use strict';
 
-const async = require('async'),
-      azure = require('azure-storage'),
-      common = require('service-utils'),
-      HttpStatus = require('http-status-codes'),
-      log = common.services.log("featureService/services/visits"),
-      postgres = require('./postgres'),
-      ServiceError = common.utils.ServiceError,
-      uuid = require('uuid/v4');
+const
+    async = require('async'),
+    common = require('service-utils'),
+    HttpStatus = require('http-status-codes'),
+    postgres = require('./postgres'),
+    ServiceError = common.utils.ServiceError,
+    uuid = require('uuid/v4');
 
 let featureTablePool;
-let redlock;
 
 function rowToVisit(row) {
     if (!row) return;
@@ -40,7 +38,7 @@ function resultsToVisits(results) {
 }
 
 function deleteByUserId(userId, callback) {
-    const query = `DELETE FROM visits WHERE user_id = $1`;
+    const query = 'DELETE FROM visits WHERE user_id = $1';
     const params = [userId];
 
     executeQuery(query, params, callback);
@@ -50,7 +48,7 @@ function executeQuery(query, params, callback) {
     featureTablePool.connect((err, client, done) => {
         if (err) {
             console.error(err);
-            return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, "Error connecting to the visits DB"));
+            return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, 'Error connecting to the visits DB'));
         }
 
         client.query(query, params, (err, results) => {
@@ -58,7 +56,7 @@ function executeQuery(query, params, callback) {
 
             if (err) {
                 console.error(err);
-                return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, "Error querying the visits DB"));
+                return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, 'Error querying the visits DB'));
             } else {
                 return callback(null, resultsToVisits(results));
             }
@@ -77,14 +75,14 @@ function fromRequest(visitsJson, callback) {
 }
 
 function getByTimestamp(userId, timestamp, callback) {
-    const query = `SELECT * FROM visits WHERE user_id = $1 AND start >= $2 AND finish <= $3`;
+    const query = 'SELECT * FROM visits WHERE user_id = $1 AND start >= $2 AND finish <= $3';
     const params = [userId, timestamp, timestamp];
 
     executeQuery(query, params, callback);
 }
 
 function getByUserId(userId, callback) {
-    const query = `SELECT * FROM visits WHERE user_id = $1`;
+    const query = 'SELECT * FROM visits WHERE user_id = $1';
     const params = [userId];
 
     executeQuery(query, params, callback);
@@ -119,11 +117,11 @@ function toResponse(visits) {
 
 function upsert(visits, callback) {
     visits.forEach(visit => {
-        if (!visit.id)        return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'id' not provided for visit: " + JSON.stringify(visit, null ,2)));
-        if (!visit.userId)    return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'userId' not provided for visit: " + JSON.stringify(visit, null ,2)));
-        if (!visit.featureId) return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'featureId' not provided for visit: " + JSON.stringify(visit, null ,2)));
-        if (!visit.start)     return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'start' not provided for visit: " + JSON.stringify(visit, null ,2)));
-        if (!visit.finish)     return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'finish' not provided for visit: " + JSON.stringify(visit, null ,2)));
+        if (!visit.id)        return callback(new ServiceError(HttpStatus.BAD_REQUEST, '\'id\' not provided for visit: ' + JSON.stringify(visit, null ,2)));
+        if (!visit.userId)    return callback(new ServiceError(HttpStatus.BAD_REQUEST, '\'userId\' not provided for visit: ' + JSON.stringify(visit, null ,2)));
+        if (!visit.featureId) return callback(new ServiceError(HttpStatus.BAD_REQUEST, '\'featureId\' not provided for visit: ' + JSON.stringify(visit, null ,2)));
+        if (!visit.start)     return callback(new ServiceError(HttpStatus.BAD_REQUEST, '\'start\' not provided for visit: ' + JSON.stringify(visit, null ,2)));
+        if (!visit.finish)     return callback(new ServiceError(HttpStatus.BAD_REQUEST, '\'finish\' not provided for visit: ' + JSON.stringify(visit, null ,2)));
     });
 
     async.each(visits, (visit, visitCallback) => {

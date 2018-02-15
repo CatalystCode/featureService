@@ -1,7 +1,8 @@
-"use strict"
+'use strict';
 
-const async = require('async'),
-      features = require('./features');
+const
+    async = require('async'),
+    features = require('./features');
 
 const submodules = [
     features

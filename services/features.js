@@ -1,13 +1,10 @@
-"use strict"
+'use strict';
 
-const async = require('async'),
-      azure = require('azure-storage'),
-      common = require('service-utils'),
-      GeoPoint = require('geopoint'),
-      HttpStatus = require('http-status-codes'),
-      postgres = require('./postgres'),
-      ServiceError = common.utils.ServiceError,
-      turf = require('turf');
+const
+    common = require('service-utils'),
+    HttpStatus = require('http-status-codes'),
+    postgres = require('./postgres'),
+    ServiceError = common.utils.ServiceError;
 
 let featureDatabasePool;
 
@@ -15,7 +12,7 @@ function executeQuery(query, params, callback) {
     featureDatabasePool.connect((err, client, done) => {
         if (err) {
             console.error(err);
-            return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, "Error connecting to the features DB"));
+            return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, 'Error connecting to the features DB'));
         }
 
         client.query(query, params, (err, results) => {
@@ -23,7 +20,7 @@ function executeQuery(query, params, callback) {
 
             if (err) {
                 console.error(err);
-                return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, "Error querying the features DB"));
+                return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, 'Error querying the features DB'));
             } else {
                 return callback(null, resultsToFeatures(results));
             }
@@ -85,7 +82,7 @@ function parseCentroid(centroid_geo_json) {
     return [x, y];
 }
 
-function rowToFeature(row, columns) {
+function rowToFeature(row) {
     if (!row) return;
 
     row['createdAt'] = row['created_at'];
@@ -149,7 +146,7 @@ function addQueryPredicates(sql, query, params) {
     if (query.filter_layer) {
         sql += ` AND lower(layer) IN (${query.filter_layer.split(',').map(layer => {
             params.push(layer);
-            return `lower($${params.length})`
+            return `lower($${params.length})`;
         }).join(',')})`;
     }
 
@@ -189,7 +186,7 @@ function getByName(query, callback) {
     const namesDisjunction = `(${names.map(name => {
         nameParams.push(name);
         return `lower(name) = lower($${nameParams.length})`;
-    }).join(" OR ")})`;
+    }).join(' OR ')})`;
 
     let nameQuery = `SELECT ${buildQueryColumns(query)} FROM features WHERE ${namesDisjunction}`;
 
@@ -243,12 +240,10 @@ function intersectLocations(locations, callback) {
 */
 
 function upsert(feature, callback) {
-    let prefix = "";
-
-    if (!feature.layer)      return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'layer' not provided for feature."));
-    if (!feature.name)       return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'name' not provided for feature."));
-    if (!feature.hull)       return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'hull' not provided for feature."));
-    if (!feature.properties) return callback(new ServiceError(HttpStatus.BAD_REQUEST, "'properties' not provided for feature."));
+    if (!feature.layer)      return callback(new ServiceError(HttpStatus.BAD_REQUEST, '\'layer\' not provided for feature.'));
+    if (!feature.name)       return callback(new ServiceError(HttpStatus.BAD_REQUEST, '\'name\' not provided for feature.'));
+    if (!feature.hull)       return callback(new ServiceError(HttpStatus.BAD_REQUEST, '\'hull\' not provided for feature.'));
+    if (!feature.properties) return callback(new ServiceError(HttpStatus.BAD_REQUEST, '\'properties\' not provided for feature.'));
 
     feature.elevation = feature.elevation || 'null';
     feature.hierarchy = feature.hierarchy || '{}';
@@ -294,6 +289,6 @@ module.exports = {
     getByPoint,
     getByName,
     init,
-/*  intersectLocations, */
+    /*  intersectLocations, */
     upsert,
 };

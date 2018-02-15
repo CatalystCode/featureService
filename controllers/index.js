@@ -1,3 +1,3 @@
 module.exports = {
-    features:       require('./features')
+    features: require('./features')
 };
