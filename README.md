@@ -65,7 +65,7 @@ docker run \
   -e FEATURES_DB_USER="$dbuser@$dbname" \
   -e FEATURES_DB_PASSWORD="$dbpassword" \
   -e FEATURES_DB_HOST="$dbname.postgres.database.azure.com" \
-   -t featureservice
+  -t featureservice
 ```
 
 The first time that you run this command, it will take about 90 minutes while
