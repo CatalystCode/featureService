@@ -30,3 +30,4 @@ example via the following requests:
 - http://localhost:8080/features/name/bogota
 - http://localhost:8080/features/point/18.678/15.123
 - http://localhost:8080/features/bbox/12.3/22.3/12.4/22.4
+- http://localhost:8080/features/id/wof-85975935,wof-404477281?include=bbox,centroid
