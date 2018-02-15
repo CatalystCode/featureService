@@ -61,7 +61,7 @@ created, you can run the project via Docker:
 docker build -t featureservice .
 
 docker run \
-  -p 8080:80 \
+  -p 3035:80 \
   -e FEATURES_DB_USER="$dbuser@$dbname" \
   -e FEATURES_DB_PASSWORD="$dbpassword" \
   -e FEATURES_DB_HOST="$dbname.postgres.database.azure.com" \
@@ -78,7 +78,7 @@ runs, the start should be instantaneous.
 After starting the service, you will be able to call the featureService, for
 example via the following requests:
 
-- http://localhost:8080/features/name/bogota
-- http://localhost:8080/features/point/18.678/15.123
-- http://localhost:8080/features/bbox/12.3/22.3/12.4/22.4
-- http://localhost:8080/features/id/wof-85975935,wof-404477281?include=bbox,centroid
+- http://localhost:3035/features/name/bogota
+- http://localhost:3035/features/point/18.678/15.123
+- http://localhost:3035/features/bbox/12.3/22.3/12.4/22.4
+- http://localhost:3035/features/id/wof-85975935,wof-404477281?include=bbox,centroid
