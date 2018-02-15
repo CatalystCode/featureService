@@ -3,17 +3,16 @@ const pg = require('pg'),
       querystring = require('querystring'),
       HttpStatus = require('http-status-codes'),
       common = require('service-utils'),
+      config = require('../config'),
       ServiceError = common.utils.ServiceError,
       url = require('url');
 
 function init(callback) {
-    const connectionString = process.env.FEATURES_CONNECTION_STRING;
-
-    if (!connectionString) {
+    if (!config.featuresConnectionString) {
         return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, "Environment not set up to connect to DB"));
     }
 
-    const params = url.parse(connectionString);
+    const params = url.parse(config.featuresConnectionString);
     const query = querystring.parse(params.query);
     const auth = params.auth.split(':');
 
