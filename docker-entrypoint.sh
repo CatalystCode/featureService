@@ -4,6 +4,7 @@ run_sql() {
   PGSSLMODE="require" \
   PGPASSWORD="${FEATURES_DB_PASSWORD}" \
   psql \
+    --tuples-only \
     --username="${FEATURES_DB_USER}" \
     --port="${FEATURES_DB_PORT}" \
     --host="${FEATURES_DB_HOST}" \
@@ -28,6 +29,11 @@ features_database_exists() {
   | grep -q 'yes'
 }
 
+can_connect_to_database() {
+  echo "SELECT version();" \
+  | run_sql 'postgres'
+}
+
 log() {
   echo "[$(date)] $1"
 }
@@ -40,6 +46,11 @@ fail() {
 if [ -z "${FEATURES_DB_USER}" ]; then fail "Need to provide FEATURES_DB_USER environment variable"; fi
 if [ -z "${FEATURES_DB_PASSWORD}" ]; then fail "Need to provide FEATURES_DB_PASSWORD environment variable"; fi
 if [ -z "${FEATURES_DB_HOST}" ]; then fail "Need to provide FEATURES_DB_HOST environment variable"; fi
+
+while ! can_connect_to_database; do
+  log "Unable to connect to database, retrying."
+  sleep 30s
+done
 
 username="${FEATURES_DB_USER%@*}"
 hostname="${FEATURES_DB_USER#*@}"
@@ -79,5 +90,8 @@ if ! features_database_exists; then
   log "...done, query planner is now ready"
 fi
 
-FEATURES_CONNECTION_STRING="postgres://frontend@${hostname}:${FEATURES_DB_PASSWORD}@${FEATURES_DB_HOST}:${FEATURES_DB_PORT}/${FEATURES_DB_NAME}?ssl=true" \
-npm start
+export FEATURES_CONNECTION_STRING="postgres://frontend@${hostname}:${FEATURES_DB_PASSWORD}@${FEATURES_DB_HOST}:${FEATURES_DB_PORT}/${FEATURES_DB_NAME}?ssl=true"
+
+while ! npm start; do
+  sleep 30s
+done
