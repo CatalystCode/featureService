@@ -2,22 +2,61 @@
 
 ## Setup ##
 
-In order to run this project on your machine, you will need to set up:
+### System dependencies ###
 
-- [Postgres on Azure](https://azure.microsoft.com/en-us/services/postgresql/)
+In order to run this project on your machine, you will need to install the
+following system-level dependencies:
+
+- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 - [Docker](https://docs.docker.com/docker-for-windows/)
 
-Once the system dependencies are installed, you can run the project via Docker:
+### Azure resources ###
+
+You will need to set up an instance of [Azure Databases for PostgreSQL](https://azure.microsoft.com/en-us/services/postgresql/) for the featureService.
+
+You can run the following snippet in a Bash shell (such as the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10))
+to set up a new instance of Azure Databases for PostgreSQL using the Azure CLI:
+
+```sh
+dbname="----CHANGEME----"             # e.g. myfeaturesservicedb
+dbuser="----CHANGEME----"             # e.g. admin
+dbpassword="----CHANGEME----"         # e.g. featureService1!Rocks
+resource_group="----CHANGEME----"     # e.g. myfeaturesserviceresourcegroup
+resource_location="----CHANGEME----"  # e.g. eastus
+
+az group create \
+  --name="$resource_group" \
+  --location="$resource_location"
+
+az postgres server create \
+  --name="$dbname" \
+  --admin-user="$dbuser" \
+  --admin-password="$dbpassword" \
+  --resource-group="$resource_group" \
+  --location="$resource_location" \
+  --performance-tier="Standard"
+```
+
+Next, find the database in the [Azure Portal](https://portal.azure.com) and
+enable clients to connect to the database. You can either white-list particular
+IPs or a range of IPs as shown in the screenshot below:
+
+![Screenshot showing Azure Databases for PostgreSQL firewall configuration](https://user-images.githubusercontent.com/1086421/36278106-c1fd7fe6-1260-11e8-8a22-8311b19f83c7.png)
+
+### Running the application ###
+
+Once the system dependencies are installed and your Postgres database has been
+created, you can run the project via Docker:
 
 ```sh
 docker build -t featureservice .
 
 docker run \
   -p 8080:80 \
-  -e FEATURES_DB_USER="----CHANGEME----" \
-  -e FEATURES_DB_PASSWORD="----CHANGEME----" \
-  -e FEATURES_DB_HOST="----CHANGEME----" \
-  -t featureservice
+  -e FEATURES_DB_USER="$dbuser@$dbname" \
+  -e FEATURES_DB_PASSWORD="$dbpassword" \
+  -e FEATURES_DB_HOST="$dbname.postgres.database.azure.com" \
+   -t featureservice
 ```
 
 The first time that you run this command, it will take about 90 minutes while
