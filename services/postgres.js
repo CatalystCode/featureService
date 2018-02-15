@@ -4,6 +4,7 @@ const
     HttpStatus = require('http-status-codes'),
     common = require('service-utils'),
     ServiceError = common.utils.ServiceError,
+    config = require('../config'),
     url = require('url');
 
 function init(callback) {
@@ -15,16 +16,14 @@ function init(callback) {
     const query = querystring.parse(params.query);
     const auth = params.auth.split(':');
 
-    const config = {
+    const featureDatabasePool = new pg.Pool({
         user: auth[0],
         password: auth[1],
         host: params.hostname,
         port: params.port,
         ssl: query['ssl'],
         database: params.pathname.split('/')[1]
-    };
-
-    const featureDatabasePool = new pg.Pool(config);
+    });
 
     return callback(null, featureDatabasePool);
 }
