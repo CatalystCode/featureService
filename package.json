@@ -26,6 +26,7 @@
     "uuid": "^3.0.1"
   },
   "scripts": {
+    "start": "node server.js",
     "test": "PORT=3035 FEATURES_CONNECTION_STRING='postgres://frontend:[euro4sure]@127.0.0.1/geofeatures' mocha"
   },
   "devDependencies": {

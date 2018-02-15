@@ -1,50 +1,32 @@
 # featureService #
 
-## Development setup ##
+## Setup ##
 
-### System dependencies ###
+In order to run this project on your machine, you will need to set up:
 
-In order to install on your local machine, you will need to install:
+- [Postgres on Azure](https://azure.microsoft.com/en-us/services/postgresql/)
+- [Docker](https://docs.docker.com/docker-for-windows/)
 
-- Postgres + postgis ([instructions for Ubuntu 16.04](http://www.gis-blog.com/how-to-install-postgis-2-3-on-ubuntu-16-04-lts/))
-- Node ([instructions for Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-16-04))
-
-### Database setup ###
-
-Once the system dependencies are installed, go open a bash shell on the project directory and set up the database:
+Once the system dependencies are installed, you can run the project via Docker:
 
 ```sh
-cat << EOF | sudo -u postgres psql
-CREATE DATABASE features;
-CREATE USER frontend WITH login password 'your_password_here';
-CREATE USER ops WITH login password 'your_other_password_here';
-GRANT ops TO postgres;
-GRANT frontend TO postgres;
-EOF
-sudo -u postgres psql -d features < schema.sql
+docker build -t featureservice .
+
+docker run \
+  -p 8080:80 \
+  -e FEATURES_DB_USER="----CHANGEME----" \
+  -e FEATURES_DB_PASSWORD="----CHANGEME----" \
+  -e FEATURES_DB_HOST="----CHANGEME----" \
+  -t featureservice
 ```
 
-### Application setup ###
+The first time that you run this command, it will take a while as your Postgres
+on Azure instance is getting populated with over 2GB of global geo-spatial
+features.
 
-First, make sure the environment variables for the service are set:
+After starting the service, you will be able to call the featureService, for
+example via the following requests:
 
-```sh
-export FEATURES_CONNECTION_STRING='postgres://frontend:your_password_here@127.0.0.1/features'
-export PORT=3035
-```
-
-Now you're ready to install and start the service:
-
-```sh
-npm install
-node server.js
-```
-
-## Production setup ##
-
-You can run the script `scripts/install.sh` to set up a production machine with the featureService and all its dependencies. The script will:
-
-- Install postgres and postgis
-- Populate the postgres features database
-- Install the featureService
-- Autostart the featureService on port 80
+- http://localhost:8080/features/name/bogota
+- http://localhost:8080/features/point/18.678/15.123
+- http://localhost:8080/features/bbox/12.3/22.3/12.4/22.4
