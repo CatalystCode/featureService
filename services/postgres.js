@@ -1,15 +1,14 @@
-const pg = require('pg'),
-      process = require('process'),
-      querystring = require('querystring'),
-      HttpStatus = require('http-status-codes'),
-      common = require('service-utils'),
-      config = require('../config'),
-      ServiceError = common.utils.ServiceError,
-      url = require('url');
+const
+    pg = require('pg'),
+    querystring = require('querystring'),
+    HttpStatus = require('http-status-codes'),
+    common = require('service-utils'),
+    ServiceError = common.utils.ServiceError,
+    url = require('url');
 
 function init(callback) {
     if (!config.featuresConnectionString) {
-        return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, "Environment not set up to connect to DB"));
+        return callback(new ServiceError(HttpStatus.INTERNAL_SERVER_ERROR, 'Environment not set up to connect to DB'));
     }
 
     const params = url.parse(config.featuresConnectionString);

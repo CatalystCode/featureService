@@ -1,8 +1,8 @@
-"use strict"
+'use strict';
 
-const common = require('service-utils'),
-      HttpStatus = require('http-status-codes'),
-      services = require('../services');
+const
+    common = require('service-utils'),
+    services = require('../services');
 
 exports.getById = function(req, res) {
     let query = {
@@ -15,7 +15,7 @@ exports.getById = function(req, res) {
     services.features.getById(query, (err, features) => {
         if (err) return common.utils.handleError(res, err);
 
-        res.send({ "features": features });
+        res.send({ 'features': features });
     });
 };
 
@@ -35,7 +35,7 @@ exports.getByPoint = function(req, res) {
     services.features.getByPoint(query, (err, features) => {
         if (err) return common.utils.handleError(res, err);
 
-        res.send({ "features": features });
+        res.send({ 'features': features });
     });
 };
 
@@ -54,7 +54,7 @@ exports.getByName = function(req, res) {
     services.features.getByName(query, (err, features) => {
         if (err) return common.utils.handleError(res, err);
 
-        res.send({ "features": features });
+        res.send({ 'features': features });
     });
 };
 
