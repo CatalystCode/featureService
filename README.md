@@ -20,9 +20,10 @@ docker run \
   -t featureservice
 ```
 
-The first time that you run this command, it will take a while as your Postgres
-on Azure instance is getting populated with over 2GB of global geo-spatial
-features.
+The first time that you run this command, it will take about 90 minutes while
+your Postgres on Azure instance is getting populated with over 2GB of global
+geo-spatial features and appropriate indices are being built. On subsequent
+runs, the start should be instantaneous.
 
 After starting the service, you will be able to call the featureService, for
 example via the following requests:
