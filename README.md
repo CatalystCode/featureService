@@ -1,5 +1,8 @@
 # featureService #
 
+[![Travis CI status](https://api.travis-ci.org/CatalystCode/featureService.svg?branch=master)](https://travis-ci.org/CatalystCode/featureService)
+[![Docker Pulls](https://img.shields.io/docker/pulls/cwolff/featureservice.svg)](https://hub.docker.com/r/cwolff/featureservice/)
+
 ## What's this? ##
 
 The featureService is a simple JSON REST API that enables you to work with the
