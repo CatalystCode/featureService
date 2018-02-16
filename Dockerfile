@@ -16,7 +16,7 @@ ADD docker-entrypoint.sh /app/docker-entrypoint.sh
 CMD /app/docker-entrypoint.sh
 
 ENV PORT=80
-EXPOSE 80
+EXPOSE $PORT
 
 ENV FEATURES_DB_USER=""
 ENV FEATURES_DB_PASSWORD=""
