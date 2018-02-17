@@ -1,8 +1,7 @@
 'use strict';
 
 const async = require('async'),
-      services = require('../services'),
-      turf = require('turf');
+      services = require('../services');
 
 let rhomFeatures = {};
 

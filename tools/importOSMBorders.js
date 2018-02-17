@@ -5,7 +5,7 @@ let async = require('async'),
     fs = require('fs'),
     services = require('./services'),
     Tile = require('geotile'),
-    turf = require('turf');
+    turfCentroid = require('@turf/centroid');
 
 let count = 0;
 
@@ -38,7 +38,7 @@ function addBorderLine(line) {
         admin_level: border.properties.admin_level,
         names: names,
         geometry: border.geometry,
-        centroid: turf.centroid(border).geometry,
+        centroid: turfCentroid(border).geometry,
         category: 'boundary',
         tag: border.properties['boundary'],
         fullTag: 'boundary:' + border.properties['boundary']

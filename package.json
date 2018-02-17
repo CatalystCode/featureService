@@ -6,23 +6,18 @@
     "node": "6.9.x"
   },
   "dependencies": {
+    "@turf/centroid": "^5.1.5",
     "async": "^2.1.4",
-    "azure-storage": "^1.4.0",
     "body-parser": "^1.14.1",
     "cors": "^2.8.1",
-    "documentdb": "^1.12.0",
     "express": "^4.13.3",
-    "geojson-bbox": "0.0.0",
-    "geopoint": "^1.0.1",
     "geotile": "^0.1.10",
     "http-status-codes": "^1.0.5",
     "morgan": "^1.6.1",
-    "node-fetch": "^1.3.3",
     "pg": "^7.4.1",
     "request": "^2.79.0",
     "service-utils": "^1.0.31",
     "through2": "^2.0.3",
-    "turf": "^3.0.14",
     "uuid": "^3.0.1"
   },
   "scripts": {
@@ -31,13 +26,9 @@
     "test": "PORT=3035 FEATURES_CONNECTION_STRING='postgres://frontend:[euro4sure]@127.0.0.1/geofeatures' mocha"
   },
   "devDependencies": {
-    "country-language": "^0.1.7",
     "eslint": "^4.17.0",
     "eslint-plugin-require-path-exists": "^1.1.7",
-    "geotile": "^0.1.9",
     "mocha": "^3.3.0",
-    "node-uuid": "^1.4.7",
-    "pbf2json": "^4.2.0",
-    "through2": "^2.0.1"
+    "pbf2json": "^4.2.0"
   }
 }

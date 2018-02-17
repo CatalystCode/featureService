@@ -4,8 +4,7 @@ let async = require('async'),
     fs = require('fs'),
     path = require('path'),
     services = require('../services'),
-    Tile = require('geotile'),
-    turf = require('turf');
+    Tile = require('geotile');
 
 const DIRECTORY_PARALLELISM = 3;
 

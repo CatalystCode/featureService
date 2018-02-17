@@ -1,7 +1,5 @@
 'use strict';
 
-const uuid = require('node-uuid');
-
 let fixtures = {
     feature: {
         "id": "fake-3830198",
