@@ -12,10 +12,13 @@ fi
 
 pushd "$(dirname $0)/.."
 
-docker_tag="$DOCKER_USERNAME/featureservice:$TRAVIS_TAG"
+docker build --tag featureservice .
 
 docker login --username="$DOCKER_USERNAME" --password="$DOCKER_PASSWORD"
-docker build --tag "$docker_tag" .
-docker push "$docker_tag"
+for tag in "$TRAVIS_TAG" "latest"; do
+  docker_tag="$DOCKER_USERNAME/featureservice:$tag"
+  docker tag featureservice "$docker_tag"
+  docker push "$docker_tag"
+done
 
 popd
