@@ -26,7 +26,7 @@ load_features_dump() {
 }
 
 features_database_exists() {
-  echo "SELECT 'yes' FROM pg_database WHERE datname='${FEATURES_DB_NAME}';" \
+  echo "SELECT 'yes' FROM information_schema.tables WHERE table_name='guard';" \
   | run_sql 'postgres' \
   | grep -q 'yes'
 }
@@ -58,9 +58,8 @@ username="${FEATURES_DB_USER%@*}"
 hostname="${FEATURES_DB_USER#*@}"
 
 if ! features_database_exists; then
-  dump_file="/tmp/db.fc.gz"
-
   log "Setting up database..."
+  echo "DROP DATABASE IF EXISTS ${FEATURES_DB_NAME};" | run_sql 'postgres'
   echo "CREATE DATABASE ${FEATURES_DB_NAME};" | run_sql 'postgres'
   echo "CREATE USER ops WITH login password 'changeme';" | run_sql 'postgres'
   echo "CREATE USER frontend WITH login password 'changeme';" | run_sql 'postgres'
@@ -77,16 +76,16 @@ if ! features_database_exists; then
   retries=0
   max_retries=5
   db_is_setup=0
-  while [ "${retries}" -lt "${max_retries}" ]; do
+  while [ "${db_is_setup}" -ne 1 ] && [ "${retries}" -lt "${max_retries}" ]; do
+    dump_file="/tmp/$(date +%s)-${FEATURES_DB_DUMP_URL##*/}"
     log "Fetching database dump..."
-    curl --silent "${FEATURES_DB_DUMP_URL}" > "${dump_file}"
+    curl "${FEATURES_DB_DUMP_URL}" > "${dump_file}"
     log "...done, database dump is now available"
 
     log "Ingesting database dump..."
     if load_features_dump "${dump_file}"; then
       log "...done, database dump is now ingested"
       db_is_setup=1
-      break
     else
       retries="$((retries + 1))"
       log "...error ingesting database dump, retrying"
@@ -102,6 +101,9 @@ if ! features_database_exists; then
   log "Improving query planner..."
   echo "ANALYZE;" | run_sql "${FEATURES_DB_NAME}"
   log "...done, query planner is now ready"
+
+  echo 'CREATE TABLE guard (created TIMESTAMP);' | run_sql 'postgres'
+  echo 'INSERT INTO guard (created) VALUES (NOW());' | run_sql 'postgres'
 fi
 
 export FEATURES_CONNECTION_STRING="postgres://frontend@${hostname}:${FEATURES_DB_PASSWORD}@${FEATURES_DB_HOST}:${FEATURES_DB_PORT}/${FEATURES_DB_NAME}?ssl=true"
