@@ -50,11 +50,17 @@ az postgres server create \
   --sku-name="$dbsku"
 ```
 
-Next, find the database in the [Azure Portal](https://portal.azure.com) and
-enable clients to connect to the database. You can either white-list particular
-IPs or a range of IPs as shown in the screenshot below:
+Next, enable clients to connect to the database. You can either white-list particular
+IPs or a range of IPs:
 
-![Screenshot showing Azure Databases for PostgreSQL firewall configuration](https://user-images.githubusercontent.com/1086421/36278106-c1fd7fe6-1260-11e8-8a22-8311b19f83c7.png)
+```sh
+az postgres server firewall-rule create \
+  --server-name="${dbname}" \
+  --resource-group="${resource_group}" \
+  --start-ip-address="0.0.0.0" \
+  --end-ip-address="255.255.255.255" \
+  --name="AllowAll"
+```
 
 ### Running the application ###
 
