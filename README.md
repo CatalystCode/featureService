@@ -33,6 +33,7 @@ to set up a new instance of Azure Databases for PostgreSQL using the Azure CLI:
 dbname="----CHANGEME----"             # e.g. myfeaturesservicedb
 dbuser="----CHANGEME----"             # e.g. admin
 dbpassword="----CHANGEME----"         # e.g. featureService1!Rocks
+dbsku="----CHANGEME----"              # e.g. GP_Gen4_2
 resource_group="----CHANGEME----"     # e.g. myfeaturesserviceresourcegroup
 resource_location="----CHANGEME----"  # e.g. eastus
 
@@ -46,7 +47,7 @@ az postgres server create \
   --admin-password="$dbpassword" \
   --resource-group="$resource_group" \
   --location="$resource_location" \
-  --performance-tier="Standard"
+  --sku-name="$dbsku"
 ```
 
 Next, find the database in the [Azure Portal](https://portal.azure.com) and
