@@ -38,16 +38,16 @@ resource_group="----CHANGEME----"     # e.g. myfeaturesserviceresourcegroup
 resource_location="----CHANGEME----"  # e.g. eastus
 
 az group create \
-  --name="$resource_group" \
-  --location="$resource_location"
+  --name="${resource_group}" \
+  --location="${resource_location}"
 
 az postgres server create \
-  --name="$dbname" \
-  --admin-user="$dbuser" \
-  --admin-password="$dbpassword" \
-  --resource-group="$resource_group" \
-  --location="$resource_location" \
-  --sku-name="$dbsku"
+  --name="${dbname}" \
+  --admin-user="${dbuser}" \
+  --admin-password="${dbpassword}" \
+  --resource-group="${resource_group}" \
+  --location="${resource_location}" \
+  --sku-name="${dbsku}"
 ```
 
 Next, enable clients to connect to the database. You can either white-list particular
@@ -72,9 +72,9 @@ docker build -t featureservice .
 
 docker run \
   -p 3035:80 \
-  -e FEATURES_DB_USER="$dbuser@$dbname" \
-  -e FEATURES_DB_PASSWORD="$dbpassword" \
-  -e FEATURES_DB_HOST="$dbname.postgres.database.azure.com" \
+  -e FEATURES_DB_USER="${dbuser}@${dbname}" \
+  -e FEATURES_DB_PASSWORD="${dbpassword}" \
+  -e FEATURES_DB_HOST="${dbname}.postgres.database.azure.com" \
   -t featureservice
 ```
 
