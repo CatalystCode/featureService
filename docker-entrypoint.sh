@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 run_sql() {
   PGSSLMODE="require" \
   PGPASSWORD="${FEATURES_DB_PASSWORD}" \
@@ -72,14 +74,26 @@ if ! features_database_exists; then
   < /app/ddl/schema.sql run_sql "${FEATURES_DB_NAME}"
   log "...done, schema is now set up"
 
-  log "Fetching database dump..."
-  curl --silent "${FEATURES_DB_DUMP_URL}" > "${dump_file}"
-  log "...done, database dump is now available"
+  retries=0
+  max_retries=5
+  db_is_setup=0
+  while [ "${retries}" -lt "${max_retries}" ]; do
+    log "Fetching database dump..."
+    curl --silent "${FEATURES_DB_DUMP_URL}" > "${dump_file}"
+    log "...done, database dump is now available"
 
-  log "Ingesting database dump..."
-  load_features_dump "${dump_file}"
+    log "Ingesting database dump..."
+    if load_features_dump "${dump_file}"; then
+      log "...done, database dump is now ingested"
+      db_is_setup=1
+      break
+    else
+      retries="$((retries + 1))"
+      log "...error ingesting database dump, retrying"
+    fi
+  done
+  if [ "${db_is_setup}" -ne 1 ]; then fail "Unable to setup database in ${max_retries} retries"; fi
   rm "${dump_file}"
-  log "...done, database dump is now ingested"
 
   log "Setting up indices..."
   < /app/ddl/indices.sql run_sql "${FEATURES_DB_NAME}"
